@@ -1,0 +1,11 @@
+composer.phar
+composer.lock
+/sdk-generator/
+/vendor/
+/coverage
+.idea/
+/storage
+.env
+.DS_Store
+Thumbs.db
+/tests/testConfig.json

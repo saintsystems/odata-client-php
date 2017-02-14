@@ -1,0 +1,37 @@
+{
+    "name": "saintsystems/odata-client-php",
+    "version": "0.1.0",
+    "description": "Saint Systems OData Client for PHP",
+    "keywords": ["odata", "rest", "php"],
+    "homepage": "https://github.com/saintsystems/odata-client-php",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Saint Systems",
+            "email": "contact@saintsystems.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "monolog/monolog": "^1.22",
+        "nesbot/carbon": "^1.22",
+        "illuminate/support": "^5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.5.*",
+        "phpdocumentor/phpdocumentor": "^2.9"
+    },
+    "autoload": {
+        "files": [
+            "src/Core/helpers.php"
+        ],
+        "psr-4": {
+            "SaintSystems\\OData\\": "src"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}
