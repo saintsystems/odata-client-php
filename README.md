@@ -33,7 +33,7 @@ class UsageExample
     $people = $odataClient->from('People')->get();
 
     // Or retrieve a specific entity by ID
-    $person = $odataClient->from('People')->entityKey('russellwhyte')->get();
+    $person = $odataClient->from('People')->find('russellwhyte');
     echo "Hello, I am $person->FirstName ";
 }
 ```

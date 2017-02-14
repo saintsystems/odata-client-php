@@ -557,7 +557,8 @@ class Builder
      */
     public function first($properties = [])
     {
-        return $this->take(1)->get($properties)->first();
+        //return $this->take(1)->get($properties)->first();
+        return $this->take(1)->get($properties);
     }
 
     /**

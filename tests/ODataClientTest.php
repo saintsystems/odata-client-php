@@ -55,4 +55,13 @@ class ODataClientTest extends TestCase
         $this->assertTrue(is_array($people));
         $this->assertTrue(count($people) == 2);
     }
+
+    public function testODataClientFind()
+    {
+        $odataClient = new ODataClient($this->baseUrl);
+        $this->assertNotNull($odataClient);
+        $person = $odataClient->from('People')->find('russellwhyte');
+        //dd($person);
+        $this->assertEquals('Russell', $person->FirstName);
+    }
 }
