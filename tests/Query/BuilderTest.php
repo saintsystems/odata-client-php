@@ -133,7 +133,7 @@ class BuilderTest extends TestCase
 
         $entityId = 'russellwhyte';
 
-        $builder->entityKey($entityId);
+        $builder->whereKey($entityId);
 
         $expected = $entityId;
         $actual = $this->readAttribute($builder, 'entityKey');
@@ -152,7 +152,7 @@ class BuilderTest extends TestCase
 
         $entityId = '1';
 
-        $builder->entityKey($entityId);
+        $builder->whereKey($entityId);
 
         $expected = $entityId;
         $actual = $this->readAttribute($builder, 'entityKey');
@@ -171,7 +171,7 @@ class BuilderTest extends TestCase
 
         $entityId = 'c78ae94b-0983-e511-80e5-3863bb35ddb8';
 
-        $builder->entityKey($entityId);
+        $builder->whereKey($entityId);
 
         $expected = $entityId;
         $actual = $this->readAttribute($builder, 'entityKey');
@@ -190,7 +190,7 @@ class BuilderTest extends TestCase
 
         $entityId = 'k78ae94b-0983-t511-80e5-3863bb35ddb8';
 
-        $builder->entityKey($entityId);
+        $builder->whereKey($entityId);
 
         $expected = $entityId;
         $actual = $this->readAttribute($builder, 'entityKey');

@@ -196,14 +196,14 @@ class Builder
     }
 
     /**
-     * Set the entity set which the query is targeting.
+     * Filter the entity set on the primary key.
      *
      * @param  string  $entityKey
      * @return $this
      */
-    public function entityKey($entityKey)
+    public function whereKey($id)
     {
-        $this->entityKey = $entityKey;
+        $this->entityKey = $id;
 
         return $this;
     }
@@ -533,7 +533,7 @@ class Builder
      */
     public function find($id, $properties = [])
     {
-        return $this->entityKey($id)->first($properties);
+        return $this->whereKey($id)->first($properties);
     }
 
     /**
