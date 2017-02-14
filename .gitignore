@@ -1,6 +1,5 @@
 composer.phar
 composer.lock
-/sdk-generator/
 /vendor/
 /coverage
 .idea/
