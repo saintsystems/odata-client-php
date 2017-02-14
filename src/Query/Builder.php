@@ -6,7 +6,9 @@ use Closure;
 use RuntimeException;
 use BadMethodCallException;
 use Illuminate\Support\Arr;
+use SaintSystems\OData\Constants;
 use SaintSystems\OData\IODataClient;
+use SaintSystems\OData\Exception\ODataQueryException;
 
 class Builder
 {
@@ -533,6 +535,9 @@ class Builder
      */
     public function find($id, $properties = [])
     {
+        if (!isset($this->entitySet)) {
+            throw new ODataQueryException(Constants::ENTITY_SET_REQUIRED);
+        }
         return $this->whereKey($id)->first($properties);
     }
 

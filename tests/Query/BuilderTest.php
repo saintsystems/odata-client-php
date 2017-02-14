@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Illuminate\Support\Collection;
 use SaintSystems\OData\ODataClient;
 use SaintSystems\OData\Query\Builder;
+use SaintSystems\OData\Exception\ODataQueryException;
 
 class BuilderTest extends TestCase
 {
@@ -48,6 +49,14 @@ class BuilderTest extends TestCase
 
         $request = $builder->toRequest();
         $this->assertEquals($expected, $request);
+    }
+
+    public function testNoEntitySetFind()
+    {
+        $this->expectException(ODataQueryException::class);
+
+        $builder = $this->getBuilder();
+        $builder->find('russellwhyte');
     }
 
     public function testEntitySetWithSelect()

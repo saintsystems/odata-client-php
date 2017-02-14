@@ -45,6 +45,9 @@ class Constants
     const REQUEST_TIMED_OUT = 'The request timed out.';
     const UNABLE_TO_CREATE_INSTANCE_OF_TYPE = 'Unable to create instance of type.';
 
+    // Query error message constants
+    const ENTITY_SET_REQUIRED = 'Entity Set cannot be null or empty. Please make sure you have specified a \'from\' in your query.';
+
     // Define server error constants
     const UNABLE_TO_PARSE_RESPONSE = 'The HTTP client sent back an invalid response';
 }
