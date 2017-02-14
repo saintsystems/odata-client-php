@@ -13,7 +13,6 @@ class ODataClientTest extends TestCase
     public function setUp()
     {
         $this->baseUrl = 'http://services.odata.org/V4/TripPinService';
-        $this->crmUrl = 'https://saintsystems.crm.dynamics.com/api/data/v8.2';
     }
 
     public function testODataClientConstructor()
