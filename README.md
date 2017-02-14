@@ -29,7 +29,7 @@ class UsageExample
 
     $odataClient = new ODataClient($odataServiceUrl);
 
-    // Retrieve all entities from the `People` Entity Set
+    // Retrieve all entities from the "People" Entity Set
     $people = $odataClient->from('People')->get();
 
     // Or retrieve a specific entity by ID
