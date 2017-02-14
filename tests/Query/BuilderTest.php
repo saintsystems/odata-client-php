@@ -50,6 +50,21 @@ class BuilderTest extends TestCase
         $this->assertEquals($expected, $request);
     }
 
+    public function testEntitySetWithSelect()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->select('FirstName','LastName')->from($entitySet);
+
+        $expected = $entitySet.'?$select=FirstName,LastName';
+
+        $request = $builder->toRequest();
+        
+        $this->assertEquals($expected, $request);
+    }
+
     public function testEntitySetGet()
     {
         $builder = $this->getBuilder();

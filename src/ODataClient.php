@@ -157,6 +157,18 @@ class ODataClient implements IODataClient
     }
 
     /**
+     * Begin a fluent query against an odata service
+     *
+     * @param  array  $properties
+     * @return \SaintSystems\OData\Query\Builder
+     */
+    public function select($properties = [])
+    {
+        $properties = is_array($properties) ? $properties : func_get_args();
+        return $this->query()->select($properties);
+    }
+
+    /**
      * Get a new query builder instance.
      *
      * @return \SaintSystems\OData\Query\Builder

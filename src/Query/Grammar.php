@@ -133,7 +133,8 @@ class Grammar
     {
         if (isset($query->entitySet) 
             && (
-                isset($query->wheres)
+                !empty($query->properties)
+                || isset($query->wheres)
                 || isset($query->orders)
                 || isset($query->expand)
                 || isset($query->take)

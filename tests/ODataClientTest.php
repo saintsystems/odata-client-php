@@ -24,12 +24,21 @@ class ODataClientTest extends TestCase
         $this->assertEquals('http://services.odata.org/V4/TripPinService/', $baseUrl);
     }
 
-    public function testODataClientFromQuery()
+    public function testODataClientEntitySetQuery()
     {
         $odataClient = new ODataClient($this->baseUrl);
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')->get();
         // dd($people);
+        $this->assertTrue(is_array($people));
+    }
+
+    public function testODataClientEntitySetQueryWithSelect()
+    {
+        $odataClient = new ODataClient($this->baseUrl);
+        $this->assertNotNull($odataClient);
+        $people = $odataClient->select('FirstName','LastName')->from('People')->get();
+        dd($people);
         $this->assertTrue(is_array($people));
     }
 
