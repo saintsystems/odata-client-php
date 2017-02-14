@@ -1,5 +1,7 @@
 # Get started with the Saint Systems OData Client for PHP
 
+A fluent library for calling OData REST services inspired by and based on the [Laravel Query Builder](https://laravel.com/docs/5.4/queries).
+
 *This library is currently in preview. Please continue to provide [feedback](https://github.com/saintsystems/odata-client-php/issues/new) as we iterate towards a production-supported library.*
 
 [![Build Status](https://travis-ci.org/saintsystems/odata-client-php.svg?branch=master)](https://travis-ci.org/saintsystems/odata-client-php)
