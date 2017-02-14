@@ -162,7 +162,6 @@ class Grammar
      */
     protected function compileCount(Builder $query, $aggregate)
     {
-
         return '/$count';
     }
 

@@ -65,7 +65,7 @@ class Builder
     /**
      * An aggregate function to be run.
      *
-     * @var array
+     * @var boolean
      */
     public $count;
 
@@ -621,6 +621,19 @@ class Builder
         return $this->client->get(
             $this->grammar->compileSelect($this), $this->getBindings()
         );
+    }
+
+    /**
+     * Retrieve the "count" result of the query.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        $this->count = true;
+        $results = $this->get();
+
+        return (int) $results;
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace SaintSystems\OData\Tests;
+namespace SaintSystems\OData\Query\Tests;
 
 use PHPUnit\Framework\TestCase;
 
@@ -72,6 +72,22 @@ class BuilderTest extends TestCase
         $request = $builder->toRequest();
         
         $this->assertEquals($expected, $request);
+    }
+
+    public function testEntitySetCount()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        //$expected = 55;
+
+        $actual = $builder->from($entitySet)->count();
+
+        $this->assertTrue(is_numeric($actual));
+        $this->assertTrue($actual > 0);
+        
+        //$this->assertEquals($expected, $actual);
     }
 
     public function testEntitySetGet()

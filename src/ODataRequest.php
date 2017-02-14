@@ -213,6 +213,10 @@ class ODataRequest implements IODataRequest
             return $result;
         }
 
+        if (ends_with($this->requestUrl, '/$count')) {
+            return $result->getBody()->getContents();
+        }
+
         // Wrap response in ODataResponse layer
         try {
             $response = new ODataResponse(
