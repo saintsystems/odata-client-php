@@ -1,4 +1,4 @@
-# Get started with the Saint Systems OData Client for PHP
+# Get started with the OData Client for PHP
 
 A fluent library for calling OData REST services inspired by and based on the [Laravel Query Builder](https://laravel.com/docs/5.4/queries).
 
@@ -12,7 +12,7 @@ You can install the PHP SDK with Composer.
 ```
 {
     "require": {
-        "SaintSystems/OData": "0.1.*"
+        "saintsystems/odata-client": "0.1.*"
     }
 }
 ```
