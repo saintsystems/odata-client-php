@@ -32,9 +32,12 @@ class UsageExample
     // Retrieve all entities from the "People" Entity Set
     $people = $odataClient->from('People')->get();
 
-    // Or retrieve a specific entity by ID
+    // Or retrieve a specific entity by the Entity ID/Key
     $person = $odataClient->from('People')->find('russellwhyte');
     echo "Hello, I am $person->FirstName ";
+
+    // Want to only select a few properties/columns?
+    $people = $odataClient->from('People')->select('FirstName','LastName')->get();
 }
 ```
 

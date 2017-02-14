@@ -38,7 +38,7 @@ class ODataClientTest extends TestCase
         $odataClient = new ODataClient($this->baseUrl);
         $this->assertNotNull($odataClient);
         $people = $odataClient->select('FirstName','LastName')->from('People')->get();
-        dd($people);
+        //dd($people);
         $this->assertTrue(is_array($people));
     }
 
