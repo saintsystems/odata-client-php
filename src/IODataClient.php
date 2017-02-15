@@ -31,6 +31,14 @@ interface IODataClient
     public function from($entitySet);
 
     /**
+     * Begin a fluent query against an odata service
+     *
+     * @param  array  $properties
+     * @return \SaintSystems\OData\Query\Builder
+     */
+    public function select($properties = [])
+
+    /**
      * Get a new query builder instance.
      *
      * @return \SaintSystems\OData\Query\Builder
