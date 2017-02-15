@@ -6,11 +6,11 @@ use SaintSystems\OData\Core\Enum;
 
 class Preference extends Enum
 {
-	const ODATA_ALLOW_ENTITY_REFERENCES  = 'odata.allow-entityreferences';
+    const ODATA_ALLOW_ENTITY_REFERENCES  = 'odata.allow-entityreferences';
 
-	const ODATA_CALLBACK = 'odata.callback';
+    const ODATA_CALLBACK = 'odata.callback';
 
-	const ODATA_CONTINUE_ON_ERROR = 'odata.continue-on-error';
+    const ODATA_CONTINUE_ON_ERROR = 'odata.continue-on-error';
 
     const ODATA_INCLUDE_ANNOTATIONS = 'odata.include-annotations';
 
