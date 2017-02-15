@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Illuminate\Support\Arr;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\IODataClient;
+use SaintSystems\OData\QueryOptions;
 use SaintSystems\OData\Exception\ODataQueryException;
 
 class Builder
@@ -70,6 +71,14 @@ class Builder
     public $count;
 
     /**
+     * Whether to include a total count of items matching 
+     * the request be returned along with the result
+     *
+     * @var boolean
+     */
+    public $totalCount;
+
+    /**
      * The specific set of properties to return for this entity or complex type
      * http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part2-url-conventions/odata-v4.0-errata03-os-part2-url-conventions-complete.html#_Toc453752360
      *
@@ -126,25 +135,12 @@ class Builder
         'not similar to', 'not ilike', '~~*', '!~~*',
     ];
 
-    // /**
-    //  * Constructs a new BaseRequestBuilder.
-    //  * @param string      $requestUrl The URL for the built request.
-    //  * @param IBaseClient $client     The IBaseClient for handling requests.
-    //  */
-    // public function __construct(string $requestUrl, 
-    //                             IBaseClient $client, 
-    //                             string $returnType)
-    // {
-    //     $this->client = $client;
-    //     $this->requestUrl = $requestUrl;
-    //     $this->returnType = $returnType;
-    // }
     /**
      * Create a new query builder instance.
      *
      * @param  \SaintSystems\OData\IODataClient  $client
-     * @param  \SaintSystems\OData\Grammar  $grammar
-     * @param  \SaintSystems\OData\Processor  $processor
+     * @param  \SaintSystems\OData\Grammar       $grammar
+     * @param  \SaintSystems\OData\Processor     $processor
      * @return void
      */
     public function __construct(IODataClient $client,
@@ -221,30 +217,31 @@ class Builder
      * @param  bool    $where
      * @return $this
      */
-    public function expand($property, $first, $operator = null, $second = null, $type = 'inner', $where = false)
+    public function expand($property, $first, $operator = null, $second = null, $type = 'inner', $ref = false, $count = false)
     {
-        $join = new JoinClause($this, $type, $table);
+        //TODO: need to flush out this method as it will work much like the where and join methods
+        $expand = new ExpandClause($this, $type, $table);
 
         // If the first "column" of the join is really a Closure instance the developer
         // is trying to build a join with a complex "on" clause containing more than
         // one condition, so we'll add the join and call a Closure with the query.
         if ($first instanceof Closure) {
-            call_user_func($first, $join);
+            call_user_func($first, $expand);
 
-            $this->joins[] = $join;
+            $this->expands[] = $expand;
 
-            $this->addBinding($join->getBindings(), 'join');
+            $this->addBinding($expand->getBindings(), 'expand');
         }
 
         // If the column is simply a string, we can assume the join simply has a basic
-        // "on" clause with a single condition. So we will just build the join with
-        // this simple join clauses attached to it. There is not a join callback.
+        // "expand" clause with a single condition. So we will just build the expand with
+        // this simple expand clauses attached to it. There is not an expand callback.
         else {
             $method = $where ? 'where' : 'on';
 
-            $this->joins[] = $join->$method($first, $operator, $second);
+            $this->expands[] = $expand->$method($first, $operator, $second);
 
-            $this->addBinding($join->getBindings(), 'join');
+            $this->addBinding($expand->getBindings(), 'expand');
         }
 
         return $this;
@@ -595,8 +592,21 @@ class Builder
      * @param  array  $properties
      * @return \Illuminate\Support\Collection
      */
-    public function get($properties = [])
+    public function get($properties = [], $options = null)
     {
+        if (is_numeric($properties)) {
+            $options = $properties;
+            $properties = [];
+        }
+
+        if (isset($options)) {
+            $include_count = $options & QueryOptions::INCLUDE_COUNT;
+
+            if ($include_count) {
+                $this->totalCount = true;
+            }
+        }
+
         $original = $this->properties;
 
         if (is_null($original)) {

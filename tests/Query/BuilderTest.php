@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Illuminate\Support\Collection;
 use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\QueryOptions;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Exception\ODataQueryException;
 
@@ -86,8 +87,22 @@ class BuilderTest extends TestCase
 
         $this->assertTrue(is_numeric($actual));
         $this->assertTrue($actual > 0);
-        
         //$this->assertEquals($expected, $actual);
+    }
+
+    public function testEntitySetCountWithWhere()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $expected = 1;
+
+        $actual = $builder->from($entitySet)->where('FirstName','Russell')->get(QueryOptions::INCLUDE_REF | QueryOptions::INCLUDE_COUNT);
+
+        $this->assertTrue(is_numeric($actual));
+        $this->assertTrue($actual > 0);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testEntitySetGet()

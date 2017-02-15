@@ -41,8 +41,9 @@ class Grammar
         //'expand',
         //'search',
         'orders',
-        'take',
         'skip',
+        'take',
+        'totalCount',
     ];
 
     /**
@@ -315,6 +316,21 @@ class Grammar
     protected function compileSkip(Builder $query, $skip)
     {
         return '$skip='.(int) $skip;
+    }
+
+    /**
+     * Compile the "$count" portions of the query.
+     *
+     * @param  \SaintSystems\OData\Query\Builder   $query
+     * @param  int  $skip
+     * @return string
+     */
+    protected function compileTotalCount(Builder $query, $totalCount)
+    {
+        if (isset($query->entityKey)) {
+            return '';
+        }
+        return '$count=true';
     }
 
     /**

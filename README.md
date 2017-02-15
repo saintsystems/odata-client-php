@@ -50,11 +50,11 @@ Run ```vendor/bin/phpunit``` from the base directory.
 
 ## Documentation and resources
 
-* [Documentation](https://github.com/saintsystems/dynamics-sdk-php/blob/master/docs/index.html)
+* [Documentation](https://github.com/saintsystems/odata-client-php/blob/master/docs/index.html)
 
-* [Wiki](https://github.com/saintsystems/dynamics-sdk-php/wiki)
+* [Wiki](https://github.com/saintsystems/odata-client-php/wiki)
 
-* [Examples](https://github.com/saintsystems/dynamics-sdk-php/wiki/Example-calls)
+* [Examples](https://github.com/saintsystems/odata-client-php/wiki/Example-calls)
 
 * [OData website](http://www.odata.org)
 
