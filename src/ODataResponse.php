@@ -146,7 +146,7 @@ class ODataResponse
             }
             return $objArray;
         } else {
-            return new $class($result);
+            return [new $class($result)];
         }
     }
 

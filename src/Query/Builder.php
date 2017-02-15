@@ -559,8 +559,8 @@ class Builder
      */
     public function first($properties = [])
     {
-        //return $this->take(1)->get($properties)->first();
-        return $this->take(1)->get($properties);
+        return $this->take(1)->get($properties)->first();
+        //return $this->take(1)->get($properties);
     }
 
     /**
@@ -617,8 +617,8 @@ class Builder
 
         $this->properties = $original;
 
-        //return collect($results);
-        return $results;
+        return collect($results);
+        //return $results;
     }
 
     /**
@@ -643,7 +643,10 @@ class Builder
         $this->count = true;
         $results = $this->get();
 
-        return (int) $results;
+        //return (int) $results;
+        if (! $results->isEmpty()) {
+            return (int) $results[0];
+        }
     }
 
     /**

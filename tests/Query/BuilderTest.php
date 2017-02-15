@@ -114,7 +114,7 @@ class BuilderTest extends TestCase
         $people = $builder->from($entitySet)->get();
 
         // dd($people);
-        $this->assertTrue(is_array($people));
+        $this->assertTrue(is_array($people->toArray()));
         //$this->assertInstanceOf(Collection::class, $people);
         //$this->assertEquals($expected, $request);
     }
@@ -128,8 +128,8 @@ class BuilderTest extends TestCase
         $people = $builder->from($entitySet)->where('FirstName','Russell')->get();
 
         // dd($people);
-        $this->assertTrue(is_array($people));
-        $this->assertTrue(count($people) == 1);
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 1);
         //$this->assertInstanceOf(Collection::class, $people);
         //$this->assertEquals($expected, $request);
     }
@@ -143,8 +143,8 @@ class BuilderTest extends TestCase
         $people = $builder->from($entitySet)->where('FirstName','Russell')->orWhere('LastName','Ketchum')->get();
 
         //dd($people);
-        $this->assertTrue(is_array($people));
-        $this->assertTrue(count($people) == 2);
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 2);
         //$this->assertInstanceOf(Collection::class, $people);
         //$this->assertEquals($expected, $request);
     }
@@ -161,8 +161,8 @@ class BuilderTest extends TestCase
         })->get();
 
         //dd($people);
-        $this->assertTrue(is_array($people));
-        $this->assertTrue(count($people) == 2);
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 2);
         //$this->assertInstanceOf(Collection::class, $people);
         //$this->assertEquals($expected, $request);
     }

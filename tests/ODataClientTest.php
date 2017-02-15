@@ -28,8 +28,8 @@ class ODataClientTest extends TestCase
         $odataClient = new ODataClient($this->baseUrl);
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')->get();
-        // dd($people);
-        $this->assertTrue(is_array($people));
+        //dd($people);
+        $this->assertTrue(is_array($people->toArray()));
     }
 
     public function testODataClientEntitySetQueryWithSelect()
@@ -38,7 +38,7 @@ class ODataClientTest extends TestCase
         $this->assertNotNull($odataClient);
         $people = $odataClient->select('FirstName','LastName')->from('People')->get();
         //dd($people);
-        $this->assertTrue(is_array($people));
+        $this->assertTrue(is_array($people->toArray()));
     }
 
     public function testODataClientFromQueryWithWhere()
@@ -47,8 +47,8 @@ class ODataClientTest extends TestCase
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')->where('FirstName','Russell')->get();
         // dd($people);
-        $this->assertTrue(is_array($people));
-        $this->assertTrue(count($people) == 1);
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 1);
     }
 
     public function testODataClientFromQueryWithWhereOrWhere()
@@ -60,8 +60,8 @@ class ODataClientTest extends TestCase
                               ->orWhere('LastName','Ketchum')
                               ->get();
         // dd($people);
-        $this->assertTrue(is_array($people));
-        $this->assertTrue(count($people) == 2);
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 2);
     }
 
     public function testODataClientFind()
