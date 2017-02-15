@@ -90,20 +90,20 @@ class BuilderTest extends TestCase
         //$this->assertEquals($expected, $actual);
     }
 
-    public function testEntitySetCountWithWhere()
-    {
-        $builder = $this->getBuilder();
+    // public function testEntitySetCountWithWhere()
+    // {
+    //     $builder = $this->getBuilder();
 
-        $entitySet = 'People';
+    //     $entitySet = 'People';
 
-        $expected = 1;
+    //     $expected = 1;
 
-        $actual = $builder->from($entitySet)->where('FirstName','Russell')->get(QueryOptions::INCLUDE_REF | QueryOptions::INCLUDE_COUNT);
+    //     $actual = $builder->from($entitySet)->where('FirstName','Russell')->get(QueryOptions::INCLUDE_REF | QueryOptions::INCLUDE_COUNT);
 
-        $this->assertTrue(is_numeric($actual));
-        $this->assertTrue($actual > 0);
-        $this->assertEquals($expected, $actual);
-    }
+    //     $this->assertTrue(is_numeric($actual));
+    //     $this->assertTrue($actual > 0);
+    //     $this->assertEquals($expected, $actual);
+    // }
 
     public function testEntitySetGet()
     {
