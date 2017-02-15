@@ -6,11 +6,11 @@ use SaintSystems\OData\Core\Enum;
 
 class ResponseHeader extends Enum
 {
-	const ETAG = 'ETag';
+    const ETAG = 'ETag';
 
-	const LOCATION = 'Location';
+    const LOCATION = 'Location';
 
-	const ODATA_ENTITY_ID = 'OData-EntityId';
+    const ODATA_ENTITY_ID = 'OData-EntityId';
 
     const PREFERERENCE_APPLIED = 'Preference-Applied';
 
