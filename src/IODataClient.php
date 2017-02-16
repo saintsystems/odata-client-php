@@ -36,7 +36,7 @@ interface IODataClient
      * @param  array  $properties
      * @return \SaintSystems\OData\Query\Builder
      */
-    public function select($properties = [])
+    public function select($properties = []);
 
     /**
      * Get a new query builder instance.
