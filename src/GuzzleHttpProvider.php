@@ -43,7 +43,7 @@ class GuzzleHttpProvider implements IHttpProvider
      *
      * @param integer $timeout The timeout in ms
      * 
-     * @return HttpProvider object
+     * @return $this
      */
     public function setTimeout($timeout)
     {

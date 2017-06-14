@@ -13,8 +13,8 @@ use SaintSystems\OData\QueryOptions;
 class Builder
 {
     /**
-     * Gets the IBaseClient for handling requests.
-     * @var IBaseClient
+     * Gets the IODataClient for handling requests.
+     * @var IODataClient
      */
     public $client;
 
@@ -255,9 +255,10 @@ class Builder
     /**
      * Apply the callback's query changes if the given "value" is true.
      *
-     * @param  bool  $value
-     * @param  \Closure  $callback
-     * @param  \Closure  $default
+     * @param bool     $value
+     * @param \Closure $callback
+     * @param \Closure $default
+     *
      * @return \Microsoft\Dynamics\QueryBuilder
      */
     public function when($value, $callback, $default = null)

@@ -2,6 +2,7 @@
 
 namespace SaintSystems\OData;
 
+use GuzzleHttp\Client;
 use SaintSystems\OData\Exception\ODataException;
 
 /**
@@ -227,7 +228,7 @@ class ODataRequest implements IODataRequest
                 $result->getStatusCode(), 
                 $result->getHeaders()
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new ODataException(Constants::UNABLE_TO_PARSE_RESPONSE);
         }
 

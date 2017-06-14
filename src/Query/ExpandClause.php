@@ -71,7 +71,8 @@ class ExpandClaus extends Builder
      * @param  \Closure|string  $first
      * @param  string|null  $operator
      * @param  string|null  $second
-     * @return \Illuminate\Database\Query\ExpandClaus
+     *
+     * @return ExpandClaus
      */
     public function orOn($first, $operator = null, $second = null)
     {
@@ -81,7 +82,7 @@ class ExpandClaus extends Builder
     /**
      * Get a new instance of the join clause builder.
      *
-     * @return \Illuminate\Database\Query\ExpandClaus
+     * @return ExpandClaus
      */
     public function newQuery()
     {
