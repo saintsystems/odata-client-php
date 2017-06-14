@@ -135,6 +135,11 @@ class Builder
     ];
 
     /**
+     * @var array
+     */
+    public $select = [];
+
+    /**
      * Create a new query builder instance.
      *
      * @param IODataClient $client
