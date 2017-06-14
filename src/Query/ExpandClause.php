@@ -16,16 +16,15 @@ class ExpandClaus extends Builder
     /**
      * The parent query builder instance.
      *
-     * @var \SaintSystems\OData\Query\Builder
+     * @var Builder
      */
     private $parentQuery;
 
     /**
      * Create a new expand clause instance.
      *
-     * @param  \SaintSystems\OData\Query\Builder $parentQuery
-     * @param  string  $property
-     * @return void
+     * @param Builder $parentQuery
+     * @param string  $property
      */
     public function __construct(Builder $parentQuery, $property)
     {

@@ -54,10 +54,8 @@ class GuzzleHttpProvider implements IHttpProvider
     /**
     * Executes the HTTP request using Guzzle
     *
-    * @param mixed $client The client to use in the request
+    * @param HttpRequestMessage $request
     *
-     * @throws ODataException if response is invalid
-     *
     * @return mixed object or array of objects
     *         of class $returnType
     */
