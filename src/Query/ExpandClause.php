@@ -16,16 +16,15 @@ class ExpandClaus extends Builder
     /**
      * The parent query builder instance.
      *
-     * @var \SaintSystems\OData\Query\Builder
+     * @var Builder
      */
     private $parentQuery;
 
     /**
      * Create a new expand clause instance.
      *
-     * @param  \SaintSystems\OData\Query\Builder $parentQuery
-     * @param  string  $property
-     * @return void
+     * @param Builder $parentQuery
+     * @param string  $property
      */
     public function __construct(Builder $parentQuery, $property)
     {
@@ -72,7 +71,8 @@ class ExpandClaus extends Builder
      * @param  \Closure|string  $first
      * @param  string|null  $operator
      * @param  string|null  $second
-     * @return \Illuminate\Database\Query\ExpandClaus
+     *
+     * @return ExpandClaus
      */
     public function orOn($first, $operator = null, $second = null)
     {
@@ -82,7 +82,7 @@ class ExpandClaus extends Builder
     /**
      * Get a new instance of the join clause builder.
      *
-     * @return \Illuminate\Database\Query\ExpandClaus
+     * @return ExpandClaus
      */
     public function newQuery()
     {

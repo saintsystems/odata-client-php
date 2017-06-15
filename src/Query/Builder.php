@@ -3,19 +3,18 @@
 namespace SaintSystems\OData\Query;
 
 use Closure;
-use RuntimeException;
-use BadMethodCallException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use SaintSystems\OData\Constants;
+use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
 use SaintSystems\OData\QueryOptions;
-use SaintSystems\OData\Exception\ODataQueryException;
 
 class Builder
 {
     /**
-     * Gets the IBaseClient for handling requests.
-     * @var IBaseClient
+     * Gets the IODataClient for handling requests.
+     * @var IODataClient
      */
     public $client;
 
@@ -136,17 +135,22 @@ class Builder
     ];
 
     /**
+     * @var array
+     */
+    public $select = [];
+
+    /**
      * Create a new query builder instance.
      *
-     * @param  \SaintSystems\OData\IODataClient  $client
-     * @param  \SaintSystems\OData\Grammar       $grammar
-     * @param  \SaintSystems\OData\Processor     $processor
-     * @return void
+     * @param IODataClient $client
+     * @param Grammar      $grammar
+     * @param Processor    $processor
      */
-    public function __construct(IODataClient $client,
-                                Grammar $grammar = null,
-                                Processor $processor = null)
-    {
+    public function __construct(
+        IODataClient $client,
+        Grammar $grammar = null,
+        Processor $processor = null
+    ) {
         $this->client = $client;
         $this->grammar = $grammar ?: $client->getQueryGrammar();
         $this->processor = $processor ?: $client->getPostProcessor();
@@ -156,6 +160,7 @@ class Builder
      * Set the properties to be selected.
      *
      * @param  array|mixed  $properties
+     *
      * @return $this
      */
     public function select($properties = [])
@@ -168,7 +173,8 @@ class Builder
     /**
      * Add a new properties to the $select query option.
      *
-     * @param  array|mixed  $select
+     * @param array|mixed $select
+     *
      * @return $this
      */
     public function addSelect($select)
@@ -184,6 +190,7 @@ class Builder
      * Set the entity set which the query is targeting.
      *
      * @param  string  $entitySet
+     *
      * @return $this
      */
     public function from($entitySet)
@@ -196,7 +203,8 @@ class Builder
     /**
      * Filter the entity set on the primary key.
      *
-     * @param  string  $entityKey
+     * @param string $id
+     *
      * @return $this
      */
     public function whereKey($id)
@@ -209,18 +217,20 @@ class Builder
     /**
      * Add an $expand clause to the query.
      *
-     * @param  string  $table
-     * @param  string  $first
-     * @param  string  $operator
-     * @param  string  $second
-     * @param  string  $type
-     * @param  bool    $where
+     * @param string $property
+     * @param string $first
+     * @param string $operator
+     * @param string $second
+     * @param string $type
+     * @param bool   $ref
+     * @param bool   $count
+     *
      * @return $this
      */
     public function expand($property, $first, $operator = null, $second = null, $type = 'inner', $ref = false, $count = false)
     {
         //TODO: need to flush out this method as it will work much like the where and join methods
-        $expand = new ExpandClause($this, $type, $table);
+        $expand = new ExpandClause($this, $type, $property);
 
         // If the first "column" of the join is really a Closure instance the developer
         // is trying to build a join with a complex "on" clause containing more than
@@ -250,9 +260,10 @@ class Builder
     /**
      * Apply the callback's query changes if the given "value" is true.
      *
-     * @param  bool  $value
-     * @param  \Closure  $callback
-     * @param  \Closure  $default
+     * @param bool     $value
+     * @param \Closure $callback
+     * @param \Closure $default
+     *
      * @return \Microsoft\Dynamics\QueryBuilder
      */
     public function when($value, $callback, $default = null)
@@ -287,10 +298,11 @@ class Builder
     /**
      * Add a basic where ($filter) clause to the query.
      *
-     * @param  string|array|\Closure  $column
-     * @param  string  $operator
-     * @param  mixed   $value
-     * @param  string  $boolean
+     * @param string|array|\Closure $column
+     * @param string                $operator
+     * @param mixed                 $value
+     * @param string                $boolean
+     *
      * @return $this
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and')
@@ -363,9 +375,10 @@ class Builder
     /**
      * Add an array of where clauses to the query.
      *
-     * @param  array  $column
-     * @param  string  $boolean
-     * @param  string  $method
+     * @param array  $column
+     * @param string $boolean
+     * @param string $method
+     *
      * @return $this
      */
     protected function addArrayOfWheres($column, $boolean, $method = 'where')
@@ -384,9 +397,10 @@ class Builder
     /**
      * Prepare the value and operator for a where clause.
      *
-     * @param  string  $value
-     * @param  string  $operator
-     * @param  bool  $useDefault
+     * @param string $value
+     * @param string $operator
+     * @param bool   $useDefault
+     *
      * @return array
      *
      * @throws \InvalidArgumentException
@@ -396,7 +410,7 @@ class Builder
         if ($useDefault) {
             return [$operator, '='];
         } elseif ($this->invalidOperatorAndValue($operator, $value)) {
-            throw new InvalidArgumentException('Illegal operator and value combination.');
+            throw new \InvalidArgumentException('Illegal operator and value combination.');
         }
 
         return [$value, $operator];
@@ -407,8 +421,9 @@ class Builder
      *
      * Prevents using Null values with invalid operators.
      *
-     * @param  string  $operator
-     * @param  mixed  $value
+     * @param string $operator
+     * @param mixed  $value
+     *
      * @return bool
      */
     protected function invalidOperatorAndValue($operator, $value)
@@ -420,7 +435,7 @@ class Builder
     /**
      * Determine if the given operator is supported.
      *
-     * @param  string  $operator
+     * @param  string $operator
      * @return bool
      */
     protected function invalidOperator($operator)
@@ -432,10 +447,11 @@ class Builder
     /**
      * Add an "or where" clause to the query.
      *
-     * @param  \Closure|string  $column
-     * @param  string  $operator
-     * @param  mixed   $value
-     * @return \Illuminate\Database\Query\Builder|static
+     * @param  \Closure|string $column
+     * @param  string          $operator
+     * @param  mixed           $value
+     *
+     * @return Builder|static
      */
     public function orWhere($column, $operator = null, $value = null)
     {
@@ -445,9 +461,10 @@ class Builder
     /**
      * Add a nested where statement to the query.
      *
-     * @param  \Closure $callback
-     * @param  string   $boolean
-     * @return \Illuminate\Database\Query\Builder|static
+     * @param \Closure $callback
+     * @param string   $boolean
+     *
+     * @return Builder|static
      */
     public function whereNested(Closure $callback, $boolean = 'and')
     {
@@ -459,7 +476,7 @@ class Builder
     /**
      * Create a new query instance for nested where condition.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return Builder
      */
     public function forNestedWhere()
     {
@@ -469,8 +486,9 @@ class Builder
     /**
      * Add another query builder as a nested where to the query builder.
      *
-     * @param  \Illuminate\Database\Query\Builder|static $query
-     * @param  string  $boolean
+     * @param Builder|static $query
+     * @param string         $boolean
+     *
      * @return $this
      */
     public function addNestedWhereQuery($query, $boolean = 'and')
@@ -489,10 +507,11 @@ class Builder
     /**
      * Add a full sub-select to the query.
      *
-     * @param  string   $column
-     * @param  string   $operator
-     * @param  \Closure $callback
-     * @param  string   $boolean
+     * @param string   $column
+     * @param string   $operator
+     * @param \Closure $callback
+     * @param string   $boolean
+     *
      * @return $this
      */
     protected function whereSub($column, $operator, Closure $callback, $boolean)
@@ -526,9 +545,12 @@ class Builder
     /**
      * Execute a query for a single record by ID.
      *
-     * @param  int    $id
-     * @param  array  $properties
-     * @return mixed|static
+     * @param int   $id
+     * @param array $properties
+     *
+     * @return \stdClass|array|null
+     *
+     * @throws ODataQueryException
      */
     public function find($id, $properties = [])
     {
@@ -541,7 +563,8 @@ class Builder
     /**
      * Get a single property's value from the first result of a query.
      *
-     * @param  string  $column
+     * @param string $property
+     *
      * @return mixed
      */
     public function value($property)
@@ -554,7 +577,8 @@ class Builder
     /**
      * Execute the query and get the first result.
      *
-     * @param  array   $columns
+     * @param array $properties
+     *
      * @return \stdClass|array|null
      */
     public function first($properties = [])
@@ -566,8 +590,9 @@ class Builder
     /**
      * Set the "$skip" value of the query.
      *
-     * @param  int  $value
-     * @return \Illuminate\Database\Query\Builder|static
+     * @param int $value
+     *
+     * @return Builder|static
      */
     public function skip($value)
     {
@@ -577,7 +602,8 @@ class Builder
     /**
      * Set the "$top" value of the query.
      *
-     * @param  int  $value
+     * @param int $value
+     *
      * @return \SaintSystems\OData\QueryBuilder|static
      */
     public function take($value)
@@ -589,8 +615,10 @@ class Builder
     /**
      * Execute the query as a "GET" request.
      *
-     * @param  array  $properties
-     * @return \Illuminate\Support\Collection
+     * @param array $properties
+     * @param array $options
+     *
+     * @return Collection
      */
     public function get($properties = [], $options = null)
     {
@@ -652,7 +680,8 @@ class Builder
     /**
      * Insert a new record into the database.
      *
-     * @param  array  $values
+     * @param array $values
+     *
      * @return bool
      */
     public function insert(array $values)
@@ -691,7 +720,8 @@ class Builder
     /**
      * Insert a new record and get the value of the primary key.
      *
-     * @param  array   $values
+     * @param array $values
+     *
      * @return mixed
      */
     public function insertGetId(array $values)
@@ -724,7 +754,8 @@ class Builder
     /**
      * Remove all of the expressions from a list of bindings.
      *
-     * @param  array  $bindings
+     * @param array $bindings
+     *
      * @return array
      */
     protected function cleanBindings(array $bindings)
@@ -737,8 +768,9 @@ class Builder
     /**
      * Add a binding to the query.
      *
-     * @param  mixed   $value
-     * @param  string  $type
+     * @param mixed  $value
+     * @param string $type
+     *
      * @return $this
      *
      * @throws \InvalidArgumentException
@@ -746,7 +778,7 @@ class Builder
     public function addBinding($value, $type = 'where')
     {
         if (! array_key_exists($type, $this->bindings)) {
-            throw new InvalidArgumentException("Invalid binding type: {$type}.");
+            throw new \InvalidArgumentException("Invalid binding type: {$type}.");
         }
 
         if (is_array($value)) {
@@ -761,11 +793,10 @@ class Builder
     /**
      * Get the IODataClient instance.
      *
-     * @return \SaintSystems\OData\IODataClient
+     * @return IODataClient
      */
     public function getClient()
     {
         return $this->client;
     }
-
 }

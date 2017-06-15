@@ -49,7 +49,8 @@ class Grammar
     /**
      * Compile a select query into OData Uri
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
+     * @param Builder $query
+     *
      * @return string
      */
     public function compileSelect(Builder $query)
@@ -80,7 +81,8 @@ class Grammar
     /**
      * Compile the components necessary for a select clause.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
+     * @param Builder $query
+     *
      * @return array
      */
     protected function compileComponents(Builder $query)
@@ -103,8 +105,9 @@ class Grammar
     /**
      * Compile the "from" portion of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  string  $entitySet
+     * @param Builder $query
+     * @param string  $entitySet
+     *
      * @return string
      */
     protected function compileEntitySet(Builder $query, $entitySet)
@@ -115,8 +118,9 @@ class Grammar
     /**
      * Compile the entity key portion of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  string  $entityKey
+     * @param Builder $query
+     * @param string  $entityKey
+     *
      * @return string
      */
     protected function compileEntityKey(Builder $query, $entityKey)
@@ -151,14 +155,15 @@ class Grammar
         if (is_uuid($entityKey) || is_numeric($entityKey)) {
             return $entityKey;
         }
-        return "'$entityKey'";;
+        return "'$entityKey'";
     }
 
     /**
      * Compile an aggregated select clause.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  array  $aggregate
+     * @param Builder $query
+     * @param array   $aggregate
+     *
      * @return string
      */
     protected function compileCount(Builder $query, $aggregate)
@@ -169,8 +174,9 @@ class Grammar
     /**
      * Compile the "$select=" portion of the OData query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  array  $properties
+     * @param Builder $query
+     * @param array   $properties
+     *
      * @return string|null
      */
     protected function compileProperties(Builder $query, $properties)
@@ -193,7 +199,8 @@ class Grammar
     /**
      * Compile the "where" portions of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
+     * @param Builder $query
+     *
      * @return string
      */
     protected function compileWheres(Builder $query)
@@ -218,7 +225,8 @@ class Grammar
     /**
      * Get an array of all the where clauses for the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
+     * @param Builder $query
+     *
      * @return array
      */
     protected function compileWheresToArray($query)
@@ -231,8 +239,9 @@ class Grammar
     /**
      * Format the where clause statements into one string.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  array  $sql
+     * @param Builder $query
+     * @param array   $filter
+     *
      * @return string
      */
     protected function concatenateWhereClauses($query, $filter)
@@ -240,14 +249,15 @@ class Grammar
         //$conjunction = $query instanceof JoinClause ? 'on' : 'where';
         $conjunction = '$filter=';
 
-        return $conjunction.$this->removeLeadingBoolean(implode(' ', $filter));
+        return $conjunction . $this->removeLeadingBoolean(implode(' ', $filter));
     }
 
     /**
      * Compile a basic where clause.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array   $where
+     *
      * @return string
      */
     protected function whereBasic(Builder $query, $where)
@@ -261,8 +271,9 @@ class Grammar
     /**
      * Compile the "order by" portions of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder   $query
-     * @param  array  $orders
+     * @param Builder  $query
+     * @param array    $orders
+     *
      * @return string
      */
     protected function compileOrders(Builder $query, $orders)
@@ -277,8 +288,9 @@ class Grammar
     /**
      * Compile the query orders to an array.
      *
-     * @param  \SaintSystems\OData\Query\Builder 
-     * @param  array  $orders
+     * @param Builder $query
+     * @param array   $orders
+     *
      * @return array
      */
     protected function compileOrdersToArray(Builder $query, $orders)
@@ -293,8 +305,9 @@ class Grammar
     /**
      * Compile the "$top" portions of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder   $query
-     * @param  int  $take
+     * @param Builder $query
+     * @param int     $take
+     *
      * @return string
      */
     protected function compileTake(Builder $query, $take)
@@ -309,8 +322,9 @@ class Grammar
     /**
      * Compile the "$skip" portions of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder   $query
-     * @param  int  $skip
+     * @param Builder $query
+     * @param int     $skip
+     *
      * @return string
      */
     protected function compileSkip(Builder $query, $skip)
@@ -321,8 +335,9 @@ class Grammar
     /**
      * Compile the "$count" portions of the query.
      *
-     * @param  \SaintSystems\OData\Query\Builder   $query
-     * @param  int  $skip
+     * @param Builder $query
+     * @param int     $totalCount
+     *
      * @return string
      */
     protected function compileTotalCount(Builder $query, $totalCount)
@@ -336,7 +351,8 @@ class Grammar
     /**
      * Convert an array of property names into a delimited string.
      *
-     * @param  array   $properties
+     * @param array $properties
+     *
      * @return string
      */
     public function columnize(array $properties)
@@ -347,7 +363,8 @@ class Grammar
     /**
      * Concatenate an array of segments, removing empties.
      *
-     * @param  array   $segments
+     * @param array $segments
+     *
      * @return string
      */
     protected function concatenate($segments)
@@ -360,7 +377,8 @@ class Grammar
     /**
      * Remove the leading boolean from a statement.
      *
-     * @param  string  $value
+     * @param string $value
+     *
      * @return string
      */
     protected function removeLeadingBoolean($value)
@@ -380,8 +398,10 @@ class Grammar
 
     /**
      * Get the OData operator for the passed operator
-     * @param  string $operator The passed operator
-     * @return string           The OData operator
+     *
+     * @param string $operator The passed operator
+     *
+     * @return string The OData operator
      */
     protected function getOperatorMapping($operator)
     {
@@ -394,7 +414,8 @@ class Grammar
     /**
      * Get the appropriate query parameter place-holder for a value.
      *
-     * @param  mixed   $value
+     * @param mixed $value
+     *
      * @return string
      */
     public function parameter($value)
@@ -405,7 +426,8 @@ class Grammar
     /**
      * Determine if the given value is a raw expression.
      *
-     * @param  mixed  $value
+     * @param mixed $value
+     *
      * @return bool
      */
     public function isExpression($value)
@@ -416,7 +438,8 @@ class Grammar
     /**
      * Get the value of a raw expression.
      *
-     * @param  \Illuminate\Database\Query\Expression  $expression
+     * @param \Illuminate\Database\Query\Expression $expression
+     *
      * @return string
      */
     public function getValue($expression)
@@ -427,8 +450,9 @@ class Grammar
     /**
      * Compile a nested where clause.
      *
-     * @param  \Illuminate\Database\Query\Builder  $query
-     * @param  array  $where
+     * @param Builder $query
+     * @param array   $where
+     *
      * @return string
      */
     protected function whereNested(Builder $query, $where)

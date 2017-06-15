@@ -11,8 +11,9 @@ interface IHttpProvider
 
     /**
      * Sends the request.
-     * @param  HttpRequestMessage $request The HttpRequestMessage to send.
-     * @return HttpResponseMessage         The HttpResponseMessage.
+     * @param HttpRequestMessage $request The HttpRequestMessage to send.
+     *
+     * @return HttpResponseMessage The HttpResponseMessage.
      */
     public function send(HttpRequestMessage $request);
 
