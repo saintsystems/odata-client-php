@@ -4,7 +4,7 @@ namespace SaintSystems\OData\Query;
 
 use Closure;
 
-class ExpandClaus extends Builder
+class ExpandClause extends Builder
 {
     /**
      * The property to be expanded
@@ -48,10 +48,11 @@ class ExpandClaus extends Builder
      *
      * on `contacts`.`user_id` = `users`.`id`  and `contacts`.`info_id` = `info`.`id`
      *
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @param  string  $boolean
+     * @param \Closure|string $first
+     * @param string|null     $operator
+     * @param string|null     $second
+     * @param string          $boolean
+     *
      * @return $this
      *
      * @throws \InvalidArgumentException
@@ -68,11 +69,11 @@ class ExpandClaus extends Builder
     /**
      * Add an "or on" clause to the join.
      *
-     * @param  \Closure|string  $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
+     * @param \Closure|string $first
+     * @param string|null     $operator
+     * @param string|null     $second
      *
-     * @return ExpandClaus
+     * @return ExpandClause
      */
     public function orOn($first, $operator = null, $second = null)
     {
@@ -82,10 +83,10 @@ class ExpandClaus extends Builder
     /**
      * Get a new instance of the join clause builder.
      *
-     * @return ExpandClaus
+     * @return ExpandClause
      */
     public function newQuery()
     {
-        return new static($this->parentQuery, $this->type, $this->table);
+        return new static($this->parentQuery, $this->property);
     }
 }

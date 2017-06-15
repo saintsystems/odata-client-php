@@ -48,10 +48,11 @@ class ODataClient implements IODataClient
      * @param IAuthenticationProvider $authenticationProvider The IAuthenticationProvider for authenticating request messages.
      * @param IHttpProvider|null      $httpProvider           The IHttpProvider for sending requests.
      */
-    public function __construct($baseUrl, 
-                                Closure $authenticationProvider = null, 
-                                IHttpProvider $httpProvider = null)
-    {
+    public function __construct(
+        $baseUrl,
+        Closure $authenticationProvider = null,
+        IHttpProvider $httpProvider = null
+    ) {
         $this->setBaseUrl($baseUrl);
         $this->authenticationProvider = $authenticationProvider;
         $this->httpProvider = $httpProvider ?: new GuzzleHttpProvider();
@@ -263,5 +264,3 @@ class ODataClient implements IODataClient
         $this->postProcessor = $processor;
     }
 }
-
-

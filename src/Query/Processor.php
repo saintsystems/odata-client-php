@@ -2,14 +2,17 @@
 
 namespace SaintSystems\OData\Query;
 
+use SaintSystems\OData\IODataRequest;
+
 class Processor
 {
     /**
      * Process the results of a "select" query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  array  $results
-     * @return array
+     * @param Builder       $query
+     * @param IODataRequest $results
+     *
+     * @return IODataRequest
      */
     public function processSelect(Builder $query, $results)
     {
@@ -19,10 +22,11 @@ class Processor
     /**
      * Process an "insert get ID" query.
      *
-     * @param  \SaintSystems\OData\Query\Builder  $query
-     * @param  string  $sql
-     * @param  array   $values
-     * @param  string  $sequence
+     * @param Builder $query
+     * @param string  $sql
+     * @param array   $values
+     * @param string  $sequence
+     *
      * @return mixed
      */
     public function processInsertGetId(Builder $query, $sql, $values, $sequence = null)
