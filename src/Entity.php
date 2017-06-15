@@ -47,13 +47,18 @@ class Entity implements ArrayAccess
      *
      * @var string
      */
-    // protected $primaryKey = 'id';
+    protected $primaryKey = 'id';
      
     /**
      * The "type" of the entity key.
      * @var string
      */
     // protected $keyType = 'int';
+
+    /**
+     * @var array
+     */
+    private static $globalScopes;
 
     /**
      * The number of entities to return for pagination.
@@ -167,7 +172,17 @@ class Entity implements ArrayAccess
      * @var array
      */
     protected static $mutatorCache = [];
-    
+
+    /**
+     * @var bool
+     */
+    private $exists;
+
+    /**
+     * @var string
+     */
+    private $entity;
+
     /**
     * Construct a new Entity
     *
@@ -333,7 +348,8 @@ class Entity implements ArrayAccess
     /**
      * Set the entity name associated with the model.
      *
-     * @param  string  $entity
+     * @param string $entity
+     *
      * @return $this
      */
     public function setEntity($entity)
@@ -360,7 +376,7 @@ class Entity implements ArrayAccess
      */
     public function getKeyName()
     {
-        return static::$primaryKey;
+        return $this->primaryKey;
     }
 
     /**
@@ -1330,7 +1346,7 @@ class Entity implements ArrayAccess
         }
 
         if ($key === 'id') {
-            $key = static::$primaryKey;
+            $key = $this->primaryKey;
         }
 
         if (array_key_exists($key, $this->properties) || $this->hasGetMutator($key)) {

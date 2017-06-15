@@ -68,6 +68,11 @@ class ODataRequest implements IODataRequest
     protected $timeout;
 
     /**
+     * @var IODataClient
+     */
+    private $client;
+
+    /**
      * Constructs a new ODataRequest object
      * @param string       $method     The HTTP method to use, e.g. "GET" or "POST"
      * @param string       $requestUrl The URL for the OData request

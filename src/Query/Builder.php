@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
+use SaintSystems\OData\IODataRequest;
 use SaintSystems\OData\QueryOptions;
 
 class Builder
@@ -140,6 +141,21 @@ class Builder
     public $select = [];
 
     /**
+     * @var Processor
+     */
+    private $processor;
+
+    /**
+     * @var Grammar
+     */
+    private $grammar;
+
+    /**
+     * @var array
+     */
+    private $expands;
+
+    /**
      * Create a new query builder instance.
      *
      * @param IODataClient $client
@@ -264,7 +280,7 @@ class Builder
      * @param \Closure $callback
      * @param \Closure $default
      *
-     * @return \Microsoft\Dynamics\QueryBuilder
+     * @return Builder
      */
     public function when($value, $callback, $default = null)
     {
@@ -596,7 +612,8 @@ class Builder
      */
     public function skip($value)
     {
-        return $this->skip = $value;
+        $this->skip = $value;
+        return $this;
     }
 
     /**
@@ -604,7 +621,7 @@ class Builder
      *
      * @param int $value
      *
-     * @return \SaintSystems\OData\QueryBuilder|static
+     * @return Builder|static
      */
     public function take($value)
     {
@@ -652,7 +669,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return array
+     * @return IODataRequest
      */
     protected function runGet()
     {
@@ -734,7 +751,7 @@ class Builder
     /**
      * Get a new instance of the query builder.
      *
-     * @return \SaintSystems\OData\QueryBuilder
+     * @return Builder
      */
     public function newQuery()
     {
