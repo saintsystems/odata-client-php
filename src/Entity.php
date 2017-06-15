@@ -18,11 +18,12 @@ namespace SaintSystems\OData;
 use ArrayAccess;
 use Carbon\Carbon;
 // use LogicException;
-use JsonSerializable;
+// use JsonSerializable;
 use DateTimeInterface;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use SaintSystems\OData\MassAssignmentException;
+use SaintSystems\OData\Exception\MassAssignmentException;
 
 /**
 * Entity class
@@ -246,7 +247,7 @@ class Entity implements ArrayAccess
      * @param  array  $properties
      * @return $this
      *
-     * @throws \Illuminate\Database\Eloquent\MassAssignmentException
+     * @throws MassAssignmentException
      */
     public function fill(array $properties)
     {

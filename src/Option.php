@@ -4,13 +4,23 @@ namespace SaintSystems\OData;
 
 class Option
 {
-    public function __construct(string $name, string $value)
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $value;
+
+    /**
+     * @param string $name
+     * @param string $value
+     */
+    public function __construct($name, $value)
     {
         $this->name = $name;
         $this->value = $value;
     }
-
-    public $name;
-
-    public $value;
 }
