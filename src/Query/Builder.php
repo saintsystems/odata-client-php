@@ -230,7 +230,7 @@ class Builder
     public function expand($property, $first, $operator = null, $second = null, $type = 'inner', $ref = false, $count = false)
     {
         //TODO: need to flush out this method as it will work much like the where and join methods
-        $expand = new ExpandClause($this, $type, $table);
+        $expand = new ExpandClause($this, $type, $property);
 
         // If the first "column" of the join is really a Closure instance the developer
         // is trying to build a join with a complex "on" clause containing more than
