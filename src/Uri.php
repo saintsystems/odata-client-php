@@ -33,7 +33,10 @@ class Uri
 
     private $parsed;
 
-    public function __construct(string $uri = null)
+    /**
+     * @param string $uri
+     */
+    public function __construct($uri = null)
     {
         if ($uri == null) return;
         $uriParsed = parse_url($uri);
@@ -43,7 +46,6 @@ class Uri
                 $this->$uriPart = $uriParsed[$uriPart];
             }
         }
-
     }
 
     public function __toString()
