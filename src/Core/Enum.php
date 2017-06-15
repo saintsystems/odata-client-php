@@ -35,12 +35,12 @@ abstract class Enum
     private $_value;
 
     /**
-    * Create a new enum
-    *
-    * @param string $value The value of the enum
+     * Create a new enum
      *
-     * @throws DynamicsException if enum value is invalid
-    */
+     * @param string $value The value of the enum
+     *
+     * @throws ApplicationException
+     */
     public function __construct($value)
     {
         if (!self::has($value)) {
