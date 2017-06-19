@@ -6,7 +6,7 @@ use Closure;
 use SaintSystems\OData\Exception\ODataException;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Query\Grammar;
-use SaintSystems\OData\Query\Processor;
+use SaintSystems\OData\Query\IProcessor;
 
 class ODataClient implements IODataClient
 {
@@ -38,7 +38,7 @@ class ODataClient implements IODataClient
     /**
      * The query post processor implementation.
      *
-     * @var Processor
+     * @var IProcessor
      */
     protected $postProcessor;
 
@@ -98,11 +98,11 @@ class ODataClient implements IODataClient
     /**
      * Get the default post processor instance.
      *
-     * @return Processor
+     * @return IProcessor
      */
     protected function getDefaultPostProcessor()
     {
-        return new Processor;
+        return new Processor();
     }
 
     /**
@@ -245,7 +245,7 @@ class ODataClient implements IODataClient
     /**
      * Get the query post processor used by the connection.
      *
-     * @return Processor
+     * @return IProcessor
      */
     public function getPostProcessor()
     {
@@ -255,11 +255,11 @@ class ODataClient implements IODataClient
     /**
      * Set the query post processor used by the connection.
      *
-     * @param Processor $processor
+     * @param IProcessor $processor
      *
      * @return void
      */
-    public function setPostProcessor(Processor $processor)
+    public function setPostProcessor(IProcessor $processor)
     {
         $this->postProcessor = $processor;
     }
