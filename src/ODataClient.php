@@ -7,6 +7,7 @@ use SaintSystems\OData\Exception\ODataException;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Query\Grammar;
 use SaintSystems\OData\Query\IProcessor;
+use SaintSystems\OData\Query\Processor;
 
 class ODataClient implements IODataClient
 {
