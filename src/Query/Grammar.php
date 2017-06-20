@@ -2,7 +2,7 @@
 
 namespace SaintSystems\OData\Query;
 
-class Grammar
+class Grammar implements IGrammar
 {
     /**
      * All of the available clause operators.
@@ -47,11 +47,7 @@ class Grammar
     ];
 
     /**
-     * Compile a select query into OData Uri
-     *
-     * @param Builder $query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function compileSelect(Builder $query)
     {
@@ -349,11 +345,7 @@ class Grammar
     }
 
     /**
-     * Convert an array of property names into a delimited string.
-     *
-     * @param array $properties
-     *
-     * @return string
+     * @inheritdoc
      */
     public function columnize(array $properties)
     {
@@ -387,9 +379,7 @@ class Grammar
     }
 
     /**
-     * Get the grammar specific operators.
-     *
-     * @return array
+     * @inheritdoc
      */
     public function getOperators()
     {
@@ -412,11 +402,7 @@ class Grammar
     }
 
     /**
-     * Get the appropriate query parameter place-holder for a value.
-     *
-     * @param mixed $value
-     *
-     * @return string
+     * @inheritdoc
      */
     public function parameter($value)
     {
@@ -424,11 +410,7 @@ class Grammar
     }
 
     /**
-     * Determine if the given value is a raw expression.
-     *
-     * @param mixed $value
-     *
-     * @return bool
+     * @inheritdoc
      */
     public function isExpression($value)
     {
@@ -436,11 +418,7 @@ class Grammar
     }
 
     /**
-     * Get the value of a raw expression.
-     *
-     * @param \Illuminate\Database\Query\Expression $expression
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getValue($expression)
     {

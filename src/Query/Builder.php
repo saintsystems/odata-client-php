@@ -146,7 +146,7 @@ class Builder
     private $processor;
 
     /**
-     * @var Grammar
+     * @var IGrammar
      */
     private $grammar;
 
@@ -159,12 +159,12 @@ class Builder
      * Create a new query builder instance.
      *
      * @param IODataClient $client
-     * @param Grammar      $grammar
+     * @param IGrammar     $grammar
      * @param Processor    $processor
      */
     public function __construct(
         IODataClient $client,
-        Grammar $grammar = null,
+        IGrammar $grammar = null,
         Processor $processor = null
     ) {
         $this->client = $client;

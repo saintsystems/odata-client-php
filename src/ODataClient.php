@@ -6,6 +6,7 @@ use Closure;
 use SaintSystems\OData\Exception\ODataException;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Query\Grammar;
+use SaintSystems\OData\Query\IGrammar;
 use SaintSystems\OData\Query\Processor;
 
 class ODataClient implements IODataClient
@@ -31,7 +32,7 @@ class ODataClient implements IODataClient
     /**
      * The query grammar implementation.
      *
-     * @var Grammar
+     * @var IGrammar
      */
     protected $queryGrammar;
 
@@ -78,7 +79,7 @@ class ODataClient implements IODataClient
     /**
      * Get the default query grammar instance.
      *
-     * @return Grammar
+     * @return IGrammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -223,7 +224,7 @@ class ODataClient implements IODataClient
     /**
      * Get the query grammar used by the connection.
      *
-     * @return Grammar
+     * @return IGrammar
      */
     public function getQueryGrammar()
     {
@@ -233,11 +234,11 @@ class ODataClient implements IODataClient
     /**
      * Set the query grammar used by the connection.
      *
-     * @param  Grammar  $grammar
+     * @param  IGrammar  $grammar
      *
      * @return void
      */
-    public function setQueryGrammar(Grammar $grammar)
+    public function setQueryGrammar(IGrammar $grammar)
     {
         $this->queryGrammar = $grammar;
     }
