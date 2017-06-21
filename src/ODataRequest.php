@@ -108,7 +108,7 @@ class ODataRequest implements IODataRequest
      */
     public function setReturnType($returnClass)
     {
-        if (empty($returnClass)) return $this;
+        if (is_null($returnClass)) return $this;
         $this->returnType = $returnClass;
         if (strcasecmp($this->returnType, 'stream') == 0) {
             $this->returnsStream  = true;

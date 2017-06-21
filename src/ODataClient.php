@@ -44,6 +44,13 @@ class ODataClient implements IODataClient
     protected $postProcessor;
 
     /**
+     * The return type for the entities
+     *
+     * @var string
+     */
+    private $entityReturnType;
+
+    /**
      * Constructs a new ODataClient.
      * @param string                  $baseUrl                The base service URL.
      * @param IAuthenticationProvider $authenticationProvider The IAuthenticationProvider for authenticating request messages.
@@ -216,7 +223,7 @@ class ODataClient implements IODataClient
      */
     public function request($method, $requestUri)
     {
-        $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this);
+        $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this, $this->entityReturnType);
 
         return $request->execute();
     }
@@ -263,5 +270,15 @@ class ODataClient implements IODataClient
     public function setPostProcessor(IProcessor $processor)
     {
         $this->postProcessor = $processor;
+    }
+
+    /**
+     * Set the entity return type
+     *
+     * @param string $entityReturnType
+     */
+    public function setEntityReturnType($entityReturnType)
+    {
+        $this->entityReturnType = $entityReturnType;
     }
 }
