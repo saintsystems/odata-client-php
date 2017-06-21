@@ -3,7 +3,7 @@
 namespace SaintSystems\OData;
 
 use SaintSystems\OData\Query\IGrammar;
-use SaintSystems\OData\Query\Processor;
+use SaintSystems\OData\Query\IProcessor;
 
 interface IODataClient
 {
@@ -77,16 +77,16 @@ interface IODataClient
     /**
      * Get the query post processor used by the connection.
      *
-     * @return Processor
+     * @return IProcessor
      */
     public function getPostProcessor();
 
     /**
      * Set the query post processor used by the connection.
      *
-     * @param Processor $processor
+     * @param IProcessor $processor
      *
      * @return void
      */
-    public function setPostProcessor(Processor $processor);
+    public function setPostProcessor(IProcessor $processor);
 }

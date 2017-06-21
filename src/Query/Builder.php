@@ -141,7 +141,7 @@ class Builder
     public $select = [];
 
     /**
-     * @var Processor
+     * @var IProcessor
      */
     private $processor;
 
@@ -160,12 +160,12 @@ class Builder
      *
      * @param IODataClient $client
      * @param IGrammar     $grammar
-     * @param Processor    $processor
+     * @param IProcessor   $processor
      */
     public function __construct(
         IODataClient $client,
         IGrammar $grammar = null,
-        Processor $processor = null
+        IProcessor $processor = null
     ) {
         $this->client = $client;
         $this->grammar = $grammar ?: $client->getQueryGrammar();
