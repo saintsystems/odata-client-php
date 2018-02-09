@@ -229,7 +229,7 @@ class ODataClient implements IODataClient
      * Run a PATCH request against the service.
      *
      * @param string $requestUri
-     * @param mixed  $postData
+     * @param mixed  $body
      *
      * @return IODataRequest
      */
@@ -242,7 +242,6 @@ class ODataClient implements IODataClient
      * Run a DELETE request against the service.
      *
      * @param string $requestUri
-     * @param mixed  $postData
      *
      * @return IODataRequest
      */
@@ -256,6 +255,7 @@ class ODataClient implements IODataClient
      *
      * @param string $method
      * @param string $requestUri
+     * @param mixed  $body
      *
      * @return IODataRequest
      *

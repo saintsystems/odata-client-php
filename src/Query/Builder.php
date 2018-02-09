@@ -669,9 +669,6 @@ class Builder
     /**
      * Execute the query as a "DELETE" request.
      *
-     * @param array $properties
-     * @param array $options
-     *
      * @return boolean
      */
     public function delete($options = null)
