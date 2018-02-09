@@ -43,6 +43,11 @@ class HttpMethod extends Enum
     const PUT = 'PUT';
 
     /**
+     * Represents an HTTP PATCH protocol method that is used to update an entity.
+     */
+    const PATCH = 'PATCH';
+
+    /**
      * Represents an HTTP TRACE protocol method.
      */
     const TRACE = 'TRACE';
