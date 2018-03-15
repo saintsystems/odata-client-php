@@ -667,6 +667,43 @@ class Builder
     }
 
     /**
+     * Execute the query as a "POST" request.
+     *
+     * @param array $body
+     * @param array $properties
+     * @param array $options
+     *
+     * @return Collection
+     */
+    public function post($body = [], $properties = [], $options = null)
+    {
+        if (is_numeric($properties)) {
+            $options = $properties;
+            $properties = [];
+        }
+
+        if (isset($options)) {
+            $include_count = $options & QueryOptions::INCLUDE_COUNT;
+
+            if ($include_count) {
+                $this->totalCount = true;
+            }
+        }
+
+        $original = $this->properties;
+
+        if (is_null($original)) {
+            $this->properties = $properties;
+        }
+
+        $results = $this->processor->processSelect($this, $this->runPost($body));
+
+        $this->properties = $original;
+
+        return collect($results);
+    }
+
+    /**
      * Execute the query as a "DELETE" request.
      *
      * @return boolean
