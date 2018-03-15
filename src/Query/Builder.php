@@ -667,6 +667,92 @@ class Builder
     }
 
     /**
+     * Execute the query as a "POST" request.
+     *
+     * @param array $body
+     * @param array $properties
+     * @param array $options
+     *
+     * @return Collection
+     */
+    public function post($body = [], $properties = [], $options = null)
+    {
+        if (is_numeric($properties)) {
+            $options = $properties;
+            $properties = [];
+        }
+
+        if (isset($options)) {
+            $include_count = $options & QueryOptions::INCLUDE_COUNT;
+
+            if ($include_count) {
+                $this->totalCount = true;
+            }
+        }
+
+        $original = $this->properties;
+
+        if (is_null($original)) {
+            $this->properties = $properties;
+        }
+
+        $results = $this->processor->processSelect($this, $this->runPost($body));
+
+        $this->properties = $original;
+
+        return collect($results);
+    }
+
+    /**
+     * Execute the query as a "DELETE" request.
+     *
+     * @return boolean
+     */
+    public function delete($options = null)
+    {
+        $results = $this->processor->processSelect($this, $this->runDelete());
+
+        return true;
+    }
+
+    /**
+     * Execute the query as a "PATCH" request.
+     *
+     * @param array $properties
+     * @param array $options
+     *
+     * @return Collection
+     */
+    public function patch($body, $properties = [], $options = null)
+    {
+        if (is_numeric($properties)) {
+            $options = $properties;
+            $properties = [];
+        }
+
+        if (isset($options)) {
+            $include_count = $options & QueryOptions::INCLUDE_COUNT;
+
+            if ($include_count) {
+                $this->totalCount = true;
+            }
+        }
+
+        $original = $this->properties;
+
+        if (is_null($original)) {
+            $this->properties = $properties;
+        }
+
+        $results = $this->processor->processSelect($this, $this->runPatch($body));
+
+        $this->properties = $original;
+
+        return collect($results);
+        //return $results;
+    }
+
+    /**
      * Run the query as a "GET" request against the client.
      *
      * @return IODataRequest
@@ -675,6 +761,42 @@ class Builder
     {
         return $this->client->get(
             $this->grammar->compileSelect($this), $this->getBindings()
+        );
+    }
+
+    /**
+     * Run the query as a "GET" request against the client.
+     *
+     * @return IODataRequest
+     */
+    protected function runPatch($body)
+    {
+        return $this->client->patch(
+            $this->grammar->compileSelect($this), $body
+        );
+    }
+
+    /**
+     * Run the query as a "GET" request against the client.
+     *
+     * @return IODataRequest
+     */
+    protected function runPost($body)
+    {
+        return $this->client->post(
+            $this->grammar->compileSelect($this), $body
+        );
+    }
+
+    /**
+     * Run the query as a "GET" request against the client.
+     *
+     * @return IODataRequest
+     */
+    protected function runDelete()
+    {
+        return $this->client->delete(
+            $this->grammar->compileSelect($this)
         );
     }
 

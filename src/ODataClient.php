@@ -213,19 +213,65 @@ class ODataClient implements IODataClient
     }
 
     /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function post($requestUri, $postData)
+    {
+        return $this->request(HttpMethod::POST, $requestUri, $postData);
+    }
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function patch($requestUri, $body)
+    {
+        return $this->request(HttpMethod::PATCH, $requestUri, $body);
+    }
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     *
+     * @return IODataRequest
+     */
+    public function delete($requestUri)
+    {
+        return $this->request(HttpMethod::DELETE, $requestUri);
+    }
+
+    /**
      * Return an ODataRequest
      *
      * @param string $method
      * @param string $requestUri
+     * @param mixed  $body
      *
      * @return IODataRequest
      *
      * @throws ODataException
      */
-    public function request($method, $requestUri)
+    public function request($method, $requestUri, $body = null)
     {
         $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this, $this->entityReturnType);
 
+        if ($body) {
+            $request->attachBody($body);
+        }
+        if ($method === 'PATCH' || $method === 'DELETE') {
+            // TODO: find a better solution for this
+            $request->addHeaders(array('If-Match' => '*'));
+        }
         return $request->execute();
     }
 
