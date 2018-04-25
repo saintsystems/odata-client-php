@@ -2,7 +2,9 @@
 
 namespace SaintSystems\OData\Query;
 
-class Grammar implements IGrammar
+use Illuminate\Database\Grammar as BaseGrammar;
+
+class Grammar extends BaseGrammar implements IGrammar
 {
     /**
      * All of the available clause operators.
@@ -14,6 +16,9 @@ class Grammar implements IGrammar
         'contains', 'startswith', 'endswith',
     ];
 
+    /**
+     * @var array
+     */
     protected $operatorMapping = [
         '='  => 'eq',
         '<'  => 'lt',
@@ -70,8 +75,38 @@ class Grammar implements IGrammar
         $query->properties = $original;
 
         //dd($uri);
-        
+
         return $uri;
+    }
+
+    /**
+     * Compile an insert statement into SQL.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $values
+     * @return string
+     */
+    public function compileInsert(Builder $query, array $values)
+    {
+        // Essentially we will force every insert to be treated as a batch insert which
+        // simply makes creating the SQL easier for us since we can utilize the same
+        // basic routine regardless of an amount of records given to us to insert.
+        $table = $this->wrapTable($query->entitySet);
+
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+
+        $columns = $this->columnize(array_keys(reset($values)));
+
+        // We need to build a list of parameter place-holders of values that are bound
+        // to the query. Each insert should have the exact same amount of parameter
+        // bindings so we will loop through the record and parameterize them all.
+        $parameters = collect($values)->map(function ($record) {
+            return '(' . $this->parameterize($record) . ')';
+        })->implode(', ');
+
+        return "insert into $table ($columns) values $parameters";
     }
 
     /**
@@ -89,8 +124,8 @@ class Grammar implements IGrammar
             // To compile the query, we'll spin through each component of the query and
             // see if that component exists. If it does we'll just call the compiler
             // function for the component which is responsible for making the SQL.
-            if (! is_null($query->$component)) {
-                $method = 'compile'.ucfirst($component);
+            if (!is_null($query->$component)) {
+                $method = 'compile' . ucfirst($component);
 
                 $uri[$component] = $this->$method($query, $query->$component);
             }
@@ -130,9 +165,14 @@ class Grammar implements IGrammar
         return "($entityKey)";
     }
 
+    /**
+     * @param Builder $query
+     * @param $queryString
+     * @return mixed
+     */
     protected function compileQueryString(Builder $query, $queryString)
     {
-        if (isset($query->entitySet) 
+        if (isset($query->entitySet)
             && (
                 !empty($query->properties)
                 || isset($query->wheres)
@@ -146,6 +186,10 @@ class Grammar implements IGrammar
         return '';
     }
 
+    /**
+     * @param $entityKey
+     * @return mixed
+     */
     protected function wrapKey($entityKey)
     {
         if (is_uuid($entityKey) || is_numeric($entityKey)) {
@@ -180,15 +224,15 @@ class Grammar implements IGrammar
         // If the query is actually performing an aggregating select, we will let that
         // compiler handle the building of the select clauses, as it will need some
         // more syntax that is best handled by that function to keep things neat.
-        if (! is_null($query->count)) {
+        if (!is_null($query->count)) {
             return;
         }
 
         $select = '';
-        if (! empty($properties)) {
-            $select = '$select='.$this->columnize($properties);
+        if (!empty($properties)) {
+            $select = '$select=' . $this->columnize($properties);
         }
-        
+
         return $select;
     }
 
@@ -228,7 +272,7 @@ class Grammar implements IGrammar
     protected function compileWheresToArray($query)
     {
         return collect($query->wheres)->map(function ($where) use ($query) {
-            return $where['boolean'].' '.$this->{"where{$where['type']}"}($query, $where);
+            return $where['boolean'] . ' ' . $this->{"where{$where['type']}"}($query, $where);
         })->all();
     }
 
@@ -259,9 +303,9 @@ class Grammar implements IGrammar
     protected function whereBasic(Builder $query, $where)
     {
         //$value = $this->parameter($where['value']);
-        $value = "'".$where['value']."'";
+        $value = "'" . $where['value'] . "'";
 
-        return $where['column'].' '.$this->getOperatorMapping($where['operator']).' '.$value;
+        return $where['column'] . ' ' . $this->getOperatorMapping($where['operator']) . ' ' . $value;
     }
 
     /**
@@ -274,8 +318,8 @@ class Grammar implements IGrammar
      */
     protected function compileOrders(Builder $query, $orders)
     {
-        if (! empty($orders)) {
-            return '$orderby='.implode(',', $this->compileOrdersToArray($query, $orders));
+        if (!empty($orders)) {
+            return '$orderby=' . implode(',', $this->compileOrdersToArray($query, $orders));
         }
 
         return '';
@@ -292,9 +336,9 @@ class Grammar implements IGrammar
     protected function compileOrdersToArray(Builder $query, $orders)
     {
         return array_map(function ($order) {
-            return ! isset($order['sql'])
-                        ? $order['column'].' '.$order['direction']
-                        : $order['sql'];
+            return !isset($order['sql'])
+            ? $order['column'] . ' ' . $order['direction']
+            : $order['sql'];
         }, $orders);
     }
 
@@ -309,10 +353,10 @@ class Grammar implements IGrammar
     protected function compileTake(Builder $query, $take)
     {
         // If we have an entity key $top is redundant and invalid, so bail
-        if (! empty($query->entityKey)) {
+        if (!empty($query->entityKey)) {
             return '';
         }
-        return '$top='.(int) $take;
+        return '$top=' . (int) $take;
     }
 
     /**
@@ -325,7 +369,7 @@ class Grammar implements IGrammar
      */
     protected function compileSkip(Builder $query, $skip)
     {
-        return '$skip='.(int) $skip;
+        return '$skip=' . (int) $skip;
     }
 
     /**
@@ -441,6 +485,6 @@ class Grammar implements IGrammar
         // $offset = $query instanceof JoinClause ? 3 : 6;
         $offset = 8;
 
-        return '('.substr($this->compileWheres($where['query']), $offset).')';
+        return '(' . substr($this->compileWheres($where['query']), $offset) . ')';
     }
 }
