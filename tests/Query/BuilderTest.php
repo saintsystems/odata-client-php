@@ -17,7 +17,7 @@ class BuilderTest extends TestCase
 
     public function setUp()
     {
-        $this->baseUrl = 'http://services.odata.org/V4/TripPinService';
+        $this->baseUrl = 'https://services.odata.org/V4/TripPinService';
         $this->client = new ODataClient($this->baseUrl);
     }
 
@@ -45,7 +45,7 @@ class BuilderTest extends TestCase
 
         $expected = $entitySet;
         $actual = $this->readAttribute($builder, 'entitySet');
-        
+
         $this->assertEquals($expected, $actual);
 
         $request = $builder->toRequest();
@@ -71,7 +71,7 @@ class BuilderTest extends TestCase
         $expected = $entitySet.'?$select=FirstName,LastName';
 
         $request = $builder->toRequest();
-        
+
         $this->assertEquals($expected, $request);
     }
 
@@ -148,7 +148,7 @@ class BuilderTest extends TestCase
         //$this->assertInstanceOf(Collection::class, $people);
         //$this->assertEquals($expected, $request);
     }
-    
+
     public function testEntitySetGetWhereNested()
     {
         $builder = $this->getBuilder();
@@ -182,7 +182,7 @@ class BuilderTest extends TestCase
 
         $expectedUri = "('$entityId')";
         $actualUri = $builder->toRequest();
-        
+
         $this->assertEquals($expectedUri, $actualUri);
     }
 
@@ -201,7 +201,7 @@ class BuilderTest extends TestCase
 
         $expectedUri = "($entityId)";
         $actualUri = $builder->toRequest();
-        
+
         $this->assertEquals($expectedUri, $actualUri);
     }
 
@@ -220,7 +220,7 @@ class BuilderTest extends TestCase
 
         $expectedUri = "($entityId)";
         $actualUri = $builder->toRequest();
-        
+
         $this->assertEquals($expectedUri, $actualUri);
     }
 
@@ -239,7 +239,7 @@ class BuilderTest extends TestCase
 
         $expectedUri = "('$entityId')";
         $actualUri = $builder->toRequest();
-        
+
         $this->assertEquals($expectedUri, $actualUri);
     }
 
@@ -269,6 +269,102 @@ class BuilderTest extends TestCase
         $actual = $this->readAttribute($builder, 'skip');
 
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testOrderColumnOnly()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order('Name'); // default asc
+
+        $expectedUri = '$orderby=Name asc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithDirection()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order('Name', 'desc');
+
+        $expectedUri = '$orderby=Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithShortArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(['Name', 'desc']);
+
+        $expectedUri = '$orderby=Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithMultipleShortArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(['Id', 'asc'], ['Name', 'desc']);
+
+        $expectedUri = '$orderby=Id asc,Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithMultipleNestedShortArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(array(['Id', 'asc'], ['Name', 'desc']));
+
+        $expectedUri = '$orderby=Id asc,Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(['column' => 'Name', 'direction' => 'desc']);
+
+        $expectedUri = '$orderby=Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithMultipleArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(['column' => 'Id', 'direction' => 'asc'], ['column' => 'Name', 'direction' => 'desc']);
+
+        $expectedUri = '$orderby=Id asc,Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testOrderWithMultipleNestedArray()
+    {
+        $builder = $this->getBuilder();
+
+        $builder->order(array(['column' => 'Id', 'direction' => 'asc'], ['column' => 'Name', 'direction' => 'desc']));
+
+        $expectedUri = '$orderby=Id asc,Name desc';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
     }
 
 }

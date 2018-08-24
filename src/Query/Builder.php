@@ -296,6 +296,64 @@ class Builder
     }
 
     /**
+     * Set the properties to be ordered.
+     *
+     * @param  array|mixed  $properties
+     *
+     * @return $this
+     */
+    public function order($properties = [])
+    {
+        $order = is_array($properties) && count(func_get_args()) === 1 ? $properties : func_get_args();
+
+        if (!(isset($order[0]) && is_array($order[0]))) {
+            $order = array($order);
+        }
+
+        $this->orders = $this->buildOrders($order);
+
+        return $this;
+    }
+
+    /**
+     * Set the sql property to be ordered.
+     *
+     * @param string $sql
+     *
+     * @return $this
+     */
+    public function orderBySQL($sql = '')
+    {
+        $this->orders = array(['sql' => $sql]);
+
+        return $this;
+    }
+
+    /**
+     * Reformat array to match grammar structure
+     *
+     * @param array $orders
+     *
+     * @return array
+     */
+    private function buildOrders($orders = [])
+    {
+        $_orders = [];
+
+        foreach ($orders as &$order) {
+            $column = isset($order['column']) ? $order['column'] : $order[0];
+            $direction = isset($order['direction']) ? $order['direction'] : (isset($order[1]) ? $order[1] : 'asc');
+
+            array_push($_orders, [
+                'column' => $column,
+                'direction' => $direction
+            ]);
+        }
+
+        return $_orders;
+    }
+
+    /**
      * Merge an array of where clauses and bindings.
      *
      * @param  array  $wheres
@@ -810,7 +868,6 @@ class Builder
         $this->count = true;
         $results = $this->get();
 
-        //return (int) $results;
         if (! $results->isEmpty()) {
             // replace all none numeric characters before casting it as int
             return (int) preg_replace('/[^0-9,.]/', '', $results[0]);
