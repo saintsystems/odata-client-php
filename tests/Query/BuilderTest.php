@@ -367,4 +367,38 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testMultipleChainedQueryParams()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->select('Name,Gender')
+                ->where('Gender', '=', 'Female')
+                ->order('Name', 'desc')
+                ->take(5);
+
+        $expectedUri = 'People?$select=Name,Gender&$filter=Gender eq \'Female\'&$orderby=Name desc&$top=5';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereEnum()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+        $whereEnum = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PersonGender\'Female\'';
+
+        $builder->from($entitySet)
+            ->where('Gender', '=', $whereEnum);
+
+        $expectedUri = 'People?$filter=Gender eq Microsoft.OData.Service.Sample.TrippinInMemory.Models.PersonGender\'Female\'';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }
