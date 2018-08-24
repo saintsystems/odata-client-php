@@ -47,6 +47,13 @@ class Grammar implements IGrammar
     ];
 
     /**
+     * Determine if query param is the first one added to uri
+     *
+     * @var bool
+     */
+    private $isFirstQueryParam = true;
+
+    /**
      * @inheritdoc
      */
     public function compileSelect(Builder $query)
@@ -186,7 +193,7 @@ class Grammar implements IGrammar
 
         $select = '';
         if (! empty($properties)) {
-            $select = '$select='.$this->columnize($properties);
+            $select = $this->appendQueryParam('$select=') . $this->columnize($properties);
         }
 
         return $select;
@@ -243,7 +250,7 @@ class Grammar implements IGrammar
     protected function concatenateWhereClauses($query, $filter)
     {
         //$conjunction = $query instanceof JoinClause ? 'on' : 'where';
-        $conjunction = '$filter=';
+        $conjunction = $this->appendQueryParam('$filter=');
 
         return $conjunction . $this->removeLeadingBoolean(implode(' ', $filter));
     }
@@ -281,7 +288,7 @@ class Grammar implements IGrammar
     protected function compileOrders(Builder $query, $orders)
     {
         if (! empty($orders)) {
-            return '$orderby='.implode(',', $this->compileOrdersToArray($query, $orders));
+            return $this->appendQueryParam('$orderby=') . implode(',', $this->compileOrdersToArray($query, $orders));
         }
 
         return '';
@@ -318,7 +325,7 @@ class Grammar implements IGrammar
         if (! empty($query->entityKey)) {
             return '';
         }
-        return '$top='.(int) $take;
+        return $this->appendQueryParam('$top=') . (int) $take;
     }
 
     /**
@@ -331,7 +338,7 @@ class Grammar implements IGrammar
      */
     protected function compileSkip(Builder $query, $skip)
     {
-        return '$skip='.(int) $skip;
+        return $this->appendQueryParam('$skip=') . (int) $skip;
     }
 
     /**
@@ -347,7 +354,7 @@ class Grammar implements IGrammar
         if (isset($query->entityKey)) {
             return '';
         }
-        return '$count=true';
+        return $this->appendQueryParam('$count=true');
     }
 
     /**
@@ -448,5 +455,18 @@ class Grammar implements IGrammar
         $offset = 8;
 
         return '('.substr($this->compileWheres($where['query']), $offset).')';
+    }
+
+    /**
+     * Append query param to existing uri
+     *
+     * @param string $value
+     * @return mixed
+     */
+    private function appendQueryParam(string $value)
+    {
+        $param = $this->isFirstQueryParam ? $value : '&' . $value;
+        $this->isFirstQueryParam = false;
+        return $param;
     }
 }
