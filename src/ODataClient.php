@@ -6,12 +6,14 @@ use Closure;
 use SaintSystems\OData\Exception\ODataException;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Query\Grammar;
+use SaintSystems\OData\Query\IGrammar;
+use SaintSystems\OData\Query\IProcessor;
 use SaintSystems\OData\Query\Processor;
 
 class ODataClient implements IODataClient
 {
     /**
-     * The base service URL. For example, "http://services.odata.org/V4/TripPinService/"
+     * The base service URL. For example, "https://services.odata.org/V4/TripPinService/"
      * @var string
      */
     private $baseUrl;
@@ -31,16 +33,23 @@ class ODataClient implements IODataClient
     /**
      * The query grammar implementation.
      *
-     * @var Grammar
+     * @var IGrammar
      */
     protected $queryGrammar;
 
     /**
      * The query post processor implementation.
      *
-     * @var Processor
+     * @var IProcessor
      */
     protected $postProcessor;
+
+    /**
+     * The return type for the entities
+     *
+     * @var string
+     */
+    private $entityReturnType;
 
     /**
      * Constructs a new ODataClient.
@@ -78,7 +87,7 @@ class ODataClient implements IODataClient
     /**
      * Get the default query grammar instance.
      *
-     * @return Grammar
+     * @return IGrammar
      */
     protected function getDefaultQueryGrammar()
     {
@@ -98,11 +107,11 @@ class ODataClient implements IODataClient
     /**
      * Get the default post processor instance.
      *
-     * @return Processor
+     * @return IProcessor
      */
     protected function getDefaultPostProcessor()
     {
-        return new Processor;
+        return new Processor();
     }
 
     /**
@@ -134,12 +143,11 @@ class ODataClient implements IODataClient
      */
     public function setBaseUrl($value)
     {
-        if (empty($value))
-        {
+        if (empty($value)) {
             throw new ODataException(Constants::BASE_URL_MISSING);
         }
 
-        $this->baseUrl = rtrim($value, '/').'/';
+        $this->baseUrl = rtrim($value, '/') . '/';
     }
 
     /**
@@ -204,6 +212,45 @@ class ODataClient implements IODataClient
     }
 
     /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function post($requestUri, $postData)
+    {
+        return $this->request(HttpMethod::POST, $requestUri, $postData);
+    }
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function patch($requestUri, $body)
+    {
+        return $this->request(HttpMethod::PATCH, $requestUri, $body);
+    }
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function delete($requestUri)
+    {
+        return $this->request(HttpMethod::DELETE, $requestUri);
+    }
+
+    /**
      * Return an ODataRequest
      *
      * @param string $method
@@ -213,17 +260,24 @@ class ODataClient implements IODataClient
      *
      * @throws ODataException
      */
-    public function request($method, $requestUri)
+    public function request($method, $requestUri, $body = null)
     {
-        $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this);
+        $request = new ODataRequest($method, $this->baseUrl . $requestUri, $this, $this->entityReturnType);
 
+        if ($body) {
+            $request->attachBody($body);
+        }
+        if ($method === 'PATCH' || $method === 'DELETE') {
+            // TODO: find a better solution for this
+            $request->addHeaders(array('If-Match' => '*'));
+        }
         return $request->execute();
     }
 
     /**
      * Get the query grammar used by the connection.
      *
-     * @return Grammar
+     * @return IGrammar
      */
     public function getQueryGrammar()
     {
@@ -233,11 +287,11 @@ class ODataClient implements IODataClient
     /**
      * Set the query grammar used by the connection.
      *
-     * @param  Grammar  $grammar
+     * @param  IGrammar  $grammar
      *
      * @return void
      */
-    public function setQueryGrammar(Grammar $grammar)
+    public function setQueryGrammar(IGrammar $grammar)
     {
         $this->queryGrammar = $grammar;
     }
@@ -245,7 +299,7 @@ class ODataClient implements IODataClient
     /**
      * Get the query post processor used by the connection.
      *
-     * @return Processor
+     * @return IProcessor
      */
     public function getPostProcessor()
     {
@@ -255,12 +309,22 @@ class ODataClient implements IODataClient
     /**
      * Set the query post processor used by the connection.
      *
-     * @param Processor $processor
+     * @param IProcessor $processor
      *
      * @return void
      */
-    public function setPostProcessor(Processor $processor)
+    public function setPostProcessor(IProcessor $processor)
     {
         $this->postProcessor = $processor;
+    }
+
+    /**
+     * Set the entity return type
+     *
+     * @param string $entityReturnType
+     */
+    public function setEntityReturnType($entityReturnType)
+    {
+        $this->entityReturnType = $entityReturnType;
     }
 }

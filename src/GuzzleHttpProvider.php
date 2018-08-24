@@ -42,7 +42,7 @@ class GuzzleHttpProvider implements IHttpProvider
      * Sets the timeout limit of the cURL request
      *
      * @param integer $timeout The timeout in ms
-     * 
+     *
      * @return $this
      */
     public function setTimeout($timeout)
@@ -60,20 +60,20 @@ class GuzzleHttpProvider implements IHttpProvider
     *         of class $returnType
     */
     public function send(HttpRequestMessage $request)
-    {    
+    {
         $options = [
             'headers' => $request->headers,
             'stream' =>  $request->returnsStream,
             'timeout' => $this->timeout,
         ];
 
-        if ($request->method == HttpMethod::POST || $request->method == HttpMethod::PUT) {
+        if ($request->method == HttpMethod::POST || $request->method == HttpMethod::PUT || $request->method == HttpMethod::PATCH) {
             $options['body'] = $request->body;
         }
-        
+
         $result = $this->http->request(
-            $request->method, 
-            $request->requestUri, 
+            $request->method,
+            $request->requestUri,
             $options
         );
 
