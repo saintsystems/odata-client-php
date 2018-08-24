@@ -12,7 +12,7 @@ You can install the PHP SDK with Composer.
 ```
 {
     "require": {
-        "saintsystems/odata-client": "0.2.*"
+        "saintsystems/odata-client": "^0.2.4"
     }
 }
 ```
