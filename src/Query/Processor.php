@@ -2,49 +2,12 @@
 
 namespace SaintSystems\OData\Query;
 
-use SaintSystems\OData\IODataRequest;
-
-class Processor
+class Processor implements IProcessor
 {
     /**
-     * Process the results of a "select" query.
-     *
-     * @param Builder       $query
-     * @param IODataRequest $results
-     *
-     * @return IODataRequest
+     * @inheritdoc
      */
     public function processSelect(Builder $query, $results)
-    {
-        return $results;
-    }
-
-    /**
-     * Process an "insert get ID" query.
-     *
-     * @param Builder $query
-     * @param string  $sql
-     * @param array   $values
-     * @param string  $sequence
-     *
-     * @return mixed
-     */
-    public function processInsertGetId(Builder $query, $sql, $values, $sequence = null)
-    {
-        $query->getClient()->insert($sql, $values);
-
-        $id = $query->getConnection()->getPdo()->lastInsertId($sequence);
-
-        return is_numeric($id) ? (int) $id : $id;
-    }
-
-    /**
-     * Process the results of a column listing query.
-     *
-     * @param  array  $results
-     * @return array
-     */
-    public function processColumnListing($results)
     {
         return $results;
     }

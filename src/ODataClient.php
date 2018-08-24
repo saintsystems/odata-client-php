@@ -228,7 +228,7 @@ class ODataClient implements IODataClient
      * Run a PATCH request against the service.
      *
      * @param string $requestUri
-     * @param mixed  $postData
+     * @param mixed  $body
      *
      * @return IODataRequest
      */
@@ -241,7 +241,6 @@ class ODataClient implements IODataClient
      * Run a DELETE request against the service.
      *
      * @param string $requestUri
-     * @param mixed  $postData
      *
      * @return IODataRequest
      */
@@ -255,6 +254,7 @@ class ODataClient implements IODataClient
      *
      * @param string $method
      * @param string $requestUri
+     * @param mixed  $body
      *
      * @return IODataRequest
      *
@@ -262,7 +262,7 @@ class ODataClient implements IODataClient
      */
     public function request($method, $requestUri, $body = null)
     {
-        $request = new ODataRequest($method, $this->baseUrl . $requestUri, $this, $this->entityReturnType);
+        $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this, $this->entityReturnType);
 
         if ($body) {
             $request->attachBody($body);
