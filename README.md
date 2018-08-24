@@ -12,7 +12,7 @@ You can install the PHP SDK with Composer.
 ```
 {
     "require": {
-        "saintsystems/odata-client": "0.1.*"
+        "saintsystems/odata-client": "0.2.*"
     }
 }
 ```
@@ -25,7 +25,7 @@ use SaintSystems\OData;
 
 class UsageExample
 {
-    $odataServiceUrl = 'http://services.odata.org/V4/TripPinService';
+    $odataServiceUrl = 'https://services.odata.org/V4/TripPinService';
 
     $odataClient = new ODataClient($odataServiceUrl);
 
