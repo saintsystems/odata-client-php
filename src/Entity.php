@@ -535,6 +535,48 @@ class Entity implements ArrayAccess
     }
 
     /**
+     * Get the mutated properties for a given instance.
+     *
+     * @return array
+     */
+    public function getMutatedProperties()
+    {
+        $class = static::class;
+
+        if (!isset(static::$mutatorCache[$class])) {
+            static::cacheMutatedProperties($class);
+        }
+
+        return static::$mutatorCache[$class];
+    }
+
+    /**
+     * Extract and cache all the mutated properties of a class.
+     *
+     * @param  string  $class
+     * @return void
+     */
+    public static function cacheMutatedProperties($class)
+    {
+        static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))->map(function ($match) {
+            return lcfirst(static::$snakePropreties ? Str::snake($match) : $match);
+        })->all();
+    }
+
+    /**
+     * Get all of the property mutator methods.
+     *
+     * @param  mixed  $class
+     * @return array
+     */
+    protected static function getMutatorMethods($class)
+    {
+        preg_match_all('/(?<=^|;)get([^;]+?)Property(;|$)/', implode(';', get_class_methods($class)), $matches);
+
+        return $matches[1];
+    }
+
+    /**
      * Get the fillable properties for the model.
      *
      * @return array
@@ -955,8 +997,7 @@ class Entity implements ArrayAccess
         // which simply lets the developers tweak the property as it is set on
         // the entity, such as "json_encoding" a listing of data for storage.
         if ($this->hasSetMutator($key)) {
-            //$method = 'set'.Str::studly($key).'Property';
-            $method = 'set_'.$key;
+            $method = 'set'.Str::studly($key).'Property';
 
             return $this->{$method}($value);
         }
@@ -992,8 +1033,7 @@ class Entity implements ArrayAccess
      */
     public function hasSetMutator($key)
     {
-        // return method_exists($this, 'set'.Str::studly($key).'Attribute');
-        return method_exists($this, 'set_'.$key);
+        return method_exists($this, 'set'.Str::studly($key).'Property');
     }
 
     /**
@@ -1164,9 +1204,7 @@ class Entity implements ArrayAccess
      */
     public function toArray()
     {
-        $properties = $this->propertiesToArray();
-
-        return array_merge($properties, $this->relationsToArray());
+        return array_merge($this->propertiesToArray(), $this->relationsToArray());
     }
 
     /**
@@ -1176,11 +1214,44 @@ class Entity implements ArrayAccess
      */
     public function propertiesToArray()
     {
-        $properties = $this->getArrayableProperties();
-
         // If a property is a date, we will cast it to a string after converting it
         // to a DateTime / Carbon instance. This is so we will get some consistent
         // formatting while accessing properties vs. arraying / JSONing a model.
+        $properties = $this->addDatePropertiesToArray(
+            $properties = $this->getArrayableProperties()
+        );
+
+        $properties = $this->addMutatedPropertiesToArray(
+            $properties,
+            $mutatedProperties = $this->getMutatedProperties()
+        );
+
+        // Next we will handle any casts that have been setup for this entity and cast
+        // the values to their appropriate type. If the property has a mutator we
+        // will not perform the cast on those properties to avoid any confusion.
+        $properties = $this->addCastPropertiesToArray(
+            $properties,
+            $mutatedProperties
+        );
+
+        // Here we will grab all of the appended, calculated properties to this model
+        // as these properties are not really in the properties array, but are run
+        // when we need to array or JSON the model for convenience to the coder.
+        foreach ($this->getArrayableAppends() as $key) {
+            $properties[$key] = $this->mutatePropertyForArray($key, null);
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Add the date properties to the properties array.
+     *
+     * @param  array  $properties
+     * @return array
+     */
+    protected function addDatePropertiesToArray(array $properties)
+    {
         foreach ($this->getDates() as $key) {
             if (! isset($properties[$key])) {
                 continue;
@@ -1191,44 +1262,65 @@ class Entity implements ArrayAccess
             );
         }
 
-        $mutatedProperties = $this->getMutatedProperties();
+        return $properties;
+    }
 
-        // We want to spin through all the mutated properties for this model and call
-        // the mutator for the attribute. We cache off every mutated properties so
-        // we don't have to constantly check on properties that actually change.
+    /**
+     * Add the mutated properties to the properties array.
+     *
+     * @param  array  $properties
+     * @param  array  $mutatedProperties
+     * @return array
+     */
+    protected function addMutatedPropertiesToArray(array $properties, array $mutatedProperties)
+    {
         foreach ($mutatedProperties as $key) {
+            // We want to spin through all the mutated properties for this model and call
+            // the mutator for the properties. We cache off every mutated properties so
+            // we don't have to constantly check on properties that actually change.
             if (! array_key_exists($key, $properties)) {
                 continue;
             }
 
+            // Next, we will call the mutator for this properties so that we can get these
+            // mutated property's actual values. After we finish mutating each of the
+            // properties we will return this final array of the mutated properties.
             $properties[$key] = $this->mutatePropertyForArray(
                 $key, $properties[$key]
             );
         }
 
-        // Next we will handle any casts that have been setup for this model and cast
-        // the values to their appropriate type. If the attribute has a mutator we
-        // will not perform the cast on those properties to avoid any confusion.
+        return $properties;
+    }
+
+    /**
+     * Add the casted properties to the properties array.
+     *
+     * @param  array  $properties
+     * @param  array  $mutatedProperties
+     * @return array
+     */
+    protected function addCastPropertiesToArray(array $properties, array $mutatedProperties)
+    {
         foreach ($this->getCasts() as $key => $value) {
-            if (! array_key_exists($key, $properties) ||
-                in_array($key, $mutatedProperties)) {
+            if (! array_key_exists($key, $properties) || in_array($key, $mutatedProperties)) {
                 continue;
             }
 
+            // Here we will cast the property. Then, if the cast is a date or datetime cast
+            // then we will serialize the date for the array. This will convert the dates
+            // to strings based on the date format specified for these Entity models.
             $properties[$key] = $this->castProperty(
                 $key, $properties[$key]
             );
 
-            if ($properties[$key] && ($value === 'date' || $value === 'datetime')) {
+            // If the property cast was a date or a datetime, we will serialize the date as
+            // a string. This allows the developers to customize how dates are serialized
+            // into an array without affecting how they are persisted into the storage.
+            if ($properties[$key] &&
+                ($value === 'date' || $value === 'datetime')) {
                 $properties[$key] = $this->serializeDate($properties[$key]);
             }
-        }
-
-        // Here we will grab all of the appended, calculated properties to this model
-        // as these properties are not really in the properties array, but are run
-        // when we need to array or JSON the model for convenience to the coder.
-        foreach ($this->getArrayableAppends() as $key) {
-            $properties[$key] = $this->mutateAttributeForArray($key, null);
         }
 
         return $properties;
@@ -1349,10 +1441,17 @@ class Entity implements ArrayAccess
             $key = $this->primaryKey;
         }
 
-        if (array_key_exists($key, $this->properties) || $this->hasGetMutator($key)) {
+        // If the property exists in the properties array or has a "get" mutator we will
+        // get the property's value. Otherwise, we will proceed as if the developers
+        // are asking for a relationship's value. This covers both types of values.
+        if (array_key_exists($key, $this->properties) ||
+            $this->hasGetMutator($key)) {
             return $this->getPropertyValue($key);
         }
 
+        // Here we will determine if the model base class itself contains this given key
+        // since we don't want to treat any of those methods as relationships because
+        // they are all intended as helper methods and none of these are relations.
         if (method_exists(self::class, $key)) {
             return;
         }
@@ -1388,7 +1487,8 @@ class Entity implements ArrayAccess
         // If the property is listed as a date, we will convert it to a DateTime
         // instance on retrieval, which makes it quite convenient to work with
         // date fields without having to create a mutator for each property.
-        if (in_array($key, $this->getDates()) && ! is_null($value)) {
+        if (in_array($key, $this->getDates()) &&
+            ! is_null($value)) {
             return $this->asDateTime($value);
         }
 
@@ -1403,7 +1503,7 @@ class Entity implements ArrayAccess
      */
     protected function getPropertyFromArray($key)
     {
-        if (array_key_exists($key, $this->properties)) {
+        if (isset($this->properties[$key])) {
             return $this->properties[$key];
         }
     }
@@ -1416,8 +1516,8 @@ class Entity implements ArrayAccess
      */
     public function hasGetMutator($key)
     {
-        //return method_exists($this, 'get'.Str::studly($key).'Attribute');
-        return method_exists($this, 'get_'.$key);
+        return method_exists($this, 'get'.Str::studly($key).'Property');
+        //return method_exists($this, 'get_'.$key);
     }
 
     /**
@@ -1429,8 +1529,8 @@ class Entity implements ArrayAccess
      */
     protected function mutateProperty($key, $value)
     {
-        //return $this->{'get'.Str::studly($key).'Attribute'}($value);
-        return $this->{'get_'.$key}($value);
+        return $this->{'get'.Str::studly($key).'Property'}($value);
+        // return $this->{'get_'.$key}($value);
     }
 
     /**
