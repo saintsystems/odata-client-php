@@ -70,7 +70,7 @@ class Grammar implements IGrammar
         $query->properties = $original;
 
         //dd($uri);
-        
+
         return $uri;
     }
 
@@ -132,7 +132,7 @@ class Grammar implements IGrammar
 
     protected function compileQueryString(Builder $query, $queryString)
     {
-        if (isset($query->entitySet) 
+        if (isset($query->entitySet)
             && (
                 !empty($query->properties)
                 || isset($query->wheres)
@@ -188,7 +188,7 @@ class Grammar implements IGrammar
         if (! empty($properties)) {
             $select = '$select='.$this->columnize($properties);
         }
-        
+
         return $select;
     }
 
@@ -259,7 +259,13 @@ class Grammar implements IGrammar
     protected function whereBasic(Builder $query, $where)
     {
         //$value = $this->parameter($where['value']);
-        $value = "'".$where['value']."'";
+        $value = $where['value'];
+
+         // stringify all values if it has NOT an odata enum syntax
+        // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female')
+        if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value)) {
+            $value = "'".$where['value']."'";
+        }
 
         return $where['column'].' '.$this->getOperatorMapping($where['operator']).' '.$value;
     }
