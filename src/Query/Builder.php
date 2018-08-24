@@ -141,6 +141,11 @@ class Builder
     public $select = [];
 
     /**
+     * @var array
+     */
+    public $expands;
+
+    /**
      * @var IProcessor
      */
     private $processor;
@@ -149,11 +154,6 @@ class Builder
      * @var IGrammar
      */
     private $grammar;
-
-    /**
-     * @var array
-     */
-    private $expands;
 
     /**
      * Create a new query builder instance.
@@ -233,16 +233,19 @@ class Builder
     /**
      * Add an $expand clause to the query.
      *
-     * @param string $property
-     * @param string $first
-     * @param string $operator
-     * @param string $second
-     * @param string $type
-     * @param bool   $ref
-     * @param bool   $count
-     *
+     * @param array $properties
      * @return $this
      */
+    public function expand($properties = [])
+    {
+        $this->expands = is_array($properties) ? $properties : func_get_args();
+
+        return $this;
+    }
+
+    /*
+     * TODO: do we still need this? lots of bugs in here!!!
+     *
     public function expand($property, $first, $operator = null, $second = null, $type = 'inner', $ref = false, $count = false)
     {
         //TODO: need to flush out this method as it will work much like the where and join methods
@@ -272,6 +275,7 @@ class Builder
 
         return $this;
     }
+    */
 
     /**
      * Apply the callback's query changes if the given "value" is true.

@@ -393,9 +393,41 @@ class BuilderTest extends TestCase
         $whereEnum = 'Microsoft.OData.Service.Sample.TrippinInMemory.Models.PersonGender\'Female\'';
 
         $builder->from($entitySet)
-            ->where('Gender', '=', $whereEnum);
+                ->where('Gender', '=', $whereEnum);
 
         $expectedUri = 'People?$filter=Gender eq Microsoft.OData.Service.Sample.TrippinInMemory.Models.PersonGender\'Female\'';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithSingleExpand()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+        $expand = 'PersonGender';
+
+        $builder->from($entitySet)
+                ->expand($expand);
+
+        $expectedUri = 'People?$expand=PersonGender';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithMultipleExpand()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+        $expands = ['PersonGender', 'PersonOccupation'];
+
+        $builder->from($entitySet)
+                ->expand($expands);
+
+        $expectedUri = 'People?$expand=PersonGender,PersonOccupation';
         $actualUri = $builder->toRequest();
 
         $this->assertEquals($expectedUri, $actualUri);
