@@ -463,4 +463,34 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWhereString()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->where('FirstName', 'Russell');
+
+        $expectedUri = 'People?$filter=FirstName eq \'Russell\'';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWhereNumeric()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Photos';
+
+        $builder->from($entitySet)
+                ->where('Id', 1);
+
+        $expectedUri = 'Photos?$filter=Id eq 1';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }

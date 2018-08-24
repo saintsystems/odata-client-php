@@ -288,7 +288,9 @@ class Grammar implements IGrammar
         // stringify all values if it has NOT an odata enum syntax
         // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female')
         if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value)) {
-            $value = "'".$where['value']."'";
+            if (!is_numeric($value)) {
+                $value = "'".$where['value']."'";
+            }
         }
 
         return $where['column'].' '.$this->getOperatorMapping($where['operator']).' '.$value;
