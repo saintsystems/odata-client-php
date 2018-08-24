@@ -267,10 +267,14 @@ class ODataClient implements IODataClient
         if ($body) {
             $request->attachBody($body);
         }
+
+        // TODO: find a better solution for this
+        /*
         if ($method === 'PATCH' || $method === 'DELETE') {
-            // TODO: find a better solution for this
             $request->addHeaders(array('If-Match' => '*'));
         }
+         */
+
         return $request->execute();
     }
 
