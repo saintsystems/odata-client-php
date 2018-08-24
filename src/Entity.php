@@ -1,7 +1,7 @@
 <?php
 /**
 * Copyright (c) Saint Systems, LLC.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
-* 
+*
 * OData Entity File
 * PHP version 7
 *
@@ -48,7 +48,7 @@ class Entity implements ArrayAccess
      * @var string
      */
     protected $primaryKey = 'id';
-     
+
     /**
      * The "type" of the entity key.
      * @var string
@@ -1357,7 +1357,8 @@ class Entity implements ArrayAccess
             return;
         }
 
-        return $this->getRelationValue($key);
+        // return $this->getRelationValue($key);
+        return null;
     }
 
     /**
