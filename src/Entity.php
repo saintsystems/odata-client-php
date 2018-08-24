@@ -68,11 +68,11 @@ class Entity implements ArrayAccess
     protected $perPage = 25;
 
     /**
-    * The array of properties available
-    * to the model
-    *
-    * @var array(string => string)
-    */
+     * The array of properties available
+     * to the model
+     *
+     * @var array(string => string)
+     */
     protected $properties = [];
 
     /**

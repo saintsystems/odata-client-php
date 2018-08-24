@@ -475,6 +475,30 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Compile a "where null" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereNull(Builder $query, $where)
+    {
+        return $where['column'] . ' eq null';
+    }
+
+    /**
+     * Compile a "where not null" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereNotNull(Builder $query, $where)
+    {
+        return $where['column'] . ' ne null';
+    }
+
+    /**
      * Append query param to existing uri
      *
      * @param string $value

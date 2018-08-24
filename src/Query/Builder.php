@@ -611,6 +611,57 @@ class Builder
     }
 
     /**
+     * Add a "where null" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $boolean
+     * @param  bool    $not
+     * @return $this
+     */
+    public function whereNull($column, $boolean = 'and', $not = false)
+    {
+        $type = $not ? 'NotNull' : 'Null';
+
+        $this->wheres[] = compact('type', 'column', 'boolean');
+
+        return $this;
+    }
+
+    /**
+     * Add an "or where null" clause to the query.
+     *
+     * @param  string  $column
+     * @return Builder|static
+     */
+    public function orWhereNull($column)
+    {
+        return $this->whereNull($column, 'or');
+    }
+
+    /**
+     * Add a "where not null" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $boolean
+     * @return Builder|static
+     */
+    public function whereNotNull($column, $boolean = 'and')
+    {
+        return $this->whereNull($column, $boolean, true);
+    }
+
+    /**
+     * Add an "or where not null" clause to the query.
+     *
+     * @param  string  $column
+     * @return Builder|static
+     */
+    public function orWhereNotNull($column)
+    {
+        return $this->whereNotNull($column, 'or');
+    }
+
+    /**
      * Get the HTTP Request representation of the query.
      *
      * @return string

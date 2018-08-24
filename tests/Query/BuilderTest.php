@@ -433,4 +433,34 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWithWhereNull()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereNull('FirstName');
+
+        $expectedUri = 'People?$filter=FirstName eq null';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereNotNull()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereNotNull('FirstName');
+
+        $expectedUri = 'People?$filter=FirstName ne null';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }
