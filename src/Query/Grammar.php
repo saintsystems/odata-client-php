@@ -471,9 +471,9 @@ class Grammar implements IGrammar
         // is a join clause query, we need to remove the "on" portion of the SQL and
         // if it is a normal query we need to take the leading "$filter=" of queries.
         // $offset = $query instanceof JoinClause ? 3 : 6;
-        $offset = 8;
-
-        return '('.substr($this->compileWheres($where['query']), $offset).')';
+        $wheres = $this->compileWheres($where['query']);
+        $offset = (substr($wheres, 0, 1) === '&') ? 9 : 8;
+        return '('.substr($wheres, $offset).')';
     }
 
     /**
