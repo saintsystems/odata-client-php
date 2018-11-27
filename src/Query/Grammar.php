@@ -288,7 +288,8 @@ class Grammar implements IGrammar
         // stringify all values if it has NOT an odata enum syntax
         // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female')
         if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value)) {
-            if (is_string($value) && !\DateTime::createFromFormat('U', $value)) {
+            // Check if the value is a string and NOT a date
+            if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
                 $value = "'".$where['value']."'";
             }
         }
