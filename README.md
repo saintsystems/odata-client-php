@@ -21,24 +21,37 @@ You can install the PHP SDK with Composer.
 The following is an example that shows how to call an OData service.
 
 ```php
-use SaintSystems\OData;
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use SaintSystems\OData\ODataClient;
 
 class UsageExample
 {
-    $odataServiceUrl = 'https://services.odata.org/V4/TripPinService';
+	public function __construct()
+	{
+		$odataServiceUrl = 'https://services.odata.org/V4/TripPinService';
 
-    $odataClient = new ODataClient($odataServiceUrl);
+		$odataClient = new ODataClient($odataServiceUrl);
 
-    // Retrieve all entities from the "People" Entity Set
-    $people = $odataClient->from('People')->get();
+		// Retrieve all entities from the "People" Entity Set
+		$people = $odataClient->from('People')->get();
 
-    // Or retrieve a specific entity by the Entity ID/Key
-    $person = $odataClient->from('People')->find('russellwhyte');
-    echo "Hello, I am $person->FirstName ";
+		// Or retrieve a specific entity by the Entity ID/Key
+		try {
+			$person = $odataClient->from('People')->find('russellwhyte');
+			echo "Hello, I am $person->FirstName ";
+		} catch (Exception $e) {
+			echo $e->getMessage();
+		}
 
-    // Want to only select a few properties/columns?
-    $people = $odataClient->from('People')->select('FirstName','LastName')->get();
+		// Want to only select a few properties/columns?
+		$people = $odataClient->from('People')->select('FirstName','LastName')->get();
+	}
 }
+
+$example = new UsageExample();
 ```
 
 ## Develop
