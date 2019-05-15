@@ -285,9 +285,9 @@ class Grammar implements IGrammar
         //$value = $this->parameter($where['value']);
         $value = $where['value'];
 
-        // stringify all values if it has NOT an odata enum syntax
-        // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female')
-        if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value)) {
+        // stringify all values if it has NOT an odata enum or special syntax primitive data type
+        // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female' or datetime'1970-01-01T00:00:00')
+        if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value) && !$this->isSpecialPrimitiveDataType($value)) {
             // Check if the value is a string and NOT a date
             if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
                 $value = "'".$where['value']."'";
@@ -295,6 +295,10 @@ class Grammar implements IGrammar
         }
 
         return $where['column'].' '.$this->getOperatorMapping($where['operator']).' '.$value;
+    }
+
+    protected function isSpecialPrimitiveDataType($value){
+        return preg_match("/^(binary|datetime|guid|time|datetimeoffset)(\'[\w\:\-\.]+\')$/i", $value);
     }
 
     /**
