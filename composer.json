@@ -15,7 +15,6 @@
     "require": {
         "php": ">=7.1",
         "guzzlehttp/guzzle": "^6.2",
-        "monolog/monolog": "^1.22",
         "nesbot/carbon": "^1.22",
         "illuminate/support": "^5.4"
     },
