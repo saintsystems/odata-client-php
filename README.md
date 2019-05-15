@@ -10,11 +10,7 @@ A fluent library for calling OData REST services inspired by and based on the [L
 ## Install the SDK
 You can install the PHP SDK with Composer.
 ```
-{
-    "require": {
-        "saintsystems/odata-client": "^0.2.4"
-    }
-}
+composer require saintsystems/odata-client
 ```
 ### Call an OData Service
 
