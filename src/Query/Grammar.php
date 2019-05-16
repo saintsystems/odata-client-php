@@ -10,8 +10,16 @@ class Grammar implements IGrammar
      * @var array
      */
     protected $operators = [
-        '=', '<', '>', '<=', '>=', '!<', '!>', '<>', '!=',
-        'contains', 'startswith', 'endswith',
+        '=', '<', '>', '<=', '>=', '!<', '!>', '<>', '!='
+    ];
+
+    /**
+     * All of the available clause functions.
+     *
+     * @var array
+     */
+    protected $functions = [
+        'contains', 'startswith', 'endswith', 'substringof'
     ];
 
     protected $operatorMapping = [
@@ -282,21 +290,29 @@ class Grammar implements IGrammar
      */
     protected function whereBasic(Builder $query, $where)
     {
-        //$value = $this->parameter($where['value']);
-        $value = $where['value'];
-
-        // stringify all values if it has NOT an odata enum or special syntax primitive data type
-        // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female' or datetime'1970-01-01T00:00:00')
-        if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value) && !$this->isSpecialPrimitiveDataType($value)) {
-            // Check if the value is a string and NOT a date
-            if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
-                $value = "'".$where['value']."'";
-            }
-        }
-
+        $value = $this->prepareValue($where['value']);
         return $where['column'].' '.$this->getOperatorMapping($where['operator']).' '.$value;
     }
 
+    /**
+     * Compile a "where function" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereFunction(Builder $query, $where)
+    {
+        $value = $this->prepareValue($where['value']);
+        return $where['operator'] . '(' . $where['column'] . ',' . $value . ')';
+    }
+
+    /**
+     * Determines if the value is a special primitive data type (similar syntax with enums)
+     *
+     * @param string $value
+     * @return string
+     */
     protected function isSpecialPrimitiveDataType($value){
         return preg_match("/^(binary|datetime|guid|time|datetimeoffset)(\'[\w\:\-\.]+\')$/i", $value);
     }
@@ -424,6 +440,22 @@ class Grammar implements IGrammar
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getFunctions()
+    {
+        return $this->functions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOperatorsAndFunctions()
+    {
+        return array_merge($this->operators, $this->functions);
+    }
+
+    /**
      * Get the OData operator for the passed operator
      *
      * @param string $operator The passed operator
@@ -436,6 +468,25 @@ class Grammar implements IGrammar
             return $this->operatorMapping[$operator];
         }
         return $operator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function prepareValue($value)
+    {
+        //$value = $this->parameter($value);
+
+        // stringify all values if it has NOT an odata enum or special syntax primitive data type
+        // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female' or datetime'1970-01-01T00:00:00')
+        if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value) && !$this->isSpecialPrimitiveDataType($value)) {
+            // Check if the value is a string and NOT a date
+            if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
+                $value = "'".$value."'";
+            }
+        }
+
+        return $value;
     }
 
     /**

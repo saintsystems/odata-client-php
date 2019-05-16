@@ -438,6 +438,10 @@ class Builder
         // in our array and add the query binding to our array of bindings that
         // will be bound to each SQL statements when it is finally executed.
         $type = 'Basic';
+        if($this->isOperatorAFunction($operator)){
+            $type = 'Function';
+        }
+        
 
         $this->wheres[] = compact(
             'type', 'column', 'operator', 'value', 'boolean'
@@ -470,6 +474,17 @@ class Builder
                 }
             }
         }, $boolean);
+    }
+
+    /**
+     * Determine if the given operator is actually a function.
+     *
+     * @param  string $operator
+     * @return bool
+     */
+    protected function isOperatorAFunction($operator)
+    {
+        return in_array(strtolower($operator), $this->grammar->getFunctions(), true);
     }
 
     /**
@@ -519,7 +534,7 @@ class Builder
     protected function invalidOperator($operator)
     {
         return ! in_array(strtolower($operator), $this->operators, true) &&
-               ! in_array(strtolower($operator), $this->grammar->getOperators(), true);
+               ! in_array(strtolower($operator), $this->grammar->getOperatorsAndFunctions(), true);
     }
 
     /**
