@@ -441,7 +441,7 @@ class Builder
         if($this->isOperatorAFunction($operator)){
             $type = 'Function';
         }
-        
+
 
         $this->wheres[] = compact(
             'type', 'column', 'operator', 'value', 'boolean'
@@ -762,10 +762,11 @@ class Builder
      *
      * @param array $properties
      * @param array $options
+     * @param bool $collect
      *
      * @return Collection
      */
-    public function get($properties = [], $options = null)
+    public function get($properties = [], $options = null, $collect = true)
     {
         if (is_numeric($properties)) {
             $options = $properties;
@@ -790,7 +791,7 @@ class Builder
 
         $this->properties = $original;
 
-        return collect($results);
+        return $collect ? collect($results) : $results;
         //return $results;
     }
 
@@ -800,10 +801,11 @@ class Builder
      * @param array $body
      * @param array $properties
      * @param array $options
+     * @param bool $collect
      *
      * @return Collection
      */
-    public function post($body = [], $properties = [], $options = null)
+    public function post($body = [], $properties = [], $options = null, $collect = true)
     {
         if (is_numeric($properties)) {
             $options = $properties;
@@ -828,7 +830,7 @@ class Builder
 
         $this->properties = $original;
 
-        return collect($results);
+        return $collect ? collect($results) : $results;
     }
 
     /**
@@ -848,10 +850,11 @@ class Builder
      *
      * @param array $properties
      * @param array $options
+     * @param bool $collect
      *
      * @return Collection
      */
-    public function patch($body, $properties = [], $options = null)
+    public function patch($body, $properties = [], $options = null, $collect = true)
     {
         if (is_numeric($properties)) {
             $options = $properties;
@@ -876,7 +879,7 @@ class Builder
 
         $this->properties = $original;
 
-        return collect($results);
+        return $collect ? collect($results) : $results;
         //return $results;
     }
 
