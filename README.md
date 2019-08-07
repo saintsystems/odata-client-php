@@ -4,7 +4,9 @@ A fluent library for calling OData REST services inspired by and based on the [L
 
 *This library is currently in preview. Please continue to provide [feedback](https://github.com/saintsystems/odata-client-php/issues/new) as we iterate towards a production-supported library.*
 
-[![Build Status](https://travis-ci.org/saintsystems/odata-client-php.svg?branch=master)](https://travis-ci.org/saintsystems/odata-client-php)
+[![Build Status](https://img.shields.io/travis/saintsystems/odata-client-php/master.svg?style=flat-square)](https://travis-ci.org/saintsystems/odata-client-php)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/saintsystemsodata-client-php.svg?style=flat-square)](https://packagist.org/packages/saintsystems/nova-resource-group-menu)
+[![Total Downloads](https://img.shields.io/packagist/dt/saintsystems/odata-client-php.svg?style=flat-square)](https://packagist.org/packages/saintsystems/odata-client-php)
 
 
 ## Install the SDK
