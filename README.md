@@ -61,7 +61,7 @@ Run ```vendor/bin/phpunit``` from the base directory.
 
 ## Documentation and resources
 
-* [Documentation](https://github.com/saintsystems/odata-client-php/blob/master/docs/index.html)
+* [Documentation](https://github.com/saintsystems/odata-client-php/wiki/Example-Calls)
 
 * [Wiki](https://github.com/saintsystems/odata-client-php/wiki)
 
