@@ -483,6 +483,8 @@ class Grammar implements IGrammar
             // Check if the value is a string and NOT a date
             if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
                 $value = "'".$value."'";
+            } else if(is_bool($value)){
+                $value = $value ? 'true' : 'false';
             }
         }
 
