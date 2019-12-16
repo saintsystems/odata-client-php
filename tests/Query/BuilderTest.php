@@ -493,4 +493,40 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityMultipleWheres()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+            ->where([
+                ['FirstName', 'Russell'],
+                ['LastName', 'Whyte'],
+            ]);
+
+        $expectedUri = 'People?$filter=(FirstName eq \'Russell\' and LastName eq \'Whyte\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityMultipleWheresNested()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+            ->where(function($query) {
+                $query->where('FirstName','Russell');
+                $query->where('LastName','Whyte');
+            });
+
+        $expectedUri = 'People?$filter=(FirstName eq \'Russell\' and LastName eq \'Whyte\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }
