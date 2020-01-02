@@ -398,9 +398,16 @@ class Grammar implements IGrammar
      */
     protected function concatenate($segments)
     {
-        return implode('', array_filter($segments, function ($value) {
-            return (string) $value !== '';
-        }));
+        // return implode('', array_filter($segments, function ($value) {
+        //     return (string) $value !== '';
+        // }));
+        $uri = '';
+        foreach ($segments as $segment => $value) {
+            if ((string) $value !== '') {
+                $uri.= strpos($uri, '?$') ? '&' . $value : $value;
+            }
+        }
+        return $uri;
     }
 
     /**
@@ -513,8 +520,8 @@ class Grammar implements IGrammar
      */
     private function appendQueryParam(string $value)
     {
-        $param = $this->isFirstQueryParam ? $value : '&' . $value;
-        $this->isFirstQueryParam = false;
-        return $param;
+        //$param = $this->isFirstQueryParam ? $value : '&' . $value;
+        //$this->isFirstQueryParam = false;
+        return $value;
     }
 }
