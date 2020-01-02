@@ -16,13 +16,14 @@ namespace SaintSystems\OData;
 // use Closure;
 // use Exception;
 use ArrayAccess;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 // use LogicException;
 // use JsonSerializable;
 use DateTimeInterface;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Date;
 use SaintSystems\OData\Exception\MassAssignmentException;
 
 /**
@@ -961,7 +962,9 @@ class Entity implements ArrayAccess
             case 'real':
             case 'float':
             case 'double':
-                return (float) $value;
+                return $this->fromFloat($value);
+            case 'decimal':
+                return $this->asDecimal($value, explode(':', $this->getCasts()[$key], 2)[1]);
             case 'string':
                 return (string) $value;
             case 'bool':
@@ -975,7 +978,9 @@ class Entity implements ArrayAccess
             //case 'collection':
                 //return new BaseCollection($this->fromJson($value));
             case 'date':
+                return $this->asDate($value);
             case 'datetime':
+            case 'custom_datetime':
                 return $this->asDateTime($value);
             case 'timestamp':
                 return $this->asTimeStamp($value);
@@ -1050,62 +1055,83 @@ class Entity implements ArrayAccess
     }
 
     /**
-     * Convert a DateTime to a storable string.
+     * Return a timestamp as DateTime object with time set to 00:00:00.
      *
-     * @param  \DateTime|int  $value
-     * @return string
+     * @param  mixed  $value
+     * @return \Illuminate\Support\Carbon
      */
-    public function fromDateTime($value)
+    protected function asDate($value)
     {
-        $format = $this->getDateFormat();
-
-        $value = $this->asDateTime($value);
-
-        return $value->format($format);
+        return $this->asDateTime($value)->startOfDay();
     }
 
     /**
      * Return a timestamp as DateTime object.
      *
      * @param  mixed  $value
-     * @return \Carbon\Carbon
+     * @return \Illuminate\Support\Carbon
      */
     protected function asDateTime($value)
     {
         // If this value is already a Carbon instance, we shall just return it as is.
         // This prevents us having to re-instantiate a Carbon instance when we know
         // it already is one, which wouldn't be fulfilled by the DateTime check.
-        if ($value instanceof Carbon) {
-            return $value;
+        if ($value instanceof CarbonInterface) {
+            return Date::instance($value);
         }
-
-         // If the value is already a DateTime instance, we will just skip the rest of
-         // these checks since they will be a waste of time, and hinder performance
-         // when checking the field. We will just return the DateTime right away.
+        // If the value is already a DateTime instance, we will just skip the rest of
+        // these checks since they will be a waste of time, and hinder performance
+        // when checking the field. We will just return the DateTime right away.
         if ($value instanceof DateTimeInterface) {
-            return new Carbon(
-                $value->format('Y-m-d H:i:s.u'), $value->getTimeZone()
+            return Date::parse(
+                $value->format('Y-m-d H:i:s.u'), $value->getTimezone()
             );
         }
-
         // If this value is an integer, we will assume it is a UNIX timestamp's value
         // and format a Carbon object from this timestamp. This allows flexibility
         // when defining your date fields as they might be UNIX timestamps here.
         if (is_numeric($value)) {
-            return Carbon::createFromTimestamp($value);
+            return Date::createFromTimestamp($value);
         }
-
         // If the value is in simply year, month, day format, we will instantiate the
         // Carbon instances from that format. Again, this provides for simple date
         // fields on the database, while still supporting Carbonized conversion.
-        if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value)) {
-            return Carbon::createFromFormat('Y-m-d', $value)->startOfDay();
+        if ($this->isStandardDateFormat($value)) {
+            return Date::instance(Carbon::createFromFormat('Y-m-d', $value)->startOfDay());
         }
-
+        $format = $this->getDateFormat();
+        // https://bugs.php.net/bug.php?id=75577
+        if (version_compare(PHP_VERSION, '7.3.0-dev', '<')) {
+            $format = str_replace('.v', '.u', $format);
+        }
         // Finally, we will just assume this date is in the format used by default on
         // the database connection and use that format to create the Carbon object
         // that is returned back out to the developers after we convert it here.
-        return Carbon::createFromFormat($this->getDateFormat(), $value);
+        return Date::createFromFormat($format, $value);
+    }
+
+    /**
+     * Determine if the given value is a standard date format.
+     *
+     * @param  string  $value
+     * @return bool
+     */
+    protected function isStandardDateFormat($value)
+    {
+        return preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value);
+    }
+
+    /**
+     * Convert a DateTime to a storable string.
+     *
+     * @param  mixed  $value
+     * @return string|null
+     */
+    public function fromDateTime($value)
+    {
+        return empty($value) ? $value : $this->asDateTime($value)->format(
+            $this->getDateFormat()
+        );
     }
 
     /**
@@ -1174,6 +1200,38 @@ class Entity implements ArrayAccess
     public function fromJson($value, $asObject = false)
     {
         return json_decode($value, ! $asObject);
+    }
+
+    /**
+     * Decode the given float.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function fromFloat($value)
+    {
+        switch ((string) $value) {
+            case 'Infinity':
+                return INF;
+            case '-Infinity':
+                return -INF;
+            case 'NaN':
+                return NAN;
+            default:
+                return (float) $value;
+        }
+    }
+
+    /**
+     * Return a decimal as string.
+     *
+     * @param  float  $value
+     * @param  int  $decimals
+     * @return string
+     */
+    protected function asDecimal($value, $decimals)
+    {
+        return number_format($value, $decimals, '.', '');
     }
 
     /**
