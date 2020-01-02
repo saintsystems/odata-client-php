@@ -15,7 +15,7 @@ before_install:
     - composer self-update
 
 install:
-    - composer install --prefer-source --no-interaction
+    - travis_wait 30 composer install --prefer-source --no-interaction
 
 script:
     - vendor/bin/phpunit
