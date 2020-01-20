@@ -34,7 +34,7 @@ use SaintSystems\OData\Exception\MassAssignmentException;
 * @license   https://opensource.org/licenses/MIT MIT License
 * @version   Release: 0.1.0
 */
-class Entity implements ArrayAccess
+class Entity implements ArrayAccess, Arrayable
 {
     /**
      * The entity set name associated with the entity.
