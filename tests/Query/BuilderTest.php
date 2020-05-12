@@ -60,6 +60,38 @@ class BuilderTest extends TestCase
         $builder->find('russellwhyte');
     }
 
+    public function testEntitySetFindStringKey()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet);
+
+        $builder->whereKey('russellwhyte');
+
+        $expected = $entitySet.'(\'russellwhyte\')';
+        $actual = $builder->toRequest();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testEntitySetFindNumericKey()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'EntitySet';
+
+        $builder->from($entitySet);
+
+        $builder->whereKey('12345');
+
+        $expected = $entitySet.'(12345)';
+        $actual = $builder->toRequest();
+
+        $this->assertEquals($expected, $actual);
+    }
+
     public function testEntitySetWithSelect()
     {
         $builder = $this->getBuilder();
