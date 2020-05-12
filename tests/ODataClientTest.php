@@ -10,7 +10,7 @@ class ODataClientTest extends TestCase
 {
     private $baseUrl;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->baseUrl = 'http://services.odata.org/V4/TripPinService';
     }
