@@ -20,6 +20,8 @@ class GuzzleHttpProvider implements IHttpProvider
     */
     protected $timeout;
 
+    protected $extra_options;
+
     /**
      * Creates a new HttpProvider
      */
@@ -27,6 +29,7 @@ class GuzzleHttpProvider implements IHttpProvider
     {
         $this->http = new Client();
         $this->timeout = 0;
+        $this->extra_options = array();
     }
 
     /**
@@ -51,6 +54,11 @@ class GuzzleHttpProvider implements IHttpProvider
         return $this;
     }
 
+    public function setExtraOptions($options)
+    {
+        $this->extra_options = $options;
+    }
+
     /**
     * Executes the HTTP request using Guzzle
     *
@@ -64,8 +72,13 @@ class GuzzleHttpProvider implements IHttpProvider
         $options = [
             'headers' => $request->headers,
             'stream' =>  $request->returnsStream,
-            'timeout' => $this->timeout,
+            'timeout' => $this->timeout
         ];
+
+        foreach ($this->extra_options as $key => $value)
+        {
+            $options[$key] = $value;
+        }
 
         if ($request->method == HttpMethod::POST || $request->method == HttpMethod::PUT || $request->method == HttpMethod::PATCH) {
             $options['body'] = $request->body;
@@ -79,5 +92,4 @@ class GuzzleHttpProvider implements IHttpProvider
 
         return $result;
     }
-
 }
