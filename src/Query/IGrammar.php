@@ -21,6 +21,29 @@ interface IGrammar
     public function getOperators();
 
     /**
+     * Get the grammar specific functions.
+     *
+     * @return array
+     */
+    public function getFunctions();
+
+    /**
+     * Get the grammar specific operators and functions.
+     *
+     * @return array
+     */
+    public function getOperatorsAndFunctions();
+
+    /**
+     * Prepare the appropriate URI value for a where value.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public function prepareValue($value);
+
+    /**
      * Get the appropriate query parameter place-holder for a value.
      *
      * @param mixed $value
