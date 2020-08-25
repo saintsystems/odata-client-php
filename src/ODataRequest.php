@@ -305,6 +305,7 @@ class ODataRequest implements IODataRequest
     {
         $headers = [
             //RequestHeader::HOST => $this->client->getBaseUrl(),
+            RequestHeader::ACCEPT => 'application/json',
             RequestHeader::CONTENT_TYPE => 'application/json',
             RequestHeader::ODATA_MAX_VERSION => Constants::MAX_ODATA_VERSION,
             RequestHeader::ODATA_VERSION => Constants::ODATA_VERSION,
