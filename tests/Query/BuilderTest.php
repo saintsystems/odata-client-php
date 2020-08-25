@@ -44,7 +44,7 @@ class BuilderTest extends TestCase
         $builder->from($entitySet);
 
         $expected = $entitySet;
-        $actual = $this->readAttribute($builder, 'entitySet');
+        $actual = $builder->entitySet;
 
         $this->assertEquals($expected, $actual);
 
@@ -84,7 +84,7 @@ class BuilderTest extends TestCase
 
         $builder->from($entitySet);
 
-        $builder->whereKey('12345');
+        $builder->whereKey(12345);
 
         $expected = $entitySet.'(12345)';
         $actual = $builder->toRequest();
@@ -208,7 +208,7 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -222,12 +222,12 @@ class BuilderTest extends TestCase
     {
         $builder = $this->getBuilder();
 
-        $entityId = '1';
+        $entityId = 1;
 
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -246,7 +246,7 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -265,7 +265,7 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -284,7 +284,7 @@ class BuilderTest extends TestCase
         $builder->take($take);
 
         $expected = $take;
-        $actual = $this->readAttribute($builder, 'take');
+        $actual = $builder->take;
 
         $this->assertEquals($expected, $actual);
     }
@@ -298,7 +298,7 @@ class BuilderTest extends TestCase
         $builder->skip($skip);
 
         $expected = $skip;
-        $actual = $this->readAttribute($builder, 'skip');
+        $actual = $builder->skip;
 
         $this->assertEquals($expected, $actual);
     }

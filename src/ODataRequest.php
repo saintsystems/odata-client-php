@@ -221,7 +221,7 @@ class ODataRequest implements IODataRequest
             return $result;
         }
 
-        if (strpos($this->requestUrl, '/$count') !== false) {
+        if ($this->isAggregate()) {
             return $result->getBody()->getContents();
         }
 
@@ -305,14 +305,19 @@ class ODataRequest implements IODataRequest
     {
         $headers = [
             //RequestHeader::HOST => $this->client->getBaseUrl(),
-            RequestHeader::ACCEPT => 'application/json',
-            RequestHeader::CONTENT_TYPE => 'application/json',
+            RequestHeader::CONTENT_TYPE => ContentType::APPLICATION_JSON,
             RequestHeader::ODATA_MAX_VERSION => Constants::MAX_ODATA_VERSION,
             RequestHeader::ODATA_VERSION => Constants::ODATA_VERSION,
             RequestHeader::PREFER => Constants::ODATA_MAX_PAGE_SIZE_DEFAULT,
             RequestHeader::USER_AGENT => 'odata-sdk-php-' . Constants::SDK_VERSION,
             //RequestHeader::AUTHORIZATION => 'Bearer ' . $this->accessToken
         ];
+
+        if (!$this->isAggregate()) {
+            $headers[] = [
+                RequestHeader::ACCEPT => ContentType::APPLICATION_JSON,
+            ];
+        }
         return $headers;
     }
 
@@ -328,6 +333,14 @@ class ODataRequest implements IODataRequest
         $this->addHeadersToRequest($request);
 
         return $request;
+    }
+
+    /**
+     * Returns whether or not the request is an OData aggregate request ($count, etc.)
+     */
+    private function isAggregate()
+    {
+        return strpos($this->requestUrl, '/$count') !== false;
     }
 
     /**

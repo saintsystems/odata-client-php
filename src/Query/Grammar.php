@@ -163,7 +163,7 @@ class Grammar implements IGrammar
 
     protected function wrapKey($entityKey)
     {
-        if (is_uuid($entityKey) || is_numeric($entityKey)) {
+        if (is_uuid($entityKey) || is_int($entityKey)) {
             return $entityKey;
         }
         return "'$entityKey'";
