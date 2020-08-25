@@ -140,9 +140,31 @@ class Grammar implements IGrammar
             return '';
         }
 
-        $entityKey = $this->wrapKey($entityKey);
+        if (is_array($entityKey)) {
+            $entityKey = $this->compileCompositeEntityKey($entityKey);
+        } else {
+            $entityKey = $this->wrapKey($entityKey);
+        }
 
         return "($entityKey)";
+    }
+
+    /**
+     * Compile the composite entity key portion of the query.
+     *
+     * @param Builder $query
+     * @param mixed   $entityKey
+     *
+     * @return string
+     */
+    public function compileCompositeEntityKey($entityKey)
+    {
+        $entityKeys = [];
+        foreach ($entityKey as $key => $value) {
+            $entityKeys[] = $key . '=' . $this->wrapKey($value);
+        }
+
+        return implode(',', $entityKeys);
     }
 
     protected function compileQueryString(Builder $query, $queryString)

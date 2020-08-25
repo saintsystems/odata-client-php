@@ -275,6 +275,23 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityKeyComposite()
+    {
+        $builder = $this->getBuilder();
+
+        $compositeKey = [
+            'Property1' => 'Value1',
+            'Property2' => 'Value2',
+        ];
+
+        $builder->whereKey($compositeKey);
+
+        $expectedUri = "(Property1='Value1',Property2='Value2')";
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
     public function testTake()
     {
         $builder = $this->getBuilder();
