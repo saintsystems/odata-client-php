@@ -15,7 +15,7 @@ class BuilderTest extends TestCase
     protected $baseUrl;
     protected $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->baseUrl = 'https://services.odata.org/V4/TripPinService';
         $this->client = new ODataClient($this->baseUrl);
@@ -44,7 +44,7 @@ class BuilderTest extends TestCase
         $builder->from($entitySet);
 
         $expected = $entitySet;
-        $actual = $this->readAttribute($builder, 'entitySet');
+        $actual = $builder->entitySet;
 
         $this->assertEquals($expected, $actual);
 
@@ -58,6 +58,38 @@ class BuilderTest extends TestCase
 
         $builder = $this->getBuilder();
         $builder->find('russellwhyte');
+    }
+
+    public function testEntitySetFindStringKey()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet);
+
+        $builder->whereKey('russellwhyte');
+
+        $expected = $entitySet.'(\'russellwhyte\')';
+        $actual = $builder->toRequest();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testEntitySetFindNumericKey()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'EntitySet';
+
+        $builder->from($entitySet);
+
+        $builder->whereKey(12345);
+
+        $expected = $entitySet.'(12345)';
+        $actual = $builder->toRequest();
+
+        $this->assertEquals($expected, $actual);
     }
 
     public function testEntitySetWithSelect()
@@ -176,7 +208,7 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -190,12 +222,12 @@ class BuilderTest extends TestCase
     {
         $builder = $this->getBuilder();
 
-        $entityId = '1';
+        $entityId = 1;
 
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -214,7 +246,7 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
@@ -233,11 +265,28 @@ class BuilderTest extends TestCase
         $builder->whereKey($entityId);
 
         $expected = $entityId;
-        $actual = $this->readAttribute($builder, 'entityKey');
+        $actual = $builder->entityKey;
 
         $this->assertEquals($expected, $actual);
 
         $expectedUri = "('$entityId')";
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityKeyComposite()
+    {
+        $builder = $this->getBuilder();
+
+        $compositeKey = [
+            'Property1' => 'Value1',
+            'Property2' => 'Value2',
+        ];
+
+        $builder->whereKey($compositeKey);
+
+        $expectedUri = "(Property1='Value1',Property2='Value2')";
         $actualUri = $builder->toRequest();
 
         $this->assertEquals($expectedUri, $actualUri);
@@ -252,7 +301,7 @@ class BuilderTest extends TestCase
         $builder->take($take);
 
         $expected = $take;
-        $actual = $this->readAttribute($builder, 'take');
+        $actual = $builder->take;
 
         $this->assertEquals($expected, $actual);
     }
@@ -266,7 +315,7 @@ class BuilderTest extends TestCase
         $builder->skip($skip);
 
         $expected = $skip;
-        $actual = $this->readAttribute($builder, 'skip');
+        $actual = $builder->skip;
 
         $this->assertEquals($expected, $actual);
     }

@@ -13,7 +13,7 @@ interface IHttpProvider
      * Sends the request.
      * @param HttpRequestMessage $request The HttpRequestMessage to send.
      *
-     * @return HttpResponseMessage The HttpResponseMessage.
+     * @return mixed object or array of objects
      */
     public function send(HttpRequestMessage $request);
 

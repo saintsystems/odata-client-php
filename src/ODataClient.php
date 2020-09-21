@@ -59,7 +59,7 @@ class ODataClient implements IODataClient
      */
     public function __construct(
         $baseUrl,
-        Closure $authenticationProvider = null,
+        Callable $authenticationProvider = null,
         IHttpProvider $httpProvider = null
     ) {
         $this->setBaseUrl($baseUrl);

@@ -10,7 +10,7 @@ class ODataClientTest extends TestCase
 {
     private $baseUrl;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->baseUrl = 'http://services.odata.org/V4/TripPinService';
     }
@@ -19,7 +19,7 @@ class ODataClientTest extends TestCase
     {
         $odataClient = new ODataClient($this->baseUrl);
         $this->assertNotNull($odataClient);
-        $baseUrl = $this->readAttribute($odataClient, 'baseUrl');
+        $baseUrl = $odataClient->getBaseUrl();
         $this->assertEquals('http://services.odata.org/V4/TripPinService/', $baseUrl);
     }
 

@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
-* Copyright (c) Saint Systems, LLC.  All Rights Reserved.  
-* Licensed under the MIT License.  See License in the project root 
+* Copyright (c) Saint Systems, LLC.  All Rights Reserved.
+* Licensed under the MIT License.  See License in the project root
 * for license information.
-* 
+*
 * OData Constants File
 * PHP version 7
 *
@@ -19,7 +19,7 @@ namespace SaintSystems\OData;
 
 class Constants
 {
-    const SDK_VERSION = '0.1.0';
+    const SDK_VERSION = '0.5.2';
 
     // ODATA Versions to be used when accessing the Web API (see: https://msdn.microsoft.com/en-us/library/gg334391.aspx)
     const MAX_ODATA_VERSION = '4.0';
@@ -29,7 +29,7 @@ class Constants
     const ODATA_ID = '@odata.id';
     const ODATA_NEXT_LINK = '@odata.id';
     const ODATA_VALUE = 'value';
-    
+
     // Default ODATA Paging
     const ODATA_MAX_PAGE_SIZE = 'odata.maxpagesize';
     const ODATA_MAX_PAGE_SIZE_DEFAULT = 25;
