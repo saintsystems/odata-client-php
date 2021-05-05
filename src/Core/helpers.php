@@ -176,6 +176,6 @@ if (!function_exists('http_build_url')) {
 if (!function_exists('is_uuid')) {
     function is_uuid($uuid)
     {
-        return preg_match('/[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}/i', $uuid) == 1;
+        return preg_match('/^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/i', $uuid) == 1;
     }
 }
