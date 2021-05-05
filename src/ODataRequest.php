@@ -156,7 +156,7 @@ class ODataRequest implements IODataRequest
             $this->requestBody = $obj;
         }
         // JSON-encode the model object's property dictionary
-        else if (method_exists($obj, 'getProperties')) {
+        else if (is_object($obj) && method_exists($obj, 'getProperties')) {
             $class = get_class($obj);
             $class = explode("\\", $class);
             $model = strtolower(end($class));
