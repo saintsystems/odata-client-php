@@ -2,7 +2,6 @@
 
 namespace SaintSystems\OData;
 
-use GuzzleHttp\Client;
 use SaintSystems\OData\Exception\ODataException;
 
 /**
@@ -16,13 +15,6 @@ class ODataRequest implements IODataRequest
      * @var string
      */
     protected $requestUrl;
-
-    /**
-     * The Guzzle client used to make the HTTP request
-     *
-     * @var Client
-     */
-    protected $http;
 
     /**
      * An array of headers to send with the request
@@ -195,7 +187,7 @@ class ODataRequest implements IODataRequest
     }
 
     /**
-     * Executes the HTTP request using Guzzle
+     * Executes the HTTP request
      *
      * @throws ODataException if response is invalid
      *
@@ -249,7 +241,7 @@ class ODataRequest implements IODataRequest
     }
 
     /**
-     * Executes the HTTP request asynchronously using Guzzle
+     * Executes the HTTP request asynchronously
      *
      * @param mixed $client The Http client to use in the request
      *
