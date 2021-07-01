@@ -314,9 +314,7 @@ class ODataRequest implements IODataRequest
         ];
 
         if (!$this->isAggregate()) {
-            $headers[] = [
-                RequestHeader::ACCEPT => ContentType::APPLICATION_JSON,
-            ];
+            $headers[RequestHeader::ACCEPT] = RequestHeader::ACCEPT => ContentType::APPLICATION_JSON  ;
         }
         return $headers;
     }
