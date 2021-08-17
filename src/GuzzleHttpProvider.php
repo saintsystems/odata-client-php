@@ -22,6 +22,8 @@ class GuzzleHttpProvider implements IHttpProvider
 
     protected $extra_options;
 
+    protected $additionalHeaders = [];
+
     /**
      * Creates a new HttpProvider
      */
@@ -70,7 +72,7 @@ class GuzzleHttpProvider implements IHttpProvider
     public function send(HttpRequestMessage $request)
     {
         $options = [
-            'headers' => $request->headers,
+            'headers' => array_merge($request->headers, $this->additionalHeaders),
             'stream' =>  $request->returnsStream,
             'timeout' => $this->timeout
         ];
@@ -91,5 +93,14 @@ class GuzzleHttpProvider implements IHttpProvider
         );
 
         return $result;
+    }
+
+    public function setAdditionalHeader($key, $value)
+    {
+        if ($value === null) {
+            unset($this->additionalHeaders[$key]);
+        } else {
+            $this->additionalHeaders[$key] = $value;
+        }
     }
 }

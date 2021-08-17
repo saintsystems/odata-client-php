@@ -232,8 +232,10 @@ class ODataClient implements IODataClient
      *
      * @return IODataRequest
      */
-    public function patch($requestUri, $body)
+    public function patch($requestUri, $body, $ifMatch = null)
     {
+        $this->setIfMatchHeader($ifMatch);
+
         return $this->request(HttpMethod::PATCH, $requestUri, $body);
     }
 
@@ -268,12 +270,9 @@ class ODataClient implements IODataClient
             $request->attachBody($body);
         }
 
-        // TODO: find a better solution for this
-        /*
-        if ($method === 'PATCH' || $method === 'DELETE') {
-            $request->addHeaders(array('If-Match' => '*'));
+        if ($method !== HttpMethod::PATCH) {
+            $this->setIfMatchHeader(null);
         }
-         */
 
         return $request->execute();
     }
@@ -330,5 +329,64 @@ class ODataClient implements IODataClient
     public function setEntityReturnType($entityReturnType)
     {
         $this->entityReturnType = $entityReturnType;
+    }
+
+    /**
+     * Sets If-Match header on HttpProvider.
+     *
+     * @param string $value
+     * @return void
+     */
+    protected function setIfMatchHeader(string $value = null)
+    {
+        $this->getHttpProvider()->setAdditionalHeader('If-Match', $value);
+    }
+
+    /**
+     * Construct ODataClient for DSM
+     *
+     * @param string $tenantCompanyId       Tenant->api_company_id
+     * @param string $tenantName            Tenant->api_tenant
+     * @param string $tenantBaseUrl         Tenant->api_base_url
+     * @param string $tenantUsername        Tenant->api_user
+     * @param string $tenantPassword        Tenant->api_password
+     * @param string $tenantApiVersion      Tenant->api_rest_version
+     * @param boolean $verifySsl            Wether or not to verify ssl certificates
+     * @return ODataClient
+     */
+    public static function dsmFactory(string $tenantCompanyId, string $tenantName, string $tenantBaseUrl, string $tenantUsername, string $tenantPassword, string $tenantApiVersion = 'beta', bool $verifySsl = true)
+    {
+        $provider = new GuzzleHttpProvider();
+        if (!$verifySsl) {
+            $provider->setExtraOptions(['verify' => false]);
+        }
+
+        return new static(
+            rtrim($tenantBaseUrl, '/') . "/api/{$tenantApiVersion}/companies({$tenantCompanyId})",
+            function ($request) use ($tenantUsername, $tenantPassword, $tenantName) {
+                $request->headers = self::formatHeaders($request->headers);
+                $request->headers['Authorization'] = 'Basic ' . base64_encode("{$tenantUsername}:{$tenantPassword}");
+
+                $tenantQueryString = ((strpos($request->requestUri, '?') === false) ? '?': '&') . "tenant={$tenantName}";
+                $request->requestUri .= $tenantQueryString;
+            },
+            $provider
+        );
+    }
+
+    /**
+     * Formats headers correctly
+     *
+     * @param array $headers
+     * @return array
+     */
+    protected static function formatHeaders(array $headers): array
+    {
+        foreach ($headers[0] as $key => $value) {
+            $headers[$key] = $value;
+        }
+        unset($headers[0]);
+
+        return $headers;
     }
 }
