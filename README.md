@@ -4,6 +4,29 @@ See the original repository here: https://github.com/saintsystems/odata-client-p
 
 ## DSM specific additions
 ### Usage
+#### Install package
+In your ```composer.json``` add this repository.
+Example ```composer.json```
+```json
+{
+    "name": "test/test",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jmadsm/odata-client"
+        }
+    ],
+    "require": {
+        ...
+    }
+    ...
+}
+```
+
+Once this repository has been added, you can install this package by running the following command:
+```sh
+composer require saintsystems/odata-client:dev-jma
+```
 
 #### Constructing client
 ```php
