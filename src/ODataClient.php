@@ -374,6 +374,11 @@ class ODataClient implements IODataClient
         );
     }
 
+    public static function dsmFactoryFromTenantArray(array $tenant, bool $verifySsl = true)
+    {
+        return static::dsmFactory($tenant['api_company_id'], $tenant['api_tenant'], $tenant['api_base_url'], $tenant['api_user'], $tenant['api_password'], $tenant['api_rest_version'], $verifySsl);
+    }
+
     /**
      * Formats headers correctly
      *
