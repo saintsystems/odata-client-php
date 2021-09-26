@@ -482,6 +482,37 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWithWhereColumn()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereColumn('FirstName', 'LastName');
+
+        $expectedUri = 'People?$filter=FirstName eq LastName';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithOrWhereColumnO()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->where('FirstName', '=', 'Russell')
+                ->orWhereColumn('FirstName', 'LastName');
+
+        $expectedUri = 'People?$filter=FirstName eq \'Russell\' or FirstName eq LastName';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
     public function testEntityWithWhereNull()
     {
         $builder = $this->getBuilder();
