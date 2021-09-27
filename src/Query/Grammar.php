@@ -285,6 +285,11 @@ class Grammar implements IGrammar
             return $where['boolean'].' '.$this->{"where{$where['type']}"}($query, $where);
         })->all();
     }
+    
+    protected function whereRaw(Builder $query, $where)
+    {
+        return $where['rawString'];
+    }
 
     /**
      * Format the where clause statements into one string.
