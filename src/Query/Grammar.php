@@ -317,6 +317,18 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Compile a where clause comparing two columns.
+     *
+     * @param  Builder $query
+     * @param  array   $where
+     * @return string
+     */
+    protected function whereColumn(Builder $query, $where)
+    {
+        return $where['first'].' '.$this->getOperatorMapping($where['operator']).' '.$where['second'];
+    }
+
+    /**
      * Compile a "where function" clause.
      *
      * @param  Builder  $query
