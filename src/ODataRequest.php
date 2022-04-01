@@ -222,14 +222,14 @@ class ODataRequest implements IODataRequest
         }
 
         if ($this->isAggregate()) {
-            return $result->getBody()->getContents();
+            return (string) $result->getBody();
         }
 
         // Wrap response in ODataResponse layer
         try {
             $response = new ODataResponse(
                 $this,
-                $result->getBody()->getContents(),
+                (string) $result->getBody(),
                 $result->getStatusCode(),
                 $result->getHeaders()
             );
@@ -275,7 +275,7 @@ class ODataRequest implements IODataRequest
             function ($result) {
                 $response = new ODataResponse(
                     $this,
-                    $result->getBody()->getContents(),
+                    (string) $result->getBody(),
                     $result->getStatusCode(),
                     $result->getHeaders()
                 );
