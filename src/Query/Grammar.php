@@ -286,6 +286,11 @@ class Grammar implements IGrammar
         })->all();
     }
 
+    protected function whereRaw(Builder $query, $where)
+    {
+        return $where['rawString'];
+    }
+
     /**
      * Format the where clause statements into one string.
      *

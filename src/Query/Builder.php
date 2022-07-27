@@ -550,6 +550,25 @@ class Builder
         return $this->where($column, $operator, $value, 'or');
     }
 
+    public function whereRaw($rawString, $boolean = 'and')
+    {
+        // We will add this where clause into this array of clauses that we
+        // are building for the query. All of them will be compiled via a grammar
+        // once the query is about to be executed and run against the database.
+        $type = 'Raw';
+
+        $this->wheres[] = compact(
+            'type', 'rawString', 'boolean'
+        );
+
+        return $this;
+    }
+
+    public function orWhereRaw($rawString)
+    {
+        return $this->whereRaw($rawString, 'or');
+    }
+
     /**
      * Add a "where" clause comparing two columns to the query.
      *
