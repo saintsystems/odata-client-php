@@ -762,10 +762,10 @@ class Builder
     }
 
     /**
-     * Execute a query for a single record by ID.
+     * Execute a query for a single record by ID. Single and multi-part IDs are supported.
      *
-     * @param int   $id
-     * @param array $properties
+     * @param int|string|array      $id the value of the ID or an associative array in case of multi-part IDs
+     * @param array                 $properties
      *
      * @return \stdClass|array|null
      *
