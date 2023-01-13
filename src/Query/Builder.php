@@ -751,6 +751,66 @@ class Builder
         return $this->whereNotNull($column, 'or');
     }
 
+
+
+
+    /**
+     * Add a "where in" clause to the query.
+     *
+     * @param  string  $column
+     * @param  array   $list
+     * @param  string  $boolean
+     * @param  bool    $not
+     * @return $this
+     */
+    public function whereIn($column, $list, $boolean = 'and', $not = false)
+    {
+        $type = $not ? 'NotIn' : 'In';
+
+        $this->wheres[] = compact('type', 'column', 'list', 'boolean');
+
+        return $this;
+    }
+
+    /**
+     * Add an "or where in" clause to the query.
+     *
+     * @param  string  $column
+     * @param  array   $list
+     * @return Builder|static
+     */
+    public function orWhereIn($column, $list)
+    {
+        return $this->whereIn($column, $list, 'or');
+    }
+
+    /**
+     * Add a "where not in" clause to the query.
+     *
+     * @param  string  $column
+     * @param  array   $list
+     * @param  string  $boolean
+     * @return Builder|static
+     */
+    public function whereNotIn($column, $list, $boolean = 'and')
+    {
+        return $this->whereIn($column, $list, $boolean, true);
+    }
+
+    /**
+     * Add an "or where not in" clause to the query.
+     *
+     * @param  string  $column
+     * @param  array   $list
+     * @return Builder|static
+     */
+    public function orWhereNotIn($column, $list)
+    {
+        return $this->whereNotIn($column, $list, 'or');
+    }
+
+
+
     /**
      * Get the HTTP Request representation of the query.
      *

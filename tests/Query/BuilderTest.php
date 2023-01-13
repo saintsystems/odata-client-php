@@ -543,6 +543,36 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWithWhereIn()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereIn('FirstName', ['John', 'Jane']);
+
+        $expectedUri = 'People?$filter=FirstName in (\'John\',\'Jane\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereNotIn()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereNotIn('FirstName', ['John', 'Jane']);
+
+        $expectedUri = 'People?$filter=not(FirstName in (\'John\',\'Jane\'))';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
     public function testEntityWhereString()
     {
         $builder = $this->getBuilder();

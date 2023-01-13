@@ -605,6 +605,30 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Compile a "where in" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereIn(Builder $query, $where)
+    {
+        return $where['column'] . ' in (\'' . implode('\',\'', $where['list'])  . '\')';
+    }
+
+    /**
+     * Compile a "where not in" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereNotIn(Builder $query, $where)
+    {
+        return 'not(' . $where['column'] . ' in (\'' . implode('\',\'', $where['list'])  . '\'))';
+    }
+
+    /**
      * Append query param to existing uri
      *
      * @param string $value
