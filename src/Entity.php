@@ -17,6 +17,7 @@ namespace SaintSystems\OData;
 // use Exception;
 use ArrayAccess;
 use Carbon\CarbonInterface;
+use Carbon\Carbon;
 // use LogicException;
 // use JsonSerializable;
 use DateTimeInterface;
