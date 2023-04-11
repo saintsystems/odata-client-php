@@ -204,7 +204,7 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param array  $bindings
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function get($requestUri, $bindings = [])
     {
@@ -217,7 +217,7 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $postData
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function post($requestUri, $postData)
     {
@@ -230,7 +230,7 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $body
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function patch($requestUri, $body)
     {
@@ -242,7 +242,7 @@ class ODataClient implements IODataClient
      *
      * @param string $requestUri
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function delete($requestUri)
     {
@@ -256,7 +256,7 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $body
      *
-     * @return IODataRequest
+     * @return IODataResponse
      *
      * @throws ODataException
      */
