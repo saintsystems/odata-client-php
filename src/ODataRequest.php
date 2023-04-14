@@ -199,8 +199,9 @@ class ODataRequest implements IODataRequest
      *
      * @throws ODataException if response is invalid
      *
-     * @return mixed object or array of objects
-     *         of class $returnType
+     * @return array array of objects
+     *         of class $returnType if $returnType !== false
+     *         of class ODataResponse if $returnType === false
      */
     public function execute()
     {
@@ -238,7 +239,7 @@ class ODataRequest implements IODataRequest
         }
 
         // If no return type is specified, return DynamicsResponse
-        $returnObj = $response;
+        $returnObj = [$response];
 
         $returnType = is_null($this->returnType) ? Entity::class : $this->returnType;
 
