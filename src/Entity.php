@@ -817,7 +817,7 @@ class Entity implements ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return bool
      */
-    public function offsetExists(mixed $offset): bool
+    public function offsetExists($offset): bool
     {
         return isset($this->$offset);
     }
@@ -828,7 +828,7 @@ class Entity implements ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return mixed
      */
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet($offset): mixed
     {
         return $this->$offset;
     }
@@ -840,7 +840,7 @@ class Entity implements ArrayAccess, Arrayable
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet($offset, $value): void
     {
         $this->$offset = $value;
     }
@@ -851,7 +851,7 @@ class Entity implements ArrayAccess, Arrayable
      * @param  mixed  $offset
      * @return void
      */
-    public function offsetUnset(mixed $offset): void
+    public function offsetUnset($offset): void
     {
         unset($this->$offset);
     }
