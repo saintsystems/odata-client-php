@@ -8,10 +8,17 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['7.3', '7.4']
+        php-versions: ['7.3', '7.4', '8.0', '8.1', '8.2']
     steps:
       - uses: actions/checkout@v3
       - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Check PHP Version
+        run: php -v
       - uses: php-actions/composer@v6
       - run: echo "Composer dependencies have been installed"
-      - run: vendor/bin/phpunit
+      - name: Run Tests
+        run: vendor/bin/phpunit
