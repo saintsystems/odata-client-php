@@ -3,7 +3,8 @@ name: CI
 on: [push]
 
 jobs:
-  build-test:
+  test:
+    name: PHP ${{ matrix.php-versions }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
