@@ -76,7 +76,7 @@ class ODataResponse
         $this->body = $body;
         $this->httpStatusCode = $httpStatusCode;
         $this->headers = $headers;
-        $this->decodedBody = $this->decodeBody();
+        $this->decodedBody = $this->body ? $this->decodeBody() : [];
     }
 
     /**
