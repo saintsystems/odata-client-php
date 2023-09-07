@@ -64,6 +64,24 @@ class ODataClientTest extends TestCase
         $this->assertTrue($people->count() == 2);
     }
 
+    public function testODataClientFromQueryWithWhereOrWhereArrays()
+    {
+        $odataClient = new ODataClient($this->baseUrl);
+        $this->assertNotNull($odataClient);
+        $people = $odataClient->from('People')
+                              ->where([
+                                ['FirstName', 'Russell'],
+                                ['LastName', 'Whyte'],
+                              ])
+                              ->orWhere([
+                                ['FirstName', 'Scott'],
+                                ['LastName', 'Ketchum'],
+                              ])
+                              ->get();
+        $this->assertTrue(is_array($people->toArray()));
+        $this->assertTrue($people->count() == 2);
+    }
+
     public function testODataClientFind()
     {
         $odataClient = new ODataClient($this->baseUrl);
