@@ -2,7 +2,7 @@
 
 namespace SaintSystems\OData\Query;
 
-use SaintSystems\OData\IODataRequest;
+use SaintSystems\OData\IODataResponse;
 
 interface IProcessor
 {
@@ -10,9 +10,9 @@ interface IProcessor
      * Process the results of a "select" query.
      *
      * @param Builder       $query
-     * @param IODataRequest $results
+     * @param IODataResponse $results
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function processSelect(Builder $query, $results);
 }

@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
-use SaintSystems\OData\IODataRequest;
 use SaintSystems\OData\QueryOptions;
 
 class Builder
@@ -1018,7 +1017,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataReponse
      */
     protected function runGet()
     {
@@ -1030,7 +1029,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runPatch($body)
     {
@@ -1042,7 +1041,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runPost($body)
     {
@@ -1054,7 +1053,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runDelete()
     {
@@ -1084,7 +1083,7 @@ class Builder
      *
      * @param array $values
      *
-     * @return bool
+     * @return IODataResponse
      */
     public function insert(array $values)
     {

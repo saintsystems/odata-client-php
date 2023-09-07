@@ -54,9 +54,51 @@ interface IODataClient
      * @param $requestUri
      * @param array $bindings
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function get($requestUri, $bindings = []);
+
+    /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataResponse
+     */
+    public function post($requestUri, $postData);
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataResponse
+     */
+    public function patch($requestUri, $body);
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     *
+     * @return IODataResponse
+     */
+    public function delete($requestUri);
+
+    /**
+     * Return an ODataRequest
+     *
+     * @param string $method
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataResponse
+     *
+     * @throws ODataException
+     */
+    public function request($method, $requestUri, $body = null);
 
     /**
      * Get the query grammar used by the connection.
