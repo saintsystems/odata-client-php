@@ -51,12 +51,34 @@ interface IODataClient
     public function query();
 
     /**
+     * Run a GET HTTP request against the service.
+     *
      * @param $requestUri
      * @param array $bindings
      *
      * @return IODataRequest
      */
     public function get($requestUri, $bindings = []);
+
+    /**
+     * Run a GET HTTP request against the service.
+     *
+     * @param $requestUri
+     * @param array $bindings
+     *
+     * @return IODataRequest
+     */
+    public function getNextPage($requestUri, $bindings = []);
+
+    /**
+     * Run a GET HTTP request against the service and return a generator
+     *
+     * @param $requestUri
+     * @param array $bindings
+     *
+     * @return IODataRequest
+     */
+    public function cursor($requestUri, $bindings = []);
 
     /**
      * Get the query grammar used by the connection.

@@ -228,7 +228,7 @@ class ODataClient implements IODataClient
     }
 
     /**
-     * Run a GET HTTP request against the service and return a generator
+     * Run a GET HTTP request against the service and return a generator.
      *
      * @param string $requestUri
      * @param array  $bindings
