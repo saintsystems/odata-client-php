@@ -27,7 +27,7 @@ class Constants
 
     // Values/Keys in OData Responses
     const ODATA_ID = '@odata.id';
-    const ODATA_NEXT_LINK = '@odata.id';
+    const ODATA_NEXT_LINK = '@odata.nextLink';
     const ODATA_VALUE = 'value';
 
     // Default ODATA Paging
