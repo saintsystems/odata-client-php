@@ -9,6 +9,7 @@ use SaintSystems\OData\Query\Grammar;
 use SaintSystems\OData\Query\IGrammar;
 use SaintSystems\OData\Query\IProcessor;
 use SaintSystems\OData\Query\Processor;
+use Illuminate\Support\LazyCollection;
 
 class ODataClient implements IODataClient
 {
@@ -208,7 +209,48 @@ class ODataClient implements IODataClient
      */
     public function get($requestUri, $bindings = [])
     {
+        list($response, $nextPage) = $this->getNextPage($requestUri, $bindings);
+        return $response;
+    }
+
+    /**
+     * Run a GET HTTP request against the service.
+     *
+     * @param string $requestUri
+     * @param array  $bindings
+     * @param array  $skipToken
+     *
+     * @return IODataRequest
+     */
+    public function getNextPage($requestUri, $bindings = [])
+    {
         return $this->request(HttpMethod::GET, $requestUri);
+    }
+
+    /**
+     * Run a GET HTTP request against the service and return a generator
+     *
+     * @param string $requestUri
+     * @param array  $bindings
+     *
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function cursor($requestUri, $bindings = [])
+    {
+        return LazyCollection::make(function() use($requestUri, $bindings) {
+
+            $nextPage = $requestUri;
+
+            while (!is_null($nextPage)) {
+                list($data, $nextPage) = $this->getNextPage($nextPage, $bindings);
+
+                if (!is_null($nextPage)) {
+                    $nextPage = str_replace($this->baseUrl, '', $nextPage);
+                }
+
+                yield from $data;
+            }
+        });
     }
 
     /**
@@ -267,13 +309,6 @@ class ODataClient implements IODataClient
         if ($body) {
             $request->attachBody($body);
         }
-
-        // TODO: find a better solution for this
-        /*
-        if ($method === 'PATCH' || $method === 'DELETE') {
-            $request->addHeaders(array('If-Match' => '*'));
-        }
-         */
 
         return $request->execute();
     }

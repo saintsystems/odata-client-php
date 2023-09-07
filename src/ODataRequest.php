@@ -223,7 +223,7 @@ class ODataRequest implements IODataRequest
         }
 
         if ($this->isAggregate()) {
-            return (string) $result->getBody();
+            return [(string) $result->getBody(), null];
         }
 
         // Wrap response in ODataResponse layer
@@ -238,7 +238,7 @@ class ODataRequest implements IODataRequest
             throw new ODataException(Constants::UNABLE_TO_PARSE_RESPONSE);
         }
 
-        // If no return type is specified, return DynamicsResponse
+        // If no return type is specified, return ODataResponse
         $returnObj = [$response];
 
         $returnType = is_null($this->returnType) ? Entity::class : $this->returnType;
@@ -246,7 +246,9 @@ class ODataRequest implements IODataRequest
         if ($returnType) {
             $returnObj = $response->getResponseAsObject($returnType);
         }
-        return $returnObj;
+        $nextLink = $response->getNextLink();
+        //return $returnObj;
+        return [$returnObj, $nextLink];
     }
 
     /**
@@ -349,6 +351,11 @@ class ODataRequest implements IODataRequest
     private function addHeadersToRequest(HttpRequestMessage $request)
     {
         $request->headers = array_merge($this->headers, $request->headers);
+        if (strpos($request->requestUri, '/$count') !== false) {
+            $request->headers = array_filter($request->headers, function($key) {
+                return $key !== RequestHeader::PREFER;
+             }, ARRAY_FILTER_USE_KEY);
+        }
     }
 
     /**

@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
-* Copyright (c) Saint Systems, LLC.  All Rights Reserved.  
-* Licensed under the MIT License.  See License in the project root 
+* Copyright (c) Saint Systems, LLC.  All Rights Reserved.
+* Licensed under the MIT License.  See License in the project root
 * for license information.
-* 
+*
 * ODataResponse File
 * PHP version 7
 *
@@ -32,7 +32,7 @@ class ODataResponse
     * @var object
     */
     public $request;
-    
+
     /**
     * The body of the response
     *
@@ -41,7 +41,7 @@ class ODataResponse
     private $body;
 
     /**
-    * The body of the response, 
+    * The body of the response,
     * decoded into an array
     *
     * @var array(string)
@@ -164,20 +164,34 @@ class ODataResponse
     }
 
     /**
+    * Gets the @odata.nextLink of a response object from OData
+    *
+    * @return string next link, if provided
+    */
+    public function getNextLink()
+    {
+        if (array_key_exists(Constants::ODATA_NEXT_LINK, $this->getBody())) {
+            $nextLink = $this->getBody()[Constants::ODATA_NEXT_LINK];
+            return $nextLink;
+        }
+        return null;
+    }
+
+    /**
     * Gets the skip token of a response object from OData
     *
     * @return string skip token, if provided
     */
     public function getSkipToken()
     {
-        if (array_key_exists(Constants::ODATA_NEXT_LINK, $this->getBody())) {
-            $nextLink = $this->getBody()[Constants::ODATA_NEXT_LINK];
-            $url = explode("?", $nextLink)[1];
-            $url = explode("skiptoken=", $url);
-            if (count($url) > 1) {
-                return $url[1];
-            }
+        $nextLink = $this->getNextLink();
+        if (is_null($nextLink)) {
             return null;
+        };
+        $url = explode("?", $nextLink)[1];
+        $url = explode("skiptoken=", $url);
+        if (count($url) > 1) {
+            return $url[1];
         }
         return null;
     }

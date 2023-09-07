@@ -5,6 +5,7 @@ namespace SaintSystems\OData\Query;
 use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
@@ -120,6 +121,13 @@ class Builder
      * @var int
      */
     public $skip;
+
+    /**
+     * The skiptoken.
+     *
+     * @var int
+     */
+    public $skiptoken;
 
     /**
      * All of the available clause operators.
@@ -880,6 +888,19 @@ class Builder
     }
 
     /**
+     * Set the "$skiptoken" value of the query.
+     *
+     * @param int $value
+     *
+     * @return Builder|static
+     */
+    public function skipToken($value)
+    {
+        $this->skiptoken = $value;
+        return $this;
+    }
+
+    /**
      * Set the "$top" value of the query.
      *
      * @param int $value
@@ -1025,6 +1046,20 @@ class Builder
         return $this->client->get(
             $this->grammar->compileSelect($this), $this->getBindings()
         );
+    }
+
+    /**
+     * Get a lazy collection for the given request.
+     *
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function cursor()
+    {
+        return new LazyCollection(function() {
+            yield from $this->client->cursor(
+                $this->grammar->compileSelect($this), $this->getBindings()
+            );
+        });
     }
 
     /**
