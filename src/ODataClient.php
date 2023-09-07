@@ -53,6 +53,20 @@ class ODataClient implements IODataClient
     private $entityReturnType;
 
     /**
+     * The page size
+     *
+     * @var int
+     */
+    private $pageSize;
+
+    /**
+     * The entityKey to be found
+     *
+     * @var mixed
+     */
+    private $entityKey;
+
+    /**
      * Constructs a new ODataClient.
      * @param string                  $baseUrl                The base service URL.
      * @param IAuthenticationProvider $authenticationProvider The IAuthenticationProvider for authenticating request messages.
@@ -365,5 +379,47 @@ class ODataClient implements IODataClient
     public function setEntityReturnType($entityReturnType)
     {
         $this->entityReturnType = $entityReturnType;
+    }
+
+    /**
+     * Set the odata.maxpagesize value of the request.
+     *
+     * @param int $pageSize
+     *
+     * @return IODataClient
+     */
+    public function setPageSize($pageSize) {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+
+    /**
+     * Gets the page size
+     *
+     * @return int
+     */
+    public function getPageSize() {
+        return $this->pageSize;
+    }
+
+    /**
+     * Set the entityKey to be found.
+     *
+     * @param mixed $entityKey
+     *
+     * @return IODataClient
+     */
+    public function setEntityKey($entityKey) {
+        $this->entityKey = $entityKey;
+        return $this;
+    }
+
+    /**
+     * Gets the entity key
+     *
+     * @return mixed
+     */
+    public function getEntityKey() {
+        return $this->entityKey;
     }
 }

@@ -139,14 +139,20 @@ class ODataClientTest extends TestCase
     public function testODataClientLazyCollection()
     {
         $odataClient = new ODataClient($this->baseUrl, function($request) {
-            $request->headers[RequestHeader::PREFER] = Constants::ODATA_MAX_PAGE_SIZE . '=' . 8;
+            //$request->headers[RequestHeader::PREFER] = Constants::ODATA_MAX_PAGE_SIZE . '=' . 8;
         });
-        $data = $odataClient->from('People')->cursor();
+
+        $pageSize = 8;
+
+        $data = $odataClient->from('People')->pageSize($pageSize)->cursor();
 
         $expectedCount = 20;
 
         $this->assertInstanceOf(LazyCollection::class, $data);
         $this->assertEquals($data->count(), $expectedCount);
+
+        $this->assertInstanceOf(LazyCollection::class, $data);
+        $this->assertEquals(count($data->toArray()), $pageSize);
 
         $first = $data->first();
         $this->assertInstanceOf(Entity::class, $first);
@@ -175,5 +181,12 @@ class ODataClientTest extends TestCase
         $seventeenth = $data->skip(16)->first();
         $this->assertInstanceOf(Entity::class, $seventeenth);
         $this->assertEquals($seventeenth->UserName, 'sandyosborn');
+
+        $lastPage = $data->skip(16);
+        $this->assertEquals(count($lastPage->toArray()), 4);
+
+        $data->each(function ($person) {
+            $this->assertInstanceOf(Entity::class, $person);
+        });
     }
 }

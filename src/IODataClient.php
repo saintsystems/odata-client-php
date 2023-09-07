@@ -14,6 +14,38 @@ interface IODataClient
     public function getAuthenticationProvider();
 
     /**
+     * Set the odata.maxpagesize value of the request.
+     *
+     * @param int $pageSize
+     *
+     * @return IODataClient
+     */
+    public function setPageSize($pageSize);
+
+    /**
+     * Gets the page size
+     *
+     * @return int
+     */
+    public function getPageSize();
+
+    /**
+     * Set the entityKey to be found.
+     *
+     * @param mixed $entityKey
+     *
+     * @return IODataClient
+     */
+    public function setEntityKey($entityKey);
+
+    /**
+     * Gets the entity key
+     *
+     * @return mixed
+     */
+    public function getEntityKey();
+
+    /**
      * Gets the base URL for requests of the client.
      * @var string
      */

@@ -116,6 +116,13 @@ class Builder
     public $take;
 
     /**
+     * The desired page size.
+     *
+     * @var int
+     */
+    public $pageSize;
+
+    /**
      * The number of records to skip.
      *
      * @var int
@@ -234,7 +241,7 @@ class Builder
     public function whereKey($id)
     {
         $this->entityKey = $id;
-
+        $this->client->setEntityKey($this->entityKey);
         return $this;
     }
 
@@ -910,6 +917,20 @@ class Builder
     public function take($value)
     {
         $this->take = $value;
+        return $this;
+    }
+
+    /**
+     * Set the desired pagesize of the query;
+     *
+     * @param int $value
+     *
+     * @return Builder|static
+     */
+    public function pageSize($value)
+    {
+        $this->pageSize = $value;
+        $this->client->setPageSize($this->pageSize);
         return $this;
     }
 
