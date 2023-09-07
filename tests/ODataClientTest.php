@@ -118,31 +118,21 @@ class ODataClientTest extends TestCase
         $page1response = $odataClient->from('People')->get()->first();
         $page1results = collect($page1response->getResponseAsObject(Entity::class));
         $this->assertEquals($page1results->count(), 8);
-        // $page1results->each(function($person) {
-        //     echo PHP_EOL . $person->FirstName . ' ' . $person->LastName;
-        // });
-        // echo PHP_EOL;
+
         $page1skiptoken = $page1response->getSkipToken();
         if ($page1skiptoken) {
             $page2response = $odataClient->from('People')->skiptoken($page1skiptoken)->get()->first();
             $page2results = collect($page2response->getResponseAsObject(Entity::class));
             $page2skiptoken = $page2response->getSkipToken();
             $this->assertEquals($page2results->count(), 8);
-            // $page2results->each(function($person) {
-            //     echo PHP_EOL . $person->FirstName . ' ' . $person->LastName;
-            // });
-            // echo PHP_EOL;
         }
+
         if ($page2skiptoken) {
             $page3response = $odataClient->from('People')->skiptoken($page2skiptoken)->get()->first();
             $page3results = collect($page3response->getResponseAsObject(Entity::class));
             $page3skiptoken = $page3response->getSkipToken();
             $this->assertEquals($page3results->count(), 4);
             $this->assertNull($page3skiptoken);
-            // $page3results->each(function($person) {
-            //     echo PHP_EOL . $person->FirstName . ' ' . $person->LastName;
-            // });
-            // echo PHP_EOL;
         }
     }
 
