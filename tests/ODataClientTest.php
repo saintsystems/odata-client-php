@@ -295,4 +295,15 @@ class ODataClientTest extends TestCase
 
         $this->assertEquals($expectedCount, $counter);
     }
+
+    public function testODataClientCursorPageSizeOf20ShouldReturnAllEntities()
+    {
+        $odataClient = new ODataClient($this->baseUrl);
+
+        $pageSize = 20;
+
+        $data = $odataClient->from('People')->pageSize($pageSize)->cursor();
+
+        $this->assertEquals($pageSize, count($data->toArray()));
+    }
 }
