@@ -1,16 +1,18 @@
 <?php
+
 /**
-* Copyright (c) Saint Systems, LLC.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
-*
-* OData Entity File
-* PHP version 7
-*
-* @category  Library
-* @package   SaintSystems.OData
-* @copyright 2017 Saint Systems, LLC
-* @license   https://opensource.org/licenses/MIT MIT License
-* @version   GIT: 0.1.0
-*/
+ * Copyright (c) Saint Systems, LLC.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
+ *
+ * OData Entity File
+ * PHP version 7
+ *
+ * @category  Library
+ * @package   SaintSystems.OData
+ * @copyright 2017 Saint Systems, LLC
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @version   GIT: 0.1.0
+ */
+
 namespace SaintSystems\OData;
 
 // use Closure;
@@ -28,13 +30,13 @@ use Illuminate\Support\Facades\Date;
 use SaintSystems\OData\Exception\MassAssignmentException;
 
 /**
-* Entity class
-*
-* @package   SaintSystems.OData
-* @copyright 2017 Saint Systems, LLC
-* @license   https://opensource.org/licenses/MIT MIT License
-* @version   Release: 0.1.0
-*/
+ * Entity class
+ *
+ * @package   SaintSystems.OData
+ * @copyright 2017 Saint Systems, LLC
+ * @license   https://opensource.org/licenses/MIT MIT License
+ * @version   Release: 0.1.0
+ */
 class Entity implements ArrayAccess, Arrayable
 {
     /**
@@ -124,7 +126,7 @@ class Entity implements ArrayAccess, Arrayable
      *
      * @var array
      */
-    protected $guarded = [];//['*'];
+    protected $guarded = []; //['*'];
 
     /**
      * The properties that should be mutated to dates.
@@ -186,12 +188,12 @@ class Entity implements ArrayAccess, Arrayable
     private $entity;
 
     /**
-    * Construct a new Entity
-    *
-    * @param array $properties A list of properties to set
-    *
-    * @return Entity
-    */
+     * Construct a new Entity
+     *
+     * @param array $properties A list of properties to set
+     *
+     * @return Entity
+     */
     function __construct($properties = array())
     {
         $this->bootIfNotBooted();
@@ -210,7 +212,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     protected function bootIfNotBooted()
     {
-        if (! isset(static::$booted[static::class])) {
+        if (!isset(static::$booted[static::class])) {
             static::$booted[static::class] = true;
 
             // $this->fireModelEvent('booting', false);
@@ -241,7 +243,7 @@ class Entity implements ArrayAccess, Arrayable
         $class = static::class;
 
         foreach (class_uses_recursive($class) as $trait) {
-            if (method_exists($class, $method = 'boot'.class_basename($trait))) {
+            if (method_exists($class, $method = 'boot' . class_basename($trait))) {
                 forward_static_call([$class, $method]);
             }
         }
@@ -307,7 +309,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     protected function fillableFromArray(array $properties)
     {
-        if (count($this->getFillable()) > 0 && ! static::$unguarded) {
+        if (count($this->getFillable()) > 0 && !static::$unguarded) {
             return array_intersect_key($properties, array_flip($this->getFillable()));
         }
 
@@ -463,7 +465,7 @@ class Entity implements ArrayAccess, Arrayable
     {
         $this->hidden = array_diff($this->hidden, (array) $properties);
 
-        if (! empty($this->visible)) {
+        if (!empty($this->visible)) {
             $this->addVisible($properties);
         }
 
@@ -699,7 +701,7 @@ class Entity implements ArrayAccess, Arrayable
             return false;
         }
 
-        return empty($this->getFillable()) && ! Str::startsWith($key, '_');
+        return empty($this->getFillable()) && !Str::startsWith($key, '_');
     }
 
     /**
@@ -724,10 +726,10 @@ class Entity implements ArrayAccess, Arrayable
     }
 
     /**
-    * Gets the property dictionary of the Entity
-    *
-    * @return array The list of properties
-    */
+     * Gets the property dictionary of the Entity
+     *
+     * @return array The list of properties
+     */
     public function getProperties()
     {
         return $this->properties;
@@ -865,7 +867,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     public function __isset($key)
     {
-        return ! is_null($this->getProperty($key));
+        return !is_null($this->getProperty($key));
     }
 
     /**
@@ -977,7 +979,7 @@ class Entity implements ArrayAccess, Arrayable
             case 'array':
             case 'json':
                 return $this->fromJson($value);
-            //case 'collection':
+                //case 'collection':
                 //return new BaseCollection($this->fromJson($value));
             case 'date':
                 return $this->asDate($value);
@@ -1004,7 +1006,7 @@ class Entity implements ArrayAccess, Arrayable
         // which simply lets the developers tweak the property as it is set on
         // the entity, such as "json_encoding" a listing of data for storage.
         if ($this->hasSetMutator($key)) {
-            $method = 'set'.Str::studly($key).'Property';
+            $method = 'set' . Str::studly($key) . 'Property';
 
             return $this->{$method}($value);
         }
@@ -1016,7 +1018,7 @@ class Entity implements ArrayAccess, Arrayable
             $value = $this->fromDateTime($value);
         }
 
-        if ($this->isJsonCastable($key) && ! is_null($value)) {
+        if ($this->isJsonCastable($key) && !is_null($value)) {
             $value = $this->asJson($value);
         }
 
@@ -1040,7 +1042,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     public function hasSetMutator($key)
     {
-        return method_exists($this, 'set'.Str::studly($key).'Property');
+        return method_exists($this, 'set' . Str::studly($key) . 'Property');
     }
 
     /**
@@ -1086,7 +1088,8 @@ class Entity implements ArrayAccess, Arrayable
         // when checking the field. We will just return the DateTime right away.
         if ($value instanceof DateTimeInterface) {
             return Date::parse(
-                $value->format('Y-m-d H:i:s.u'), $value->getTimezone()
+                $value->format('Y-m-d H:i:s.u'),
+                $value->getTimezone()
             );
         }
         // If this value is an integer, we will assume it is a UNIX timestamp's value
@@ -1165,7 +1168,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     protected function getDateFormat()
     {
-        return $this->dateFormat;// ?: $this->getConnection()->getQueryGrammar()->getDateFormat();
+        return $this->dateFormat; // ?: $this->getConnection()->getQueryGrammar()->getDateFormat();
     }
 
     /**
@@ -1201,7 +1204,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     public function fromJson($value, $asObject = false)
     {
-        return json_decode($value, ! $asObject);
+        return json_decode($value, !$asObject);
     }
 
     /**
@@ -1313,7 +1316,7 @@ class Entity implements ArrayAccess, Arrayable
     protected function addDatePropertiesToArray(array $properties)
     {
         foreach ($this->getDates() as $key) {
-            if (! isset($properties[$key])) {
+            if (!isset($properties[$key])) {
                 continue;
             }
 
@@ -1338,7 +1341,7 @@ class Entity implements ArrayAccess, Arrayable
             // We want to spin through all the mutated properties for this model and call
             // the mutator for the properties. We cache off every mutated properties so
             // we don't have to constantly check on properties that actually change.
-            if (! array_key_exists($key, $properties)) {
+            if (!array_key_exists($key, $properties)) {
                 continue;
             }
 
@@ -1346,7 +1349,8 @@ class Entity implements ArrayAccess, Arrayable
             // mutated property's actual values. After we finish mutating each of the
             // properties we will return this final array of the mutated properties.
             $properties[$key] = $this->mutatePropertyForArray(
-                $key, $properties[$key]
+                $key,
+                $properties[$key]
             );
         }
 
@@ -1363,7 +1367,7 @@ class Entity implements ArrayAccess, Arrayable
     protected function addCastPropertiesToArray(array $properties, array $mutatedProperties)
     {
         foreach ($this->getCasts() as $key => $value) {
-            if (! array_key_exists($key, $properties) || in_array($key, $mutatedProperties)) {
+            if (!array_key_exists($key, $properties) || in_array($key, $mutatedProperties)) {
                 continue;
             }
 
@@ -1371,14 +1375,17 @@ class Entity implements ArrayAccess, Arrayable
             // then we will serialize the date for the array. This will convert the dates
             // to strings based on the date format specified for these Entity models.
             $properties[$key] = $this->castProperty(
-                $key, $properties[$key]
+                $key,
+                $properties[$key]
             );
 
             // If the property cast was a date or a datetime, we will serialize the date as
             // a string. This allows the developers to customize how dates are serialized
             // into an array without affecting how they are persisted into the storage.
-            if ($properties[$key] &&
-                ($value === 'date' || $value === 'datetime')) {
+            if (
+                $properties[$key] &&
+                ($value === 'date' || $value === 'datetime')
+            ) {
                 $properties[$key] = $this->serializeDate($properties[$key]);
             }
         }
@@ -1403,7 +1410,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     protected function getArrayableAppends()
     {
-        if (! count($this->appends)) {
+        if (!count($this->appends)) {
             return [];
         }
 
@@ -1493,7 +1500,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     public function getProperty($key)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -1504,8 +1511,10 @@ class Entity implements ArrayAccess, Arrayable
         // If the property exists in the properties array or has a "get" mutator we will
         // get the property's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
-        if (array_key_exists($key, $this->properties) ||
-            $this->hasGetMutator($key)) {
+        if (
+            array_key_exists($key, $this->properties) ||
+            $this->hasGetMutator($key)
+        ) {
             return $this->getPropertyValue($key);
         }
 
@@ -1547,8 +1556,10 @@ class Entity implements ArrayAccess, Arrayable
         // If the property is listed as a date, we will convert it to a DateTime
         // instance on retrieval, which makes it quite convenient to work with
         // date fields without having to create a mutator for each property.
-        if (in_array($key, $this->getDates()) &&
-            ! is_null($value)) {
+        if (
+            in_array($key, $this->getDates()) &&
+            !is_null($value)
+        ) {
             return $this->asDateTime($value);
         }
 
@@ -1576,7 +1587,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     public function hasGetMutator($key)
     {
-        return method_exists($this, 'get'.Str::studly($key).'Property');
+        return method_exists($this, 'get' . Str::studly($key) . 'Property');
         //return method_exists($this, 'get_'.$key);
     }
 
@@ -1589,7 +1600,7 @@ class Entity implements ArrayAccess, Arrayable
      */
     protected function mutateProperty($key, $value)
     {
-        return $this->{'get'.Str::studly($key).'Property'}($value);
+        return $this->{'get' . Str::studly($key) . 'Property'}($value);
         // return $this->{'get_'.$key}($value);
     }
 
