@@ -19,7 +19,7 @@ namespace SaintSystems\OData;
 
 class Constants
 {
-    const SDK_VERSION = '0.5.2';
+    const SDK_VERSION = '0.6.7';
 
     // ODATA Versions to be used when accessing the Web API (see: https://msdn.microsoft.com/en-us/library/gg334391.aspx)
     const MAX_ODATA_VERSION = '4.0';

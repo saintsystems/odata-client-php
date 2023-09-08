@@ -50,6 +50,7 @@ class Grammar implements IGrammar
         //'search',
         'orders',
         'skip',
+        'skiptoken',
         'take',
         'totalCount',
     ];
@@ -177,6 +178,7 @@ class Grammar implements IGrammar
                 || isset($query->expands)
                 || isset($query->take)
                 || isset($query->skip)
+                || isset($query->skiptoken)
             )) {
             return $queryString;
         }
@@ -418,6 +420,19 @@ class Grammar implements IGrammar
     protected function compileSkip(Builder $query, $skip)
     {
         return $this->appendQueryParam('$skip=') . (int) $skip;
+    }
+
+    /**
+     * Compile the "$skiptoken" portions of the query.
+     *
+     * @param Builder $query
+     * @param int     $skip
+     *
+     * @return string
+     */
+    protected function compileSkipToken(Builder $query, $skiptoken)
+    {
+        return $this->appendQueryParam('$skiptoken=') . (int) $skiptoken;
     }
 
     /**

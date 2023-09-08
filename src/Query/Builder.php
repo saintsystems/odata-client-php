@@ -5,6 +5,7 @@ namespace SaintSystems\OData\Query;
 use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\LazyCollection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
@@ -115,11 +116,25 @@ class Builder
     public $take;
 
     /**
+     * The desired page size.
+     *
+     * @var int
+     */
+    public $pageSize;
+
+    /**
      * The number of records to skip.
      *
      * @var int
      */
     public $skip;
+
+    /**
+     * The skiptoken.
+     *
+     * @var int
+     */
+    public $skiptoken;
 
     /**
      * All of the available clause operators.
@@ -226,7 +241,7 @@ class Builder
     public function whereKey($id)
     {
         $this->entityKey = $id;
-
+        $this->client->setEntityKey($this->entityKey);
         return $this;
     }
 
@@ -880,6 +895,19 @@ class Builder
     }
 
     /**
+     * Set the "$skiptoken" value of the query.
+     *
+     * @param int $value
+     *
+     * @return Builder|static
+     */
+    public function skipToken($value)
+    {
+        $this->skiptoken = $value;
+        return $this;
+    }
+
+    /**
      * Set the "$top" value of the query.
      *
      * @param int $value
@@ -889,6 +917,20 @@ class Builder
     public function take($value)
     {
         $this->take = $value;
+        return $this;
+    }
+
+    /**
+     * Set the desired pagesize of the query;
+     *
+     * @param int $value
+     *
+     * @return Builder|static
+     */
+    public function pageSize($value)
+    {
+        $this->pageSize = $value;
+        $this->client->setPageSize($this->pageSize);
         return $this;
     }
 
@@ -1025,6 +1067,20 @@ class Builder
         return $this->client->get(
             $this->grammar->compileSelect($this), $this->getBindings()
         );
+    }
+
+    /**
+     * Get a lazy collection for the given request.
+     *
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function cursor()
+    {
+        return new LazyCollection(function() {
+            yield from $this->client->cursor(
+                $this->grammar->compileSelect($this), $this->getBindings()
+            );
+        });
     }
 
     /**

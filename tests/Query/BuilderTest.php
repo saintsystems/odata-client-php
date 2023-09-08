@@ -113,13 +113,13 @@ class BuilderTest extends TestCase
 
         $entitySet = 'People';
 
-        //$expected = 55;
+        $expected = 20;
 
         $actual = $builder->from($entitySet)->count();
 
         $this->assertTrue(is_numeric($actual));
         $this->assertTrue($actual > 0);
-        //$this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     // public function testEntitySetCountWithWhere()
