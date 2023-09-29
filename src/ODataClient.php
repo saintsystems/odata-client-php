@@ -238,7 +238,7 @@ class ODataClient implements IODataClient
      */
     public function getNextPage($requestUri, $bindings = [])
     {
-        return $this->request(HttpMethod::GET, $requestUri);
+        return $this->request(HttpMethod::GET, $requestUri, $bindings);
     }
 
     /**
