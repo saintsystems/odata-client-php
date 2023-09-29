@@ -213,9 +213,12 @@ class ODataRequest implements IODataRequest
      *
      * @throws ODataException if response is invalid
      *
-     * @return array array of objects
-     *         of class $returnType if $returnType !== false
-     *         of class ODataResponse if $returnType === false
+     * @return If $returnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $returnType if $returnType !== false
+     *           .. of class ODataResponse if $returnType === false
+     *         - Second value: string containing the "next link" URL
      */
     public function execute()
     {
