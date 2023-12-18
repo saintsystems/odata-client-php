@@ -432,7 +432,7 @@ class Grammar implements IGrammar
      */
     protected function compileSkipToken(Builder $query, $skiptoken)
     {
-        return $this->appendQueryParam('$skiptoken=') . (int) $skiptoken;
+        return $this->appendQueryParam('$skiptoken=') . $skiptoken;
     }
 
     /**
