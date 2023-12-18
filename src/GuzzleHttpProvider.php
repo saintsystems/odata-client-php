@@ -24,10 +24,12 @@ class GuzzleHttpProvider implements IHttpProvider
 
     /**
      * Creates a new HttpProvider
+     *
+     * @param array $config
      */
-    public function __construct()
+    public function __construct($config = [])
     {
-        $this->http = new Client();
+        $this->http = new Client($config);
         $this->timeout = 0;
         $this->extra_options = array();
     }
@@ -52,6 +54,16 @@ class GuzzleHttpProvider implements IHttpProvider
     {
         $this->timeout = $timeout;
         return $this;
+    }
+
+    /**
+     * Configures the default options for the client.
+     *
+     * @param array $config
+     */
+    public function configureDefaults($config)
+    {
+        $this->http->configureDefaults($config);
     }
 
     public function setExtraOptions($options)
