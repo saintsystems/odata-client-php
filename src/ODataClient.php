@@ -219,7 +219,9 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param array  $bindings
      *
-     * @return IODataRequest
+     * @return array of objects
+     *         .. of class $entityReturnType if $entityReturnType !== false
+     *         .. of class ODataResponse if $entityReturnType === false
      */
     public function get($requestUri, $bindings = [])
     {
@@ -234,7 +236,12 @@ class ODataClient implements IODataClient
      * @param array  $bindings
      * @param array  $skipToken
      *
-     * @return IODataRequest
+     * @return If $entityReturnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $entityReturnType if $entityReturnType !== false
+     *           .. of class ODataResponse if $entityReturnType === false
+     *         - Second value: string containing the "next link" URL
      */
     public function getNextPage($requestUri, $bindings = [])
     {
@@ -273,7 +280,12 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $postData
      *
-     * @return IODataRequest
+     * @return If $entityReturnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $entityReturnType if $entityReturnType !== false
+     *           .. of class ODataResponse if $entityReturnType === false
+     *         - Second value: string containing the "next link" URL
      */
     public function post($requestUri, $postData)
     {
@@ -286,7 +298,12 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $body
      *
-     * @return IODataRequest
+     * @return If $entityReturnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $entityReturnType if $entityReturnType !== false
+     *           .. of class ODataResponse if $entityReturnType === false
+     *         - Second value: string containing the "next link" URL
      */
     public function patch($requestUri, $body)
     {
@@ -298,7 +315,12 @@ class ODataClient implements IODataClient
      *
      * @param string $requestUri
      *
-     * @return IODataRequest
+     * @return If $entityReturnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $entityReturnType if $entityReturnType !== false
+     *           .. of class ODataResponse if $entityReturnType === false
+     *         - Second value: string containing the "next link" URL
      */
     public function delete($requestUri)
     {
@@ -312,7 +334,12 @@ class ODataClient implements IODataClient
      * @param string $requestUri
      * @param mixed  $body
      *
-     * @return IODataRequest
+     * @return If $entityReturnType === 'stream': GuzzleHttp\Psr7\Response
+     *         Otherwise: array with two values
+     *         - First value: array of objects
+     *           .. of class $entityReturnType if $entityReturnType !== false
+     *           .. of class ODataResponse if $entityReturnType === false
+     *         - Second value: string containing the "next link" URL
      *
      * @throws ODataException
      */
