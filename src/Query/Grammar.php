@@ -359,6 +359,16 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Determines if the value is a raw data type
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function isRawDataType($value){
+        return preg_match("/^(raw)(\'[\w\:\-\.]+\')$/i", $value);
+    }
+
+    /**
      * Compile the "order by" portions of the query.
      *
      * @param Builder  $query
@@ -541,8 +551,13 @@ class Grammar implements IGrammar
         // stringify all values if it has NOT an odata enum or special syntax primitive data type
         // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female' or datetime'1970-01-01T00:00:00')
         if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value) && !$this->isSpecialPrimitiveDataType($value)) {
+            // If raw, strip raw keyword, and DO NOT stringify value
+            if($this->isRawDataType($value)) {
+                preg_match("/^(raw)(\'(?P<value>[\w\:\-\.]+)\')$/i", $value, $matches);
+                $value = $matches['value'];
+            }
             // Check if the value is a string and NOT a date
-            if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
+            elseif (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
                 $value = "'".$value."'";
             } else if(is_bool($value)){
                 $value = $value ? 'true' : 'false';
