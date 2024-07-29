@@ -113,7 +113,7 @@ class BuilderTest extends TestCase
 
         $entitySet = 'People';
 
-        $expected = 20;
+        $expected = 21;
 
         $actual = $builder->from($entitySet)->count();
 
