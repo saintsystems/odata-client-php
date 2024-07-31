@@ -128,7 +128,7 @@ class ODataClientTest extends TestCase
             $this->assertEquals($pageSize, $page2results->count());
         }
 
-        $lastPageSize = 5;
+        $lastPageSize = 4;
         if ($page2skiptoken) {
             $page3response = $odataClient->from('People')->skiptoken($page2skiptoken)->get()->first();
             $page3results = collect($page3response->getResponseAsObject(Entity::class));
@@ -157,7 +157,7 @@ class ODataClientTest extends TestCase
 
         $data = $odataClient->from('People')->pageSize($pageSize)->cursor();
 
-        $expectedCount = 21;
+        $expectedCount = 20;
 
         $this->assertEquals($expectedCount, $data->count());
     }
@@ -196,7 +196,7 @@ class ODataClientTest extends TestCase
 
         $last = $data->last();
         $this->assertInstanceOf(Entity::class, $last);
-        $this->assertEquals('Seymour', $last->UserName);
+        $this->assertEquals('kristakemp', $last->UserName);
     }
 
     public function testODataClientCursorSkip1FirstShouldReturnEntityScottKetchum()
@@ -273,7 +273,7 @@ class ODataClientTest extends TestCase
         $data = $odataClient->from('People')->pageSize($pageSize)->cursor();
 
         $lastPage = $data->skip(16);
-        $lastPageSize = 5;
+        $lastPageSize = 4;
         $this->assertEquals($lastPageSize, count($lastPage->toArray()));
     }
 
@@ -285,7 +285,7 @@ class ODataClientTest extends TestCase
 
         $data = $odataClient->from('People')->pageSize($pageSize)->cursor();
 
-        $expectedCount = 21;
+        $expectedCount = 20;
         $counter = 0;
 
         $data->each(function ($person) use(&$counter) {

@@ -131,7 +131,6 @@ class ODataClient implements IODataClient
 
     /**
      * Gets the IAuthenticationProvider for authenticating requests.
-     * @var IAuthenticationProvider
      *
      * @return Closure|IAuthenticationProvider
      */
@@ -232,7 +231,6 @@ class ODataClient implements IODataClient
      *
      * @param string $requestUri
      * @param array  $bindings
-     * @param array  $skipToken
      *
      * @return IODataRequest
      */
