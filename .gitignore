@@ -9,3 +9,5 @@ composer.lock
 Thumbs.db
 /tests/testConfig.json
 .vscode
+.phpunit.result.cache
+release.sh

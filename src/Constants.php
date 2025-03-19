@@ -19,7 +19,7 @@ namespace SaintSystems\OData;
 
 class Constants
 {
-    const SDK_VERSION = '0.5.2';
+    const SDK_VERSION = '0.7.2';
 
     // ODATA Versions to be used when accessing the Web API (see: https://msdn.microsoft.com/en-us/library/gg334391.aspx)
     const MAX_ODATA_VERSION = '4.0';
@@ -27,7 +27,7 @@ class Constants
 
     // Values/Keys in OData Responses
     const ODATA_ID = '@odata.id';
-    const ODATA_NEXT_LINK = '@odata.id';
+    const ODATA_NEXT_LINK = '@odata.nextLink';
     const ODATA_VALUE = 'value';
 
     // Default ODATA Paging

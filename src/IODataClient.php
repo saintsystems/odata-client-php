@@ -14,6 +14,38 @@ interface IODataClient
     public function getAuthenticationProvider();
 
     /**
+     * Set the odata.maxpagesize value of the request.
+     *
+     * @param int $pageSize
+     *
+     * @return IODataClient
+     */
+    public function setPageSize($pageSize);
+
+    /**
+     * Gets the page size
+     *
+     * @return int
+     */
+    public function getPageSize();
+
+    /**
+     * Set the entityKey to be found.
+     *
+     * @param mixed $entityKey
+     *
+     * @return IODataClient
+     */
+    public function setEntityKey($entityKey);
+
+    /**
+     * Gets the entity key
+     *
+     * @return mixed
+     */
+    public function getEntityKey();
+
+    /**
      * Gets the base URL for requests of the client.
      * @var string
      */
@@ -51,12 +83,34 @@ interface IODataClient
     public function query();
 
     /**
+     * Run a GET HTTP request against the service.
+     *
      * @param $requestUri
      * @param array $bindings
      *
      * @return IODataRequest
      */
     public function get($requestUri, $bindings = []);
+
+    /**
+     * Run a GET HTTP request against the service.
+     *
+     * @param $requestUri
+     * @param array $bindings
+     *
+     * @return IODataRequest
+     */
+    public function getNextPage($requestUri, $bindings = []);
+
+    /**
+     * Run a GET HTTP request against the service and return a generator
+     *
+     * @param $requestUri
+     * @param array $bindings
+     *
+     * @return IODataRequest
+     */
+    public function cursor($requestUri, $bindings = []);
 
     /**
      * Get the query grammar used by the connection.

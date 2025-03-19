@@ -9,6 +9,7 @@ use SaintSystems\OData\Query\Grammar;
 use SaintSystems\OData\Query\IGrammar;
 use SaintSystems\OData\Query\IProcessor;
 use SaintSystems\OData\Query\Processor;
+use Illuminate\Support\LazyCollection;
 
 class ODataClient implements IODataClient
 {
@@ -50,6 +51,20 @@ class ODataClient implements IODataClient
      * @var string
      */
     private $entityReturnType;
+
+    /**
+     * The page size
+     *
+     * @var int
+     */
+    private $pageSize;
+
+    /**
+     * The entityKey to be found
+     *
+     * @var mixed
+     */
+    private $entityKey;
 
     /**
      * Constructs a new ODataClient.
@@ -116,7 +131,6 @@ class ODataClient implements IODataClient
 
     /**
      * Gets the IAuthenticationProvider for authenticating requests.
-     * @var IAuthenticationProvider
      *
      * @return Closure|IAuthenticationProvider
      */
@@ -208,7 +222,47 @@ class ODataClient implements IODataClient
      */
     public function get($requestUri, $bindings = [])
     {
-        return $this->request(HttpMethod::GET, $requestUri);
+        list($response, $nextPage) = $this->getNextPage($requestUri, $bindings);
+        return $response;
+    }
+
+    /**
+     * Run a GET HTTP request against the service.
+     *
+     * @param string $requestUri
+     * @param array  $bindings
+     *
+     * @return IODataRequest
+     */
+    public function getNextPage($requestUri, $bindings = [])
+    {
+        return $this->request(HttpMethod::GET, $requestUri, $bindings);
+    }
+
+    /**
+     * Run a GET HTTP request against the service and return a generator.
+     *
+     * @param string $requestUri
+     * @param array  $bindings
+     *
+     * @return \Illuminate\Support\LazyCollection
+     */
+    public function cursor($requestUri, $bindings = [])
+    {
+        return LazyCollection::make(function() use($requestUri, $bindings) {
+
+            $nextPage = $requestUri;
+
+            while (!is_null($nextPage)) {
+                list($data, $nextPage) = $this->getNextPage($nextPage, $bindings);
+
+                if (!is_null($nextPage)) {
+                    $nextPage = str_replace($this->baseUrl, '', $nextPage);
+                }
+
+                yield from $data;
+            }
+        });
     }
 
     /**
@@ -268,13 +322,6 @@ class ODataClient implements IODataClient
             $request->attachBody($body);
         }
 
-        // TODO: find a better solution for this
-        /*
-        if ($method === 'PATCH' || $method === 'DELETE') {
-            $request->addHeaders(array('If-Match' => '*'));
-        }
-         */
-
         return $request->execute();
     }
 
@@ -330,5 +377,47 @@ class ODataClient implements IODataClient
     public function setEntityReturnType($entityReturnType)
     {
         $this->entityReturnType = $entityReturnType;
+    }
+
+    /**
+     * Set the odata.maxpagesize value of the request.
+     *
+     * @param int $pageSize
+     *
+     * @return IODataClient
+     */
+    public function setPageSize($pageSize) {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+
+    /**
+     * Gets the page size
+     *
+     * @return int
+     */
+    public function getPageSize() {
+        return $this->pageSize;
+    }
+
+    /**
+     * Set the entityKey to be found.
+     *
+     * @param mixed $entityKey
+     *
+     * @return IODataClient
+     */
+    public function setEntityKey($entityKey) {
+        $this->entityKey = $entityKey;
+        return $this;
+    }
+
+    /**
+     * Gets the entity key
+     *
+     * @return mixed
+     */
+    public function getEntityKey() {
+        return $this->entityKey;
     }
 }

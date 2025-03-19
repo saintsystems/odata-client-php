@@ -97,6 +97,20 @@ class ODataRequest implements IODataRequest
         }
         $this->timeout = 0;
         $this->headers = $this->getDefaultHeaders();
+        $pageSize = $this->client->getPageSize();
+        if (!is_null($pageSize) && is_int($pageSize)) {
+            $this->setPageSize($pageSize);
+        }
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $pageSize
+     * @return void
+     */
+    public function setPageSize($pageSize) {
+        $this->headers[RequestHeader::PREFER] = Constants::ODATA_MAX_PAGE_SIZE . '=' . $pageSize;
     }
 
     /**
@@ -199,8 +213,9 @@ class ODataRequest implements IODataRequest
      *
      * @throws ODataException if response is invalid
      *
-     * @return mixed object or array of objects
-     *         of class $returnType
+     * @return array array of objects
+     *         of class $returnType if $returnType !== false
+     *         of class ODataResponse if $returnType === false
      */
     public function execute()
     {
@@ -214,7 +229,15 @@ class ODataRequest implements IODataRequest
 
         $this->authenticateRequest($request);
 
+        // if (strpos($this->requestUrl, '$skiptoken') !== false) {
+            // echo PHP_EOL;
+            // echo 'Sending request: '. $this->requestUrl;
+            // echo PHP_EOL;
+        // }
         $result = $this->client->getHttpProvider()->send($request);
+
+        // Reset
+        $this->client->setEntityKey(null);
 
         //Send back the bare response
         if ($this->returnsStream) {
@@ -222,7 +245,7 @@ class ODataRequest implements IODataRequest
         }
 
         if ($this->isAggregate()) {
-            return (string) $result->getBody();
+            return [(string) $result->getBody(), null];
         }
 
         // Wrap response in ODataResponse layer
@@ -237,15 +260,17 @@ class ODataRequest implements IODataRequest
             throw new ODataException(Constants::UNABLE_TO_PARSE_RESPONSE);
         }
 
-        // If no return type is specified, return DynamicsResponse
-        $returnObj = $response;
+        // If no return type is specified, return ODataResponse
+        $returnObj = [$response];
 
         $returnType = is_null($this->returnType) ? Entity::class : $this->returnType;
 
         if ($returnType) {
             $returnObj = $response->getResponseAsObject($returnType);
         }
-        return $returnObj;
+        $nextLink = $response->getNextLink();
+
+        return [$returnObj, $nextLink];
     }
 
     /**
@@ -304,13 +329,11 @@ class ODataRequest implements IODataRequest
     private function getDefaultHeaders()
     {
         $headers = [
-            //RequestHeader::HOST => $this->client->getBaseUrl(),
             RequestHeader::CONTENT_TYPE => ContentType::APPLICATION_JSON,
             RequestHeader::ODATA_MAX_VERSION => Constants::MAX_ODATA_VERSION,
             RequestHeader::ODATA_VERSION => Constants::ODATA_VERSION,
-            RequestHeader::PREFER => Constants::ODATA_MAX_PAGE_SIZE_DEFAULT,
+            RequestHeader::PREFER => Constants::ODATA_MAX_PAGE_SIZE . '=' . Constants::ODATA_MAX_PAGE_SIZE_DEFAULT,
             RequestHeader::USER_AGENT => 'odata-sdk-php-' . Constants::SDK_VERSION,
-            //RequestHeader::AUTHORIZATION => 'Bearer ' . $this->accessToken
         ];
 
         if (!$this->isAggregate()) {
@@ -348,6 +371,11 @@ class ODataRequest implements IODataRequest
     private function addHeadersToRequest(HttpRequestMessage $request)
     {
         $request->headers = array_merge($this->headers, $request->headers);
+        if (strpos($request->requestUri, '/$count') !== false || !is_null($this->client->getEntityKey())) {
+            $request->headers = array_filter($request->headers, function($key) {
+                return $key !== RequestHeader::PREFER;
+             }, ARRAY_FILTER_USE_KEY);
+        }
     }
 
     /**

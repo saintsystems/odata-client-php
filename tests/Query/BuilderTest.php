@@ -113,13 +113,13 @@ class BuilderTest extends TestCase
 
         $entitySet = 'People';
 
-        //$expected = 55;
+        $expected = 20;
 
         $actual = $builder->from($entitySet)->count();
 
         $this->assertTrue(is_numeric($actual));
         $this->assertTrue($actual > 0);
-        //$this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     // public function testEntitySetCountWithWhere()
@@ -538,6 +538,36 @@ class BuilderTest extends TestCase
                 ->whereNotNull('FirstName');
 
         $expectedUri = 'People?$filter=FirstName ne null';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereIn()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereIn('FirstName', ['John', 'Jane']);
+
+        $expectedUri = 'People?$filter=FirstName in (\'John\',\'Jane\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereNotIn()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'People';
+
+        $builder->from($entitySet)
+                ->whereNotIn('FirstName', ['John', 'Jane']);
+
+        $expectedUri = 'People?$filter=not(FirstName in (\'John\',\'Jane\'))';
         $actualUri = $builder->toRequest();
 
         $this->assertEquals($expectedUri, $actualUri);
