@@ -1,6 +1,6 @@
 <?php
 
-namespace SaintSystems\OData\Tests\Core;
+namespace Studiosystems\OData\Tests\Core;
 
 use PHPUnit\Framework\TestCase;
 

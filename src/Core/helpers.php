@@ -46,18 +46,18 @@ if (!function_exists('http_build_url')) {
      * Build a URL.
      *
      * The parts of the second URL will be merged into the first according to
-     * the flags argument.
+     * the flag's argument.
      *
-     * @param mixed $url     (part(s) of) an URL in form of a string or
+     * @param mixed $url     (part(s) of) a URL in form of a string or
      *                       associative array like parse_url() returns
      * @param mixed $parts   same as the first argument
-     * @param int   $flags   a bitmask of binary or'ed HTTP_URL constants;
+     * @param int $flags   a bitmask of binary or HTTP_URL constants;
      *                       HTTP_URL_REPLACE is the default
      * @param array $new_url if set, it will be filled with the parts of the
      *                       composed url like parse_url() would return
      * @return string
      */
-    function http_build_url($url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new_url = array())
+    function http_build_url(mixed $url, mixed $parts = array(), int $flags = HTTP_URL_REPLACE, array &$new_url = array()): string
     {
         is_array($url) || $url = parse_url($url);
         is_array($parts) || $parts = parse_url($parts);
@@ -76,7 +76,7 @@ if (!function_exists('http_build_url')) {
             $flags |= HTTP_URL_STRIP_USER | HTTP_URL_STRIP_PASS;
         }
 
-        // Schema and host are alwasy replaced
+        // Schema and host are always replaced
         foreach (array('scheme', 'host') as $part) {
             if (isset($parts[$part])) {
                 $url[$part] = $parts[$part];
@@ -91,13 +91,13 @@ if (!function_exists('http_build_url')) {
             }
         } else {
             if (isset($parts['path']) && ($flags & HTTP_URL_JOIN_PATH)) {
-                if (isset($url['path']) && substr($parts['path'], 0, 1) !== '/') {
+                if (isset($url['path']) && !str_starts_with($parts['path'], '/')) {
                     // Workaround for trailing slashes
                     $url['path'] .= 'a';
                     $url['path'] = rtrim(
-                            str_replace(basename($url['path']), '', $url['path']),
-                            '/'
-                        ) . '/' . ltrim($parts['path'], '/');
+                        str_replace(basename($url['path']), '', $url['path']),
+                        '/'
+                    ) . '/' . ltrim($parts['path'], '/');
                 } else {
                     $url['path'] = $parts['path'];
                 }
@@ -120,7 +120,7 @@ if (!function_exists('http_build_url')) {
             }
         }
 
-        if (isset($url['path']) && $url['path'] !== '' && substr($url['path'], 0, 1) !== '/') {
+        if (isset($url['path']) && $url['path'] !== '' && !str_starts_with($url['path'], '/')) {
             $url['path'] = '/' . $url['path'];
         }
 
@@ -174,8 +174,8 @@ if (!function_exists('http_build_url')) {
 }
 
 if (!function_exists('is_uuid')) {
-    function is_uuid($uuid)
+    function is_uuid($uuid): bool
     {
-        return preg_match('/^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/i', $uuid) == 1;
+        return preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i', $uuid) == 1;
     }
 }

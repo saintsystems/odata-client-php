@@ -1,26 +1,26 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
-use SaintSystems\OData\Core\Enum;
+use Studiosystems\OData\Core\Enum;
 
 class HttpMethod extends Enum
 {
     /**
      * Represents an HTTP DELETE protocol method.
      */
-    const DELETE = 'DELETE';
+    public const DELETE = 'DELETE';
 
     /**
      * Get Represents an HTTP GET protocol method.
      */
-    const GET = 'GET';
+    public const GET = 'GET';
 
     /**
      * Represents an HTTP HEAD protocol method. The HEAD method is identical to GET except that
      * the server only returns message-headers in the response, without a message-body.
      */
-    const HEAD = 'HEAD';
+    public const HEAD = 'HEAD';
 
     /**
      * An HTTP method.
@@ -30,27 +30,27 @@ class HttpMethod extends Enum
     /**
      * Represents an HTTP OPTIONS protocol method.
      */
-    const OPTIONS = 'OPTIONS';
+    public const OPTIONS = 'OPTIONS';
 
     /**
      * Represents an HTTP POST protocol method that is used to post a new entity as an addition to a URI.
      */
-    const POST = 'POST';
+    public const POST = 'POST';
 
     /**
      * Represents an HTTP PUT protocol method that is used to replace an entity identified by a URI.
      */
-    const PUT = 'PUT';
+    public const PUT = 'PUT';
 
     /**
      * Represents an HTTP PATCH protocol method that is used to update an entity.
      */
-    const PATCH = 'PATCH';
+    public const PATCH = 'PATCH';
 
     /**
      * Represents an HTTP TRACE protocol method.
      */
-    const TRACE = 'TRACE';
+    public const TRACE = 'TRACE';
 
     public function __toString()
     {

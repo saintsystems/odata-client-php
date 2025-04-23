@@ -1,8 +1,10 @@
 <?php
 
-namespace SaintSystems\OData\Exception;
+namespace Studiosystems\OData\Exception;
 
-class MassAssignmentException extends \Exception
+use Exception;
+
+class MassAssignmentException extends Exception
 {
     public function __construct($message, $code = 0, $previous = null)
     {

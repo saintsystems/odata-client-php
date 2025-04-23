@@ -1,20 +1,20 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
-use SaintSystems\OData\Core\Enum;
+use Studiosystems\OData\Core\Enum;
 
 class ResponseHeader extends Enum
 {
-    const ETAG = 'ETag';
+    public const ETAG = 'ETag';
 
-    const LOCATION = 'Location';
+    public const LOCATION = 'Location';
 
-    const ODATA_ENTITY_ID = 'OData-EntityId';
+    public const ODATA_ENTITY_ID = 'OData-EntityId';
 
-    const PREFERERENCE_APPLIED = 'Preference-Applied';
+    public const PREFERERENCE_APPLIED = 'Preference-Applied';
 
-    const RETRY_AFTER = 'Retry-After';
+    public const RETRY_AFTER = 'Retry-After';
 
     public function __toString()
     {

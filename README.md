@@ -2,18 +2,15 @@
 
 A fluent library for calling OData REST services inspired by and based on the [Laravel Query Builder](https://laravel.com/docs/5.4/queries).
 
-*This library is currently in preview. Please continue to provide [feedback](https://github.com/saintsystems/odata-client-php/issues/new) as we iterate towards a production-supported library.*
+*This library is currently in preview. Please continue to provide [feedback](https://github.com/Studiosystems/odata-client-php/issues/new) as we iterate towards a production-supported library.*
 
-[![Build Status](https://github.com/saintsystems/odata-client-php/actions/workflows/ci.yml/badge.svg)](https://github.com/saintsystems/odata-client-php/actions/workflows/ci.yml)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/saintsystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/saintsystems/odata-client)
-[![Total Downloads](https://img.shields.io/packagist/dt/saintsystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/saintsystems/odata-client)
-
-For WordPress users, please see our [Gravity Forms Dynamics 365 Add-On](https://www.saintsystems.com/products/gravity-forms-dynamics-crm-add-on/).
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/Studiosystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/Studiosystems/odata-client)
+[![Total Downloads](https://img.shields.io/packagist/dt/Studiosystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/Studiosystems/odata-client)
 
 ## Install the SDK
 You can install the PHP SDK with Composer.
 ```
-composer require saintsystems/odata-client
+composer require studiosystems/odata-client
 ```
 ### Call an OData Service
 
@@ -24,7 +21,7 @@ The following is an example that shows how to call an OData service.
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use SaintSystems\OData\ODataClient;
+use Studiosystems\OData\ODataClient;
 
 class UsageExample
 {
@@ -62,11 +59,11 @@ Run ```vendor/bin/phpunit``` from the base directory.
 
 ## Documentation and resources
 
-* [Documentation](https://github.com/saintsystems/odata-client-php/wiki/Example-Calls)
+* [Documentation](https://github.com/Studiosystems/odata-client-php/wiki/Example-Calls)
 
-* [Wiki](https://github.com/saintsystems/odata-client-php/wiki)
+* [Wiki](https://github.com/Studiosystems/odata-client-php/wiki)
 
-* [Examples](https://github.com/saintsystems/odata-client-php/wiki/Example-calls)
+* [Examples](https://github.com/Studiosystems/odata-client-php/wiki/Example-calls)
 
 * [OData website](http://www.odata.org)
 
@@ -74,7 +71,7 @@ Run ```vendor/bin/phpunit``` from the base directory.
 
 ## Issues
 
-View or log issues on the [Issues](https://github.com/saintsystems/odata-client-php/issues) tab in the repo.
+View or log issues on the [Issues](https://github.com/Studiosystems/odata-client-php/issues) tab in the repo.
 
 ## Copyright and license
 

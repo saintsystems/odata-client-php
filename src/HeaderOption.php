@@ -1,6 +1,6 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 class HeaderOption extends Option
 {

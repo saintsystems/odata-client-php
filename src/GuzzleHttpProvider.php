@@ -1,6 +1,6 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 use GuzzleHttp\Client;
 
@@ -87,8 +87,7 @@ class GuzzleHttpProvider implements IHttpProvider
             'timeout' => $this->timeout
         ];
 
-        foreach ($this->extra_options as $key => $value)
-        {
+        foreach ($this->extra_options as $key => $value) {
             $options[$key] = $value;
         }
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
-use SaintSystems\OData\Query\IGrammar;
-use SaintSystems\OData\Query\IProcessor;
+use Studiosystems\OData\Query\IGrammar;
+use Studiosystems\OData\Query\IProcessor;
 
 interface IODataClient
 {
     /**
      * Gets the IAuthenticationProvider for authenticating HTTP requests.
-     * @var \SaintSystems\OData\IAuthenticationProvider
+     * @var \Studiosystems\OData\IAuthenticationProvider
      */
     public function getAuthenticationProvider();
 
@@ -62,7 +62,7 @@ interface IODataClient
      *
      * @param string $entitySet
      *
-     * @return \SaintSystems\OData\Query\Builder
+     * @return \Studiosystems\OData\Query\Builder
      */
     public function from($entitySet);
 
@@ -71,14 +71,14 @@ interface IODataClient
      *
      * @param array $properties
      *
-     * @return \SaintSystems\OData\Query\Builder
+     * @return \Studiosystems\OData\Query\Builder
      */
     public function select($properties = []);
 
     /**
      * Get a new query builder instance.
      *
-     * @return \SaintSystems\OData\Query\Builder
+     * @return \Studiosystems\OData\Query\Builder
      */
     public function query();
 

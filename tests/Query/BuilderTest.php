@@ -1,14 +1,14 @@
 <?php
 
-namespace SaintSystems\OData\Query\Tests;
+namespace Studiosystems\OData\Query\Tests;
 
 use PHPUnit\Framework\TestCase;
 
 use Illuminate\Support\Collection;
-use SaintSystems\OData\ODataClient;
-use SaintSystems\OData\QueryOptions;
-use SaintSystems\OData\Query\Builder;
-use SaintSystems\OData\Exception\ODataQueryException;
+use Studiosystems\OData\ODataClient;
+use Studiosystems\OData\QueryOptions;
+use Studiosystems\OData\Query\Builder;
+use Studiosystems\OData\Exception\ODataQueryException;
 
 class BuilderTest extends TestCase
 {

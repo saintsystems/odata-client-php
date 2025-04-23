@@ -1,13 +1,13 @@
 <?php
 
-namespace SaintSystems\OData\Tests;
+namespace Studiosystems\OData\Tests;
 
 use PHPUnit\Framework\TestCase;
-use SaintSystems\OData\Entity;
-use SaintSystems\OData\ODataClient;
+use Studiosystems\OData\Entity;
+use Studiosystems\OData\ODataClient;
 use Illuminate\Support\LazyCollection;
-use SaintSystems\OData\Constants;
-use SaintSystems\OData\RequestHeader;
+use Studiosystems\OData\Constants;
+use Studiosystems\OData\RequestHeader;
 
 class ODataClientTest extends TestCase
 {

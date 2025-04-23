@@ -1,6 +1,6 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 interface IODataRequest
 {

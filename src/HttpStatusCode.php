@@ -1,86 +1,86 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
-use SaintSystems\OData\Core\Enum;
+use Studiosystems\OData\Core\Enum;
 
 class HttpStatusCode extends Enum
 {
-    const OK = 200;
+    public const OK = 200;
 
-    const CREATED = 201;
+    public const CREATED = 201;
 
-    const ACCEPTED = 202;
+    public const ACCEPTED = 202;
 
-    const NON_AUTHORITATIVE_INFORMATION = 203;
+    public const NON_AUTHORITATIVE_INFORMATION = 203;
 
-    const NO_CONTENT = 204;
+    public const NO_CONTENT = 204;
 
-    const RESET_CONTENT = 205;
+    public const RESET_CONTENT = 205;
 
-    const PARTIAL_CONTENT = 206;
+    public const PARTIAL_CONTENT = 206;
 
-    const MULTIPLE_CHOICES = 300;
+    public const MULTIPLE_CHOICES = 300;
 
-    const MOVED_PERMANTENTLY = 301;
+    public const MOVED_PERMANTENTLY = 301;
 
-    const FOUND = 302;
+    public const FOUND = 302;
 
-    const SEE_OTHER = 303;
+    public const SEE_OTHER = 303;
 
-    const NOT_MODIFIED = 304;
+    public const NOT_MODIFIED = 304;
 
-    const USE_PROXY = 305;
+    public const USE_PROXY = 305;
 
-    const TEMPORARY_REDIRECT = 307;
+    public const TEMPORARY_REDIRECT = 307;
 
-    const BAD_REQUEST = 400;
+    public const BAD_REQUEST = 400;
 
-    const UNAUTHORIZED = 401;
+    public const UNAUTHORIZED = 401;
 
-    const PAYMENT_REQUIRED = 402;
+    public const PAYMENT_REQUIRED = 402;
 
-    const FORBIDDEN = 403;
+    public const FORBIDDEN = 403;
 
-    const NOT_FOUND = 404;
+    public const NOT_FOUND = 404;
 
-    const METHOD_NOT_ALLOWED = 405;
+    public const METHOD_NOT_ALLOWED = 405;
 
-    const NOT_ACCEPTABLE = 406;
+    public const NOT_ACCEPTABLE = 406;
 
-    const PROXY_AUTHENTICATION_REQUIRED = 407;
+    public const PROXY_AUTHENTICATION_REQUIRED = 407;
 
-    const REQUEST_TIMEOUT = 408;
+    public const REQUEST_TIMEOUT = 408;
 
-    const CONFLICT = 409;
+    public const CONFLICT = 409;
 
-    const GONE = 410;
+    public const GONE = 410;
 
-    const LENGTH_REQUIRED = 411;
+    public const LENGTH_REQUIRED = 411;
 
-    const PRECONDITION_FAILED = 412;
+    public const PRECONDITION_FAILED = 412;
 
-    const REQUEST_ENTITY_TOO_LARGE = 413;
+    public const REQUEST_ENTITY_TOO_LARGE = 413;
 
-    const REQUEST_URI_TOO_LONG = 414;
+    public const REQUEST_URI_TOO_LONG = 414;
 
-    const UNSUPPORTED_MEDIA_TYPE = 415;
+    public const UNSUPPORTED_MEDIA_TYPE = 415;
 
-    const REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+    public const REQUESTED_RANGE_NOT_SATISFIABLE = 416;
 
-    const EXPECTATION_FAILED = 417;
+    public const EXPECTATION_FAILED = 417;
 
-    const INTERNAL_SERVER_ERROR = 500;
+    public const INTERNAL_SERVER_ERROR = 500;
 
-    const NOT_IMPLEMENTED = 501;
+    public const NOT_IMPLEMENTED = 501;
 
-    const BAD_GATEWAY = 502;
+    public const BAD_GATEWAY = 502;
 
-    const SERVICE_UNAVAILABLE = 503;
+    public const SERVICE_UNAVAILABLE = 503;
 
-    const GATEWAY_TIMEOUT = 504;
+    public const GATEWAY_TIMEOUT = 504;
 
-    const HTTP_VERSION_NOT_SUPPORTED = 505;
+    public const HTTP_VERSION_NOT_SUPPORTED = 505;
 
     public function __toString()
     {

@@ -1,10 +1,10 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 class Uri
 {
-    const URI_PARTS = [
+    public const URI_PARTS = [
         'scheme',
         'host',
         'port',
@@ -38,10 +38,12 @@ class Uri
      */
     public function __construct($uri = null)
     {
-        if ($uri == null) return;
+        if ($uri == null) {
+            return;
+        }
         $uriParsed = parse_url($uri);
         $this->parsed = $uriParsed;
-        foreach(self::URI_PARTS as $uriPart) {
+        foreach (self::URI_PARTS as $uriPart) {
             if (isset($uriParsed[$uriPart])) {
                 $this->$uriPart = $uriParsed[$uriPart];
             }

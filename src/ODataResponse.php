@@ -16,7 +16,7 @@
  * @link      https://www.microsoft.com/en-us/OData365/
  */
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 /**
  * Class ODataResponse
@@ -29,49 +29,34 @@ class ODataResponse
 {
     /**
      * The request
-     *
-     * @var object
      */
-    public $request;
+    public object $request;
 
     /**
      * The body of the response
-     *
-     * @var string
      */
-    private $body;
+    private ?string $body;
 
     /**
      * The body of the response,
      * decoded into an array
-     *
-     * @var array(string)
      */
-    private $decodedBody;
+    private array $decodedBody;
 
     /**
      * The headers of the response
-     *
-     * @var array(string)
      */
-    private $headers;
+    private array $headers;
 
     /**
      * The status code of the response
-     *
-     * @var string
      */
-    private $httpStatusCode;
+    private ?string $httpStatusCode;
 
     /**
      * Creates a new OData HTTP response entity
-     *
-     * @param object $request        The request
-     * @param string $body           The body of the response
-     * @param string $httpStatusCode The returned status code
-     * @param array  $headers        The returned headers
      */
-    public function __construct($request, $body = null, $httpStatusCode = null, $headers = array())
+    public function __construct(object $request, string $body = null, string $httpStatusCode = null, array $headers = array())
     {
         $this->request = $request;
         $this->body = $body;
@@ -82,15 +67,13 @@ class ODataResponse
 
     /**
      * Decode the JSON response into an array
-     *
-     * @return array The decoded response
      */
-    private function decodeBody()
+    private function decodeBody(): array
     {
         $decodedBody = json_decode($this->body, true);
         if ($decodedBody === null) {
             $matches = null;
-            preg_match('~\{(?:[^{}]|(?R))*\}~', $this->body, $matches);
+            preg_match('~\{(?:[^{}]|(?R))*}~', $this->body, $matches);
             $decodedBody = json_decode($matches[0], true);
             if ($decodedBody === null) {
                 $decodedBody = array();
@@ -101,52 +84,40 @@ class ODataResponse
 
     /**
      * Get the decoded body of the HTTP response
-     *
-     * @return array The decoded body
      */
-    public function getBody()
+    public function getBody(): array
     {
         return $this->decodedBody;
     }
 
     /**
      * Get the undecoded body of the HTTP response
-     *
-     * @return string The undecoded body
      */
-    public function getRawBody()
+    public function getRawBody(): ?string
     {
         return $this->body;
     }
 
     /**
      * Get the status of the HTTP response
-     *
-     * @return string The HTTP status
      */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->httpStatusCode;
     }
 
     /**
      * Get the headers of the response
-     *
-     * @return array The response headers
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
     /**
      * Converts the response JSON object to a OData SDK object
-     *
-     * @param mixed $returnType The type to convert the object(s) to
-     *
-     * @return mixed object or array of objects of type $returnType
      */
-    public function getResponseAsObject($returnType)
+    public function getResponseAsObject(mixed $returnType): array
     {
         $class = $returnType;
         $result = $this->getBody();
@@ -165,29 +136,24 @@ class ODataResponse
 
     /**
      * Gets the @odata.nextLink of a response object from OData
-     *
-     * @return string next link, if provided
      */
-    public function getNextLink()
+    public function getNextLink(): ?string
     {
         if (array_key_exists(Constants::ODATA_NEXT_LINK, $this->getBody())) {
-            $nextLink = $this->getBody()[Constants::ODATA_NEXT_LINK];
-            return $nextLink;
+            return $this->getBody()[Constants::ODATA_NEXT_LINK];
         }
         return null;
     }
 
     /**
      * Gets the skip token of a response object from OData
-     *
-     * @return string skip token, if provided
      */
-    public function getSkipToken()
+    public function getSkipToken(): ?string
     {
         $nextLink = $this->getNextLink();
         if (is_null($nextLink)) {
             return null;
-        };
+        }
         $url = explode("?", $nextLink)[1];
         $url = explode("skiptoken=", $url);
         if (count($url) > 1) {
@@ -197,15 +163,12 @@ class ODataResponse
     }
 
     /**
-     * Gets the Id of response object (if set) from OData
-     *
-     * @return mixed id if this was an insert, if provided
+     * Gets the ID of response object (if set) from OData
      */
-    public function getId()
+    public function getId(): mixed
     {
         if (array_key_exists(Constants::ODATA_ID, $this->getHeaders())) {
-            $id = $this->getBody()[Constants::ODATA_ID];
-            return $id;
+            return $this->getBody()[Constants::ODATA_ID];
         }
         return null;
     }

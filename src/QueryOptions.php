@@ -1,14 +1,14 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
-use SaintSystems\OData\Core\Enum;
+use Studiosystems\OData\Core\Enum;
 
 class QueryOptions extends Enum
 {
-    const INCLUDE_COUNT = 1;
+    public const INCLUDE_COUNT = 1;
 
-    const INCLUDE_REF = 2;
+    public const INCLUDE_REF = 2;
 
     public function __toString()
     {

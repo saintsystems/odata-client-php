@@ -1,24 +1,14 @@
 <?php
 
-namespace SaintSystems\OData;
+namespace Studiosystems\OData;
 
 class Option
 {
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name;
 
-    /**
-     * @var string
-     */
-    public $value;
+    public string $value;
 
-    /**
-     * @param string $name
-     * @param string $value
-     */
-    public function __construct($name, $value)
+    public function __construct(string $name, string $value)
     {
         $this->name = $name;
         $this->value = $value;
