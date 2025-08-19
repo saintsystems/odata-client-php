@@ -109,6 +109,13 @@ class Builder
     public $orders;
 
     /**
+     * The custom options for the query.
+     *
+     * @var array
+     */
+    public $customOption;
+
+    /**
      * The maximum number of records to return.
      *
      * @var int
@@ -244,6 +251,19 @@ class Builder
         $this->client->setEntityKey($this->entityKey);
         return $this;
     }
+        
+    /**
+     * Add custom option to query parameters.
+     *
+     * @param string $options
+     *
+     * @return $this
+     */
+    public function addOption($option)
+    {
+        $this->customOption = $option;
+        return $this;
+    }    
 
     /**
      * Add an $expand clause to the query.
