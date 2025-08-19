@@ -409,8 +409,6 @@ class Grammar implements IGrammar
 
         if (is_array($customOption)) {
             $customOption = $this->compileCompositeCustomOption($customOption);
-        } else {
-            $customOption = $this->wrapKey($customOption);
         }
 
         return $this->appendQueryParam($customOption);
