@@ -15,6 +15,44 @@ You can install the PHP SDK with Composer.
 ```
 composer require saintsystems/odata-client
 ```
+
+### HTTP Provider Configuration
+
+Starting from version 0.9.0, the OData Client requires an HTTP provider to be explicitly set. This allows you to use any HTTP client implementation that suits your needs.
+
+#### Using Guzzle (recommended for most users)
+
+First, install Guzzle:
+```bash
+composer require guzzlehttp/guzzle
+```
+
+Then configure the OData client:
+```php
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$odataClient = new ODataClient($odataServiceUrl, null, $httpProvider);
+```
+
+#### Using PSR-17/PSR-18 implementations
+
+You can also use any PSR-17/PSR-18 compatible HTTP client:
+
+```php
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\Psr17HttpProvider;
+
+// Example using Symfony HTTP Client with Nyholm PSR-7
+$httpClient = new \Symfony\Component\HttpClient\Psr18Client();
+$requestFactory = new \Nyholm\Psr7\Factory\Psr17Factory();
+$streamFactory = new \Nyholm\Psr7\Factory\Psr17Factory();
+
+$httpProvider = new Psr17HttpProvider($httpClient, $requestFactory, $streamFactory);
+$odataClient = new ODataClient($odataServiceUrl, null, $httpProvider);
+```
+
 ### Call an OData Service
 
 The following is an example that shows how to call an OData service.
@@ -25,6 +63,7 @@ The following is an example that shows how to call an OData service.
 require_once __DIR__ . '/vendor/autoload.php';
 
 use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
 
 class UsageExample
 {
@@ -32,7 +71,8 @@ class UsageExample
 	{
 		$odataServiceUrl = 'https://services.odata.org/V4/TripPinService';
 
-		$odataClient = new ODataClient($odataServiceUrl);
+		$httpProvider = new GuzzleHttpProvider();
+		$odataClient = new ODataClient($odataServiceUrl, null, $httpProvider);
 
 		// Retrieve all entities from the "People" Entity Set
 		$people = $odataClient->from('People')->get();

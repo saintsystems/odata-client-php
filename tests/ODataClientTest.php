@@ -5,6 +5,7 @@ namespace SaintSystems\OData\Tests;
 use PHPUnit\Framework\TestCase;
 use SaintSystems\OData\Entity;
 use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
 use Illuminate\Support\LazyCollection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\RequestHeader;
@@ -18,9 +19,16 @@ class ODataClientTest extends TestCase
         $this->baseUrl = 'https://services.odata.org/V4/TripPinService';
     }
 
+    private function createODataClient($authenticationProvider = null)
+    {
+        $httpProvider = new GuzzleHttpProvider();
+        $client = new ODataClient($this->baseUrl, $authenticationProvider, $httpProvider);
+        return $client;
+    }
+
     public function testODataClientConstructor()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $baseUrl = $odataClient->getBaseUrl();
         $this->assertEquals('https://services.odata.org/V4/TripPinService/', $baseUrl);
@@ -28,7 +36,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientEntitySetQuery()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')->get();
         $this->assertTrue(is_array($people->toArray()));
@@ -36,7 +44,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientEntitySetQueryWithSelect()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->select('FirstName','LastName')->from('People')->get();
         $this->assertTrue(is_array($people->toArray()));
@@ -44,7 +52,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientFromQueryWithWhere()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')->where('FirstName','Russell')->get();
         $this->assertTrue(is_array($people->toArray()));
@@ -53,7 +61,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientFromQueryWithWhereOrWhere()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')
                               ->where('FirstName','Russell')
@@ -66,7 +74,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientFromQueryWithWhereOrWhereArrays()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')
                               ->where([
@@ -84,7 +92,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientFromQueryWithWhereOrWhereArraysAndOperators()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $people = $odataClient->from('People')
                               ->where([
@@ -102,7 +110,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientFind()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
         $this->assertNotNull($odataClient);
         $person = $odataClient->from('People')->find('russellwhyte');
         $this->assertEquals('russellwhyte', $person->UserName);
@@ -111,7 +119,7 @@ class ODataClientTest extends TestCase
     public function testODataClientSkipToken()
     {
         $pageSize = 8;
-        $odataClient = new ODataClient($this->baseUrl, function($request) use($pageSize) {
+        $odataClient = $this->createODataClient(function($request) use($pageSize) {
             $request->headers[RequestHeader::PREFER] = Constants::ODATA_MAX_PAGE_SIZE . '=' . $pageSize;
         });
         $this->assertNotNull($odataClient);
@@ -140,7 +148,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorBeLazyCollection()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -151,7 +159,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorCountShouldEqualTotalEntitySetCount()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -164,7 +172,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorToArrayCountShouldEqualPageSize()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -175,7 +183,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorFirstShouldReturnEntityRussellWhyte()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -188,7 +196,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorLastShouldReturnEntityKristaKemp()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -201,7 +209,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip1FirstShouldReturnEntityScottKetchum()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -214,7 +222,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip4FirstShouldReturnEntityWillieAshmore()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -227,7 +235,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip7FirstShouldReturnEntityKeithPinckney()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -240,7 +248,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip8FirstShouldReturnEntityMarshallGaray()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -253,7 +261,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip16FirstShouldReturnEntitySandyOsbord()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -266,7 +274,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorSkip16LastPageShouldBe4Records()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -279,7 +287,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorIteratingShouldReturnAll20Entities()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 8;
 
@@ -298,7 +306,7 @@ class ODataClientTest extends TestCase
 
     public function testODataClientCursorPageSizeOf20ShouldReturnAllEntities()
     {
-        $odataClient = new ODataClient($this->baseUrl);
+        $odataClient = $this->createODataClient();
 
         $pageSize = 20;
 

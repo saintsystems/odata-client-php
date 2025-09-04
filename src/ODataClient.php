@@ -79,7 +79,7 @@ class ODataClient implements IODataClient
     ) {
         $this->setBaseUrl($baseUrl);
         $this->authenticationProvider = $authenticationProvider;
-        $this->httpProvider = $httpProvider ?: new GuzzleHttpProvider();
+        $this->httpProvider = $httpProvider;
 
         // We need to initialize a query grammar and the query post processors
         // which are both very important parts of the OData abstractions
@@ -168,10 +168,26 @@ class ODataClient implements IODataClient
      * Gets the IHttpProvider for sending HTTP requests.
      *
      * @return IHttpProvider
+     * @throws ODataException
      */
     public function getHttpProvider()
     {
+        if (!$this->httpProvider) {
+            throw new ODataException('No HTTP provider has been set. Please provide an IHttpProvider implementation.');
+        }
         return $this->httpProvider;
+    }
+
+    /**
+     * Sets the IHttpProvider for sending HTTP requests.
+     *
+     * @param IHttpProvider $httpProvider
+     * @return $this
+     */
+    public function setHttpProvider(IHttpProvider $httpProvider)
+    {
+        $this->httpProvider = $httpProvider;
+        return $this;
     }
 
     /**

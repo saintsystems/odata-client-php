@@ -2,7 +2,6 @@
 
 namespace SaintSystems\OData;
 
-use GuzzleHttp\Client;
 use SaintSystems\OData\Exception\ODataException;
 
 /**
@@ -18,9 +17,9 @@ class ODataRequest implements IODataRequest
     protected $requestUrl;
 
     /**
-     * The Guzzle client used to make the HTTP request
+     * The HTTP client used to make the HTTP request
      *
-     * @var Client
+     * @var mixed
      */
     protected $http;
 
@@ -166,7 +165,7 @@ class ODataRequest implements IODataRequest
     public function attachBody($obj)
     {
         // Attach streams & JSON automatically
-        if (is_string($obj) || is_a($obj, 'GuzzleHttp\\Psr7\\Stream')) {
+        if (is_string($obj) || is_a($obj, 'Psr\\Http\\Message\\StreamInterface')) {
             $this->requestBody = $obj;
         }
         // JSON-encode the model object's property dictionary
@@ -209,7 +208,7 @@ class ODataRequest implements IODataRequest
     }
 
     /**
-     * Executes the HTTP request using Guzzle
+     * Executes the HTTP request
      *
      * @throws ODataException if response is invalid
      *
@@ -274,7 +273,7 @@ class ODataRequest implements IODataRequest
     }
 
     /**
-     * Executes the HTTP request asynchronously using Guzzle
+     * Executes the HTTP request asynchronously
      *
      * @param mixed $client The Http client to use in the request
      *

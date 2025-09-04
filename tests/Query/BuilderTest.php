@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Illuminate\Support\Collection;
 use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
 use SaintSystems\OData\QueryOptions;
 use SaintSystems\OData\Query\Builder;
 use SaintSystems\OData\Exception\ODataQueryException;
@@ -18,7 +19,8 @@ class BuilderTest extends TestCase
     public function setUp(): void
     {
         $this->baseUrl = 'https://services.odata.org/V4/TripPinService';
-        $this->client = new ODataClient($this->baseUrl);
+        $httpProvider = new GuzzleHttpProvider();
+        $this->client = new ODataClient($this->baseUrl, null, $httpProvider);
     }
 
     public function getBuilder()
