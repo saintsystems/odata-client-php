@@ -1,6 +1,6 @@
 {
     "name": "saintsystems/odata-client",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "description": "Saint Systems OData Client for PHP",
     "keywords": [
         "odata",
@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "nesbot/carbon": "^2.0 || ^3.0",
         "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0"
     },

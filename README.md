@@ -18,7 +18,7 @@ composer require saintsystems/odata-client
 
 ### HTTP Provider Configuration
 
-Starting from version 0.9.0, the OData Client requires an HTTP provider to be explicitly set. This allows you to use any HTTP client implementation that suits your needs.
+Starting from version 0.10.0, the OData Client requires an HTTP provider to be explicitly set. This allows you to use any HTTP client implementation that suits your needs.
 
 #### Using Guzzle (recommended for most users)
 
