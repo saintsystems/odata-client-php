@@ -37,9 +37,12 @@ class CustomOptionsTest extends TestCase
 
     protected function createMockHttpProvider(): IHttpProvider
     {
+        // Create mock response - the request parameter can be null for testing
+        $mockResponse = new ODataResponse(null, '{"value":[]}', 200, []);
+        
         $mock = $this->createMock(IHttpProvider::class);
-        $mock->method('send')->willReturn(new ODataResponse());
-        $mock->method('sendAsync')->willReturn(new ODataResponse());
+        $mock->method('send')->willReturn($mockResponse);
+        $mock->method('sendRequest')->willReturn($mockResponse);
         return $mock;
     }
 
