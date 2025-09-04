@@ -141,6 +141,8 @@ $airlines = $odataClient->from('Airlines')
 - **Preserved**: Default OData headers are automatically included
 - **Isolated**: Query-specific headers don't affect the client's global headers
 
+For a complete working example, see [`examples/custom_headers_example.php`](examples/custom_headers_example.php).
+
 ## Develop
 
 ### Run Tests
