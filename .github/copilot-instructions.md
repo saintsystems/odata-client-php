@@ -212,3 +212,60 @@ $cursor->each(function($person) {
 ```
 
 Always test these patterns when making changes to query building or HTTP handling code.
+
+## Quick Reference for Copilot Agents
+
+### Essential Commands (Copy-Paste Ready)
+```bash
+# Bootstrap project (TIMEOUT: 30+ minutes)
+composer install --no-dev --no-interaction  # Production only (2-3 min)
+composer install --no-interaction           # Full install (10-20 min)
+
+# Validate changes
+find src/ -name "*.php" -exec php -l {} \;  # Syntax check (~1.5 sec)
+composer dump-autoload                      # Regenerate autoloader (<1 sec)
+
+# Test functionality
+vendor/bin/phpunit                          # Full test suite (2-5 min, requires internet)
+php -f tests/ODataClientTest.php           # Alternative if PHPUnit unavailable
+
+# Code quality (if available)
+vendor/bin/phpstan analyse src/            # Static analysis
+```
+
+### Quick Validation Script
+```php
+<?php
+require_once 'vendor/autoload.php';
+echo "Classes: " . (class_exists('SaintSystems\OData\ODataClient') ? '✓' : '✗') . " ODataClient\n";
+echo "Autoload: " . (file_exists('vendor/autoload.php') ? '✓' : '✗') . " Working\n";
+if (class_exists('GuzzleHttp\Client')) {
+    echo "HTTP: ✓ Guzzle available for full testing\n";
+} else {
+    echo "HTTP: ⚠ Guzzle unavailable - limited testing only\n";
+}
+```
+
+### Common Issues & Solutions
+- **"Could not authenticate against github.com"** → Expected, wait for source download
+- **Network timeouts during install** → Increase timeout, NEVER CANCEL
+- **PHPUnit not found** → Use `php -f tests/ODataClientTest.php` or install individually
+- **Test failures** → Check internet connectivity to services.odata.org
+
+### Expected Output Examples
+```bash
+# Successful syntax check:
+$ find src/ -name "*.php" -exec php -l {} \;
+No syntax errors detected in src/ODataClient.php
+No syntax errors detected in src/Entity.php
+... (35 files total)
+
+# Successful validation:
+$ php -r "require_once 'vendor/autoload.php'; echo class_exists('SaintSystems\OData\ODataClient') ? 'OK' : 'FAIL';"
+OK
+
+# Production dependencies installed:
+$ composer show --no-dev | grep illuminate
+illuminate/collections    12.28.0  The Illuminate Collections package.
+illuminate/support        12.28.0  The Illuminate Support package.
+```
