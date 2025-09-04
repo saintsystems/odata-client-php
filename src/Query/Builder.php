@@ -9,7 +9,6 @@ use Illuminate\Support\LazyCollection;
 use SaintSystems\OData\Constants;
 use SaintSystems\OData\Exception\ODataQueryException;
 use SaintSystems\OData\IODataClient;
-use SaintSystems\OData\IODataRequest;
 use SaintSystems\OData\QueryOptions;
 
 class Builder
@@ -1168,7 +1167,7 @@ class Builder
     /**
      * Run the query as a "GET" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runGet()
     {
@@ -1216,7 +1215,7 @@ class Builder
     /**
      * Run the query as a "PATCH" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runPatch($body)
     {
@@ -1239,7 +1238,7 @@ class Builder
     /**
      * Run the query as a "POST" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runPost($body)
     {
@@ -1262,7 +1261,7 @@ class Builder
     /**
      * Run the query as a "DELETE" request against the client.
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     protected function runDelete()
     {
@@ -1303,7 +1302,7 @@ class Builder
      *
      * @param array $values
      *
-     * @return bool
+     * @return IODataResponse
      */
     public function insert(array $values)
     {

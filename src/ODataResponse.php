@@ -25,7 +25,7 @@ namespace SaintSystems\OData;
  * @package  SaintSystems.OData
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-class ODataResponse
+class ODataResponse implements IODataResponse
 {
     /**
      * The request

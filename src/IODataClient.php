@@ -88,9 +88,51 @@ interface IODataClient
      * @param $requestUri
      * @param array $bindings
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function get($requestUri, $bindings = []);
+
+    /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataResponse
+     */
+    public function post($requestUri, $postData);
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataResponse
+     */
+    public function patch($requestUri, $body);
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     *
+     * @return IODataResponse
+     */
+    public function delete($requestUri);
+
+    /**
+     * Return an ODataRequest
+     *
+     * @param string $method
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataResponse
+     *
+     * @throws ODataException
+     */
+    public function request($method, $requestUri, $body = null);
 
     /**
      * Run a GET HTTP request against the service.
@@ -98,7 +140,7 @@ interface IODataClient
      * @param $requestUri
      * @param array $bindings
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function getNextPage($requestUri, $bindings = []);
 
@@ -108,19 +150,9 @@ interface IODataClient
      * @param $requestUri
      * @param array $bindings
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function cursor($requestUri, $bindings = []);
-
-    /**
-     * Run a POST request against the service.
-     *
-     * @param string $requestUri
-     * @param mixed  $postData
-     *
-     * @return IODataRequest
-     */
-    public function post($requestUri, $postData);
 
     /**
      * Run a PUT request against the service.
@@ -128,28 +160,9 @@ interface IODataClient
      * @param string $requestUri
      * @param mixed  $body
      *
-     * @return IODataRequest
+     * @return IODataResponse
      */
     public function put($requestUri, $body);
-
-    /**
-     * Run a PATCH request against the service.
-     *
-     * @param string $requestUri
-     * @param mixed  $body
-     *
-     * @return IODataRequest
-     */
-    public function patch($requestUri, $body);
-
-    /**
-     * Run a DELETE request against the service.
-     *
-     * @param string $requestUri
-     *
-     * @return IODataRequest
-     */
-    public function delete($requestUri);
 
     /**
      * Get the query grammar used by the connection.
