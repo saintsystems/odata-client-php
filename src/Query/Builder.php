@@ -178,6 +178,13 @@ class Builder
     private $grammar;
 
     /**
+     * Custom headers for the request
+     *
+     * @var array
+     */
+    public $headers;
+
+    /**
      * Create a new query builder instance.
      *
      * @param IODataClient $client
@@ -192,6 +199,7 @@ class Builder
         $this->client = $client;
         $this->grammar = $grammar ?: $client->getQueryGrammar();
         $this->processor = $processor ?: $client->getPostProcessor();
+        $this->headers = [];
     }
 
     /**
@@ -1010,6 +1018,31 @@ class Builder
     }
 
     /**
+     * Set custom headers for the request.
+     *
+     * @param array $headers
+     * @return Builder|static
+     */
+    public function withHeaders(array $headers)
+    {
+        $this->headers = array_merge($this->headers, $headers);
+        return $this;
+    }
+
+    /**
+     * Add a custom header to the request.
+     *
+     * @param string $name
+     * @param string $value
+     * @return Builder|static
+     */
+    public function withHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+        return $this;
+    }
+
+    /**
      * Execute the query as a "GET" request.
      *
      * @param array $properties
@@ -1139,9 +1172,20 @@ class Builder
      */
     protected function runGet()
     {
-        return $this->client->get(
+        // Temporarily set headers on client if builder has custom headers
+        $originalHeaders = $this->client->getHeaders();
+        if (!empty($this->headers)) {
+            $this->client->setHeaders(array_merge($originalHeaders, $this->headers));
+        }
+        
+        $result = $this->client->get(
             $this->grammar->compileSelect($this), $this->getBindings()
         );
+        
+        // Restore original headers
+        $this->client->setHeaders($originalHeaders);
+        
+        return $result;
     }
 
     /**
@@ -1152,46 +1196,90 @@ class Builder
     public function cursor()
     {
         return new LazyCollection(function() {
-            yield from $this->client->cursor(
-                $this->grammar->compileSelect($this), $this->getBindings()
-            );
+            // Temporarily set headers on client if builder has custom headers
+            $originalHeaders = $this->client->getHeaders();
+            if (!empty($this->headers)) {
+                $this->client->setHeaders(array_merge($originalHeaders, $this->headers));
+            }
+            
+            try {
+                yield from $this->client->cursor(
+                    $this->grammar->compileSelect($this), $this->getBindings()
+                );
+            } finally {
+                // Restore original headers
+                $this->client->setHeaders($originalHeaders);
+            }
         });
     }
 
     /**
-     * Run the query as a "GET" request against the client.
+     * Run the query as a "PATCH" request against the client.
      *
      * @return IODataRequest
      */
     protected function runPatch($body)
     {
-        return $this->client->patch(
+        // Temporarily set headers on client if builder has custom headers
+        $originalHeaders = $this->client->getHeaders();
+        if (!empty($this->headers)) {
+            $this->client->setHeaders(array_merge($originalHeaders, $this->headers));
+        }
+        
+        $result = $this->client->patch(
             $this->grammar->compileSelect($this), $body
         );
+        
+        // Restore original headers
+        $this->client->setHeaders($originalHeaders);
+        
+        return $result;
     }
 
     /**
-     * Run the query as a "GET" request against the client.
+     * Run the query as a "POST" request against the client.
      *
      * @return IODataRequest
      */
     protected function runPost($body)
     {
-        return $this->client->post(
+        // Temporarily set headers on client if builder has custom headers
+        $originalHeaders = $this->client->getHeaders();
+        if (!empty($this->headers)) {
+            $this->client->setHeaders(array_merge($originalHeaders, $this->headers));
+        }
+        
+        $result = $this->client->post(
             $this->grammar->compileSelect($this), $body
         );
+        
+        // Restore original headers
+        $this->client->setHeaders($originalHeaders);
+        
+        return $result;
     }
 
     /**
-     * Run the query as a "GET" request against the client.
+     * Run the query as a "DELETE" request against the client.
      *
      * @return IODataRequest
      */
     protected function runDelete()
     {
-        return $this->client->delete(
+        // Temporarily set headers on client if builder has custom headers
+        $originalHeaders = $this->client->getHeaders();
+        if (!empty($this->headers)) {
+            $this->client->setHeaders(array_merge($originalHeaders, $this->headers));
+        }
+        
+        $result = $this->client->delete(
             $this->grammar->compileSelect($this)
         );
+        
+        // Restore original headers
+        $this->client->setHeaders($originalHeaders);
+        
+        return $result;
     }
 
     /**
