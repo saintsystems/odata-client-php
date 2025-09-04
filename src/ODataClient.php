@@ -295,6 +295,19 @@ class ODataClient implements IODataClient
     }
 
     /**
+     * Run a PUT request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function put($requestUri, $body)
+    {
+        return $this->request(HttpMethod::PUT, $requestUri, $body);
+    }
+
+    /**
      * Run a PATCH request against the service.
      *
      * @param string $requestUri
