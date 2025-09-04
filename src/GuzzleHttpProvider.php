@@ -3,6 +3,11 @@
 namespace SaintSystems\OData;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use SaintSystems\OData\Exception\HttpClientException;
 
 class GuzzleHttpProvider implements IHttpProvider
 {
@@ -76,10 +81,9 @@ class GuzzleHttpProvider implements IHttpProvider
     *
     * @param HttpRequestMessage $request
     *
-    * @return mixed object or array of objects
-    *         of class $returnType
+    * @return ResponseInterface PSR-7 response
     */
-    public function send(HttpRequestMessage $request)
+    public function send(HttpRequestMessage $request): ResponseInterface
     {
         $options = [
             'headers' => $request->headers,
@@ -103,5 +107,31 @@ class GuzzleHttpProvider implements IHttpProvider
         );
 
         return $result;
+    }
+
+    /**
+     * Sends a PSR-7 request and returns a PSR-7 response
+     * 
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     */
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        $options = [
+            'timeout' => $this->timeout
+        ];
+
+        foreach ($this->extra_options as $key => $value)
+        {
+            $options[$key] = $value;
+        }
+
+        try {
+            return $this->http->sendRequest($request, $options);
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            // Wrap Guzzle exceptions in PSR-18 exceptions
+            throw new HttpClientException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

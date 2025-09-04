@@ -101,7 +101,7 @@ class Psr17HttpProvider implements IHttpProvider
      *
      * @return ResponseInterface
      */
-    public function send(HttpRequestMessage $request)
+    public function send(HttpRequestMessage $request): ResponseInterface
     {
         // Create PSR-7 request
         $psrRequest = $this->requestFactory->createRequest(
@@ -124,5 +124,18 @@ class Psr17HttpProvider implements IHttpProvider
         // Note: PSR-18 doesn't have built-in timeout support
         // Implementations should handle this via client configuration
         return $this->httpClient->sendRequest($psrRequest);
+    }
+
+    /**
+     * Sends a PSR-7 request and returns a PSR-7 response
+     * 
+     * @param RequestInterface $request
+     * @return ResponseInterface
+     * @throws ClientExceptionInterface
+     */
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        // The wrapped client already implements PSR-18
+        return $this->httpClient->sendRequest($request);
     }
 }

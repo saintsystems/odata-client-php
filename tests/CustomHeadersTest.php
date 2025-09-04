@@ -8,27 +8,119 @@ use SaintSystems\OData\ODataRequest;
 use SaintSystems\OData\HttpRequestMessage;
 use SaintSystems\OData\HttpMethod;
 use SaintSystems\OData\IHttpProvider;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class MockHttpProvider implements IHttpProvider
 {
     public $lastRequest = null;
 
-    public function send(HttpRequestMessage $request)
+    public function send(HttpRequestMessage $request): ResponseInterface
     {
         $this->lastRequest = $request;
         
-        // Return a mock response
-        return new class {
-            public function getBody() {
-                return '{"value": []}';
+        // Return a mock response that implements ResponseInterface
+        return new class implements ResponseInterface {
+            public function getProtocolVersion(): string {
+                return '1.1';
             }
-            public function getStatusCode() {
-                return 200;
+            public function withProtocolVersion(string $version): ResponseInterface {
+                return $this;
             }
-            public function getHeaders() {
+            public function getHeaders(): array {
                 return [];
             }
+            public function hasHeader(string $name): bool {
+                return false;
+            }
+            public function getHeader(string $name): array {
+                return [];
+            }
+            public function getHeaderLine(string $name): string {
+                return '';
+            }
+            public function withHeader(string $name, $value): ResponseInterface {
+                return $this;
+            }
+            public function withAddedHeader(string $name, $value): ResponseInterface {
+                return $this;
+            }
+            public function withoutHeader(string $name): ResponseInterface {
+                return $this;
+            }
+            public function getBody(): \Psr\Http\Message\StreamInterface {
+                return new class implements \Psr\Http\Message\StreamInterface {
+                    private $content = '{"value": []}';
+                    
+                    public function __toString(): string {
+                        return $this->content;
+                    }
+                    public function close(): void {}
+                    public function detach() {
+                        return null;
+                    }
+                    public function getSize(): ?int {
+                        return strlen($this->content);
+                    }
+                    public function tell(): int {
+                        return 0;
+                    }
+                    public function eof(): bool {
+                        return false;
+                    }
+                    public function isSeekable(): bool {
+                        return true;
+                    }
+                    public function seek(int $offset, int $whence = SEEK_SET): void {}
+                    public function rewind(): void {}
+                    public function isWritable(): bool {
+                        return false;
+                    }
+                    public function write(string $string): int {
+                        return 0;
+                    }
+                    public function isReadable(): bool {
+                        return true;
+                    }
+                    public function read(int $length): string {
+                        return substr($this->content, 0, $length);
+                    }
+                    public function getContents(): string {
+                        return $this->content;
+                    }
+                    public function getMetadata(?string $key = null) {
+                        return null;
+                    }
+                };
+            }
+            public function withBody(\Psr\Http\Message\StreamInterface $body): ResponseInterface {
+                return $this;
+            }
+            public function getStatusCode(): int {
+                return 200;
+            }
+            public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface {
+                return $this;
+            }
+            public function getReasonPhrase(): string {
+                return 'OK';
+            }
         };
+    }
+    
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        // For PSR-18 compatibility
+        $httpMessage = new HttpRequestMessage();
+        $httpMessage->method = $request->getMethod();
+        $httpMessage->requestUri = (string)$request->getUri();
+        $httpMessage->headers = [];
+        foreach ($request->getHeaders() as $name => $values) {
+            $httpMessage->headers[$name] = implode(', ', $values);
+        }
+        $httpMessage->body = $request->getBody()->getContents();
+        
+        return $this->send($httpMessage);
     }
 }
 
