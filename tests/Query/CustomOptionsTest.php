@@ -170,10 +170,19 @@ class CustomOptionsTest extends TestCase
     public function testAddOptionValidatesKeyStartingWithDollar()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom option key \'$invalid\' cannot start with \'$\'');
+        $this->expectExceptionMessage('Custom option key \'$invalid\' cannot start with \'$\' or \'@\'');
         
         $builder = $this->getBuilder();
         $builder->addOption(['$invalid' => 'value']);
+    }
+
+    public function testAddOptionValidatesKeyStartingWithAt()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Custom option key \'@invalid\' cannot start with \'$\' or \'@\'');
+        
+        $builder = $this->getBuilder();
+        $builder->addOption(['@invalid' => 'value']);
     }
 
     public function testAddOptionValidatesEmptyKey()

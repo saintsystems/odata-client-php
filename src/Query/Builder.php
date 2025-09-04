@@ -269,7 +269,7 @@ class Builder
      * Array format: ['key' => 'value', 'key2' => 'value2']
      * 
      * Custom option keys must follow OData naming conventions:
-     * - Must not start with '$' (reserved for standard OData parameters)
+     * - Must not start with '$' or '@' (reserved for standard OData parameters)
      * - Must be valid identifiers (alphanumeric and underscores)
      * - Cannot be empty
      * 
@@ -370,9 +370,9 @@ class Builder
             throw new \InvalidArgumentException('Custom option key must be a non-empty string');
         }
 
-        // Check if key starts with '$' (reserved for OData system parameters)
-        if (strpos($key, '$') === 0) {
-            throw new \InvalidArgumentException("Custom option key '$key' cannot start with '\$' (reserved for OData system parameters)");
+        // Check if key starts with '$' or '@' (reserved for OData system parameters)
+        if (strpos($key, '$') === 0 || strpos($key, '@') === 0) {
+            throw new \InvalidArgumentException("Custom option key '$key' cannot start with '\$' or '@' (reserved for OData system parameters)");
         }
 
         // Check for valid identifier pattern (alphanumeric, underscores, hyphens)
