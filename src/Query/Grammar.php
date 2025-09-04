@@ -684,6 +684,32 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Compile a "where contains" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereContains(Builder $query, $where)
+    {
+        $value = $this->prepareValue($where['value']);
+        return 'contains(' . $where['column'] . ',' . $value . ')';
+    }
+
+    /**
+     * Compile a "where not contains" clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereNotContains(Builder $query, $where)
+    {
+        $value = $this->prepareValue($where['value']);
+        return 'indexof(' . $where['column'] . ',' . $value . ') eq -1';
+    }
+
+    /**
      * Append query param to existing uri
      *
      * @param string $value

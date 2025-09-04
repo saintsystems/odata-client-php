@@ -844,6 +844,61 @@ class Builder
         return $this->whereNotIn($column, $list, 'or');
     }
 
+    /**
+     * Add a "where contains" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $value
+     * @param  string  $boolean
+     * @param  bool    $not
+     * @return $this
+     */
+    public function whereContains($column, $value, $boolean = 'and', $not = false)
+    {
+        $type = $not ? 'NotContains' : 'Contains';
+
+        $this->wheres[] = compact('type', 'column', 'value', 'boolean');
+
+        return $this;
+    }
+
+    /**
+     * Add an "or where contains" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $value
+     * @return Builder|static
+     */
+    public function orWhereContains($column, $value)
+    {
+        return $this->whereContains($column, $value, 'or');
+    }
+
+    /**
+     * Add a "where not contains" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $value
+     * @param  string  $boolean
+     * @return Builder|static
+     */
+    public function whereNotContains($column, $value, $boolean = 'and')
+    {
+        return $this->whereContains($column, $value, $boolean, true);
+    }
+
+    /**
+     * Add an "or where not contains" clause to the query.
+     *
+     * @param  string  $column
+     * @param  string  $value
+     * @return Builder|static
+     */
+    public function orWhereNotContains($column, $value)
+    {
+        return $this->whereNotContains($column, $value, 'or');
+    }
+
 
 
     /**

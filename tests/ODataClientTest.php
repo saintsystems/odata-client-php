@@ -314,4 +314,119 @@ class ODataClientTest extends TestCase
 
         $this->assertEquals($pageSize, count($data->toArray()));
     }
+
+    public function testODataClientWhereContainsRealData()
+    {
+        $odataClient = $this->createODataClient();
+
+        // Test whereContains - should find airlines with "Airline" in their name
+        $airlines = $odataClient->from('Airlines')
+            ->whereContains('Name', 'Airline')
+            ->get();
+
+        $this->assertTrue(is_array($airlines->toArray()));
+        $this->assertGreaterThan(0, $airlines->count());
+        
+        // Verify all results contain "Airline" in the name
+        foreach ($airlines as $airline) {
+            $this->assertStringContainsString('Airline', $airline->Name);
+        }
+
+        // Should find American Airlines, Shanghai Airline, and Austrian Airlines
+        $airlineCodes = $airlines->pluck('AirlineCode')->toArray();
+        $this->assertContains('AA', $airlineCodes); // American Airlines
+        $this->assertContains('FM', $airlineCodes); // Shanghai Airline
+        $this->assertContains('OS', $airlineCodes); // Austrian Airlines
+    }
+
+    public function testODataClientOrWhereContainsRealData()
+    {
+        $odataClient = $this->createODataClient();
+
+        // Test orWhereContains - find Air France OR names containing "China"
+        $airlines = $odataClient->from('Airlines')
+            ->where('AirlineCode', 'AF')
+            ->orWhereContains('Name', 'China')
+            ->get();
+
+        $this->assertTrue(is_array($airlines->toArray()));
+        $this->assertGreaterThanOrEqual(2, $airlines->count()); // At least Air France and China Eastern
+        
+        $airlineCodes = $airlines->pluck('AirlineCode')->toArray();
+        $this->assertContains('AF', $airlineCodes); // Air France
+        $this->assertContains('MU', $airlineCodes); // China Eastern Airlines
+    }
+
+    public function testODataClientWhereNotContainsRealData()
+    {
+        $odataClient = $this->createODataClient();
+
+        // Test whereNotContains - should find airlines WITHOUT "Airline" in their name
+        $airlines = $odataClient->from('Airlines')
+            ->whereNotContains('Name', 'Airline')
+            ->get();
+
+        $this->assertTrue(is_array($airlines->toArray()));
+        $this->assertGreaterThan(0, $airlines->count());
+        
+        // Verify none of the results contain "Airline" in the name
+        foreach ($airlines as $airline) {
+            $this->assertStringNotContainsString('Airline', $airline->Name);
+        }
+
+        // Should find Air France, Alitalia, Air Canada, and other non-Airline named carriers
+        $airlineCodes = $airlines->pluck('AirlineCode')->toArray();
+        $this->assertContains('AF', $airlineCodes); // Air France
+        $this->assertContains('AZ', $airlineCodes); // Alitalia
+        $this->assertContains('AC', $airlineCodes); // Air Canada
+        $this->assertNotContains('AA', $airlineCodes); // American Airlines should NOT be included
+        $this->assertNotContains('FM', $airlineCodes); // Shanghai Airline should NOT be included
+    }
+
+    public function testODataClientOrWhereNotContainsRealData()
+    {
+        $odataClient = $this->createODataClient();
+
+        // Test orWhereNotContains - find Turkish Airlines OR names not containing "Air"
+        $airlines = $odataClient->from('Airlines')
+            ->where('AirlineCode', 'TK')
+            ->orWhereNotContains('Name', 'Air')
+            ->get();
+
+        $this->assertTrue(is_array($airlines->toArray()));
+        $this->assertGreaterThan(0, $airlines->count());
+        
+        $airlineCodes = $airlines->pluck('AirlineCode')->toArray();
+        $this->assertContains('TK', $airlineCodes); // Turkish Airlines (matched by first condition)
+        $this->assertContains('AZ', $airlineCodes); // Alitalia (no "Air" in name)
+        // Note: Results may vary based on the current dataset
+    }
+
+    public function testODataClientCombinedContainsNotContainsRealData()
+    {
+        $odataClient = $this->createODataClient();
+
+        // Test combined contains/notContains - names with "Air" but not "Airline"
+        $airlines = $odataClient->from('Airlines')
+            ->whereContains('Name', 'Air')
+            ->whereNotContains('Name', 'Airline')
+            ->get();
+
+        $this->assertTrue(is_array($airlines->toArray()));
+        $this->assertGreaterThan(0, $airlines->count());
+        
+        // Should find Air France, Air Canada, Alitalia
+        $airlineNames = $airlines->pluck('Name')->toArray();
+        foreach ($airlineNames as $name) {
+            $this->assertStringContainsString('Air', $name);
+            $this->assertStringNotContainsString('Airline', $name);
+        }
+
+        $airlineCodes = $airlines->pluck('AirlineCode')->toArray();
+        $this->assertContains('AF', $airlineCodes); // Air France
+        $this->assertContains('AC', $airlineCodes); // Air Canada  
+        $this->assertNotContains('AA', $airlineCodes); // American Airlines (contains both)
+        $this->assertNotContains('OS', $airlineCodes); // Austrian Airlines (contains both)
+        $this->assertNotContains('FM', $airlineCodes); // Shanghai Airline (contains both)
+    }
 }
