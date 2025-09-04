@@ -12,6 +12,7 @@ use SaintSystems\OData\IHttpProvider;
 use SaintSystems\OData\IODataRequest;
 use SaintSystems\OData\IODataResponse;
 use SaintSystems\OData\ODataResponse;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Test custom query options functionality
@@ -37,12 +38,17 @@ class CustomOptionsTest extends TestCase
 
     protected function createMockHttpProvider(): IHttpProvider
     {
-        // Create mock response - the request parameter can be null for testing
-        $mockResponse = new ODataResponse(null, '{"value":[]}', 200, []);
+        // Create a mock PSR-7 response to satisfy the return type constraint
+        $mockPsr7Response = $this->createMock(ResponseInterface::class);
+        $mockPsr7Response->method('getBody')->willReturn(
+            $this->createMock(\Psr\Http\Message\StreamInterface::class)
+        );
+        $mockPsr7Response->method('getStatusCode')->willReturn(200);
+        $mockPsr7Response->method('getHeaders')->willReturn([]);
         
         $mock = $this->createMock(IHttpProvider::class);
-        $mock->method('send')->willReturn($mockResponse);
-        $mock->method('sendRequest')->willReturn($mockResponse);
+        $mock->method('send')->willReturn($mockPsr7Response);
+        $mock->method('sendRequest')->willReturn($mockPsr7Response);
         return $mock;
     }
 
