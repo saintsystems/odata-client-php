@@ -478,14 +478,14 @@ class Grammar implements IGrammar
     /**
      * Compile the custom options portion of the query.
      *
-     * @param Builder $query
-     * @param string  $customOption
+     * @param Builder $query The query builder instance
+     * @param string|array|null $customOption The custom options to compile
      *
-     * @return string
+     * @return string The compiled custom options as query parameters
      */
     protected function compileCustomOption(Builder $query, $customOption)
     {
-        if (is_null($customOption)) {
+        if (is_null($customOption) || (is_array($customOption) && empty($customOption))) {
             return '';
         }
 
@@ -497,21 +497,26 @@ class Grammar implements IGrammar
     }
 
     /**
-     * Compile the composite Custom Options key portion of the query.
+     * Compile the composite Custom Options into a query parameter string.
      *
-     * @param Builder $query
-     * @param mixed   $customOption
+     * Converts an associative array of custom options into a 'key=value&key2=value2' format
+     * suitable for URL query parameters.
      *
-     * @return string
+     * @param array $customOption Associative array of custom options
+     *
+     * @return string Compiled custom options string
      */
     public function compileCompositeCustomOption($customOption)
     {
         $customOptions = [];
         foreach ($customOption as $key => $value) {
-            $customOptions[] = $key . '=' . $value;
+            // URL encode both key and value to handle special characters
+            $encodedKey = urlencode($key);
+            $encodedValue = urlencode($value);
+            $customOptions[] = $encodedKey . '=' . $encodedValue;
         }
 
-        return implode(',', $customOptions);
+        return implode('&', $customOptions);
     }    
 
     /**
@@ -590,15 +595,49 @@ class Grammar implements IGrammar
      */
     protected function concatenate($segments)
     {
-        // return implode('', array_filter($segments, function ($value) {
-        //     return (string) $value !== '';
-        // }));
         $uri = '';
+        $queryParams = [];
+        $hasQueryString = false;
+        $hasEntitySet = false;
+        
         foreach ($segments as $segment => $value) {
             if ((string) $value !== '') {
-                $uri.= strpos($uri, '?$') ? '&' . $value : $value;
+                if ($segment === 'entitySet') {
+                    $hasEntitySet = true;
+                    $uri .= $value;
+                } else if ($segment === 'entityKey' || $segment === 'count') {
+                    // These are path segments, not query parameters
+                    $uri .= $value;
+                } else if ($segment === 'queryString') {
+                    // queryString already includes the '?' 
+                    $hasQueryString = true;
+                    // Skip it if empty or just '?'
+                    if ($value !== '?') {
+                        $uri .= $value;
+                    }
+                } else {
+                    // This is a query parameter - collect it
+                    $queryParams[] = $value;
+                }
             }
         }
+        
+        // Add query parameters if any
+        if (!empty($queryParams)) {
+            // Only add '?' if we have an entity set or already have content
+            if ($hasEntitySet || strlen($uri) > 0) {
+                // If we already have a queryString with '?', use '&' to join
+                if ($hasQueryString && strpos($uri, '?') !== false) {
+                    $uri .= '&' . implode('&', $queryParams);
+                } else {
+                    $uri .= '?' . implode('&', $queryParams);
+                }
+            } else {
+                // No entity set, just return the query params without '?'
+                $uri .= implode('&', $queryParams);
+            }
+        }
+        
         return $uri;
     }
 
