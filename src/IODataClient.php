@@ -113,6 +113,45 @@ interface IODataClient
     public function cursor($requestUri, $bindings = []);
 
     /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function post($requestUri, $postData);
+
+    /**
+     * Run a PUT request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function put($requestUri, $body);
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function patch($requestUri, $body);
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     *
+     * @return IODataRequest
+     */
+    public function delete($requestUri);
+
+    /**
      * Get the query grammar used by the connection.
      *
      * @return IGrammar
