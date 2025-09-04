@@ -341,6 +341,22 @@ class ODataClient implements IODataClient
     }
 
     /**
+     * Create an ODataRequest instance. This method can be overridden in subclasses
+     * to customize request creation (e.g., setting custom timeouts).
+     *
+     * @param string $method
+     * @param string $requestUri
+     *
+     * @return ODataRequest
+     *
+     * @throws ODataException
+     */
+    protected function createRequest($method, $requestUri)
+    {
+        return new ODataRequest($method, $this->baseUrl.$requestUri, $this, $this->entityReturnType);
+    }
+
+    /**
      * Return an ODataRequest
      *
      * @param string $method
@@ -353,7 +369,7 @@ class ODataClient implements IODataClient
      */
     public function request($method, $requestUri, $body = null)
     {
-        $request = new ODataRequest($method, $this->baseUrl.$requestUri, $this, $this->entityReturnType);
+        $request = $this->createRequest($method, $requestUri);
 
         if ($body) {
             $request->attachBody($body);
