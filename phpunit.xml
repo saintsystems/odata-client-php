@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
-  <coverage includeUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">src</directory>
-    </include>
-    <exclude>
-      <directory suffix=".php">src/Model</directory>
-    </exclude>
-  </coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd">
   <testsuites>
     <testsuite name="Microsoft Dynamics SDK Test Suite">
       <directory>tests</directory>
@@ -16,4 +8,12 @@
   <!-- <logging>
 		<log type="coverage-html" target="coverage/report" charset="UTF-8" yui="true" highlight="true" lowUpperBound="50" highLowerBound="80"/>
 	</logging> -->
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">src/Model</directory>
+    </exclude>
+  </source>
 </phpunit>
