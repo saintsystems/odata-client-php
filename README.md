@@ -93,6 +93,41 @@ class UsageExample
 $example = new UsageExample();
 ```
 
+## Advanced Usage
+
+### Custom Timeout Configuration
+
+If you need to configure custom network timeouts for your OData requests, you can create a subclass of `ODataClient` and override the `createRequest` method:
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+class CustomTimeoutODataClient extends ODataClient {
+    private $customTimeout;
+    
+    public function __construct($baseUrl, $authProvider = null, $httpProvider = null, $timeout = 30) {
+        parent::__construct($baseUrl, $authProvider, $httpProvider);
+        $this->customTimeout = $timeout;
+    }
+    
+    protected function createRequest($method, $requestUri) {
+        $request = parent::createRequest($method, $requestUri);
+        $request->setTimeout($this->customTimeout);
+        return $request;
+    }
+}
+
+// Usage with custom timeout
+$httpProvider = new GuzzleHttpProvider();
+$client = new CustomTimeoutODataClient('https://api.example.com/odata', null, $httpProvider, 60);
+$result = $client->from('Products')->get(); // Uses 60-second timeout
+```
+
+This approach allows you to customize request creation without having to override the entire request flow, following the template method pattern.
+
 ## Develop
 
 ### Run Tests
