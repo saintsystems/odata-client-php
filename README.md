@@ -136,6 +136,59 @@ $airlines = $odataClient->from('Airlines')
     ->get();
 ```
 
+### Custom Query Options
+
+You can add custom query parameters to your OData requests that are not part of the standard OData specification. This is useful for passing additional parameters to your OData service:
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$odataClient = new ODataClient($odataServiceUrl, null, $httpProvider);
+
+// Method 1: Add custom options using string format
+$people = $odataClient->from('People')
+    ->addOption('timeout=30')
+    ->addOption('format=minimal')
+    ->get();
+// Results in: /People?timeout=30&format=minimal
+
+// Method 2: Add custom options using array format  
+$people = $odataClient->from('People')
+    ->addOption(['timeout' => '30', 'debug' => 'true'])
+    ->get();
+// Results in: /People?timeout=30&debug=true
+
+// Method 3: Mix with standard OData parameters
+$people = $odataClient->from('People')
+    ->select('FirstName', 'LastName')
+    ->where('FirstName', 'Russell')
+    ->addOption('version=2.0')
+    ->get();
+// Results in: /People?$select=FirstName,LastName&$filter=FirstName eq 'Russell'&version=2.0
+
+// Method 4: Multiple addOption calls are merged (not overwritten)
+$people = $odataClient->from('People')
+    ->addOption('timeout=30')
+    ->addOption('format=minimal')
+    ->addOption(['debug' => 'true']);
+// Results in: /People?timeout=30&format=minimal&debug=true
+
+// Custom option keys are validated:
+// ✓ Valid: 'timeout', 'custom_param', 'kebab-case', 'camelCase'
+// ✗ Invalid: '$reserved' (starts with $), 'invalid key!' (special chars)
+```
+
+**Key Features:**
+- **Merging**: Multiple `addOption()` calls merge instead of overwriting
+- **Flexible**: Supports both string (`'key=value'`) and array (`['key' => 'value']`) formats
+- **Validated**: Custom option keys are validated to prevent conflicts with OData system parameters
+- **URL Encoded**: Special characters in keys and values are automatically URL encoded
+- **Fluent**: Chain with other query methods for clean, readable code
+
 ### Custom Timeout Configuration
 
 If you need to configure custom network timeouts for your OData requests, you can create a subclass of `ODataClient` and override the `createRequest` method:

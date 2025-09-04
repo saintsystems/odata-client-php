@@ -478,14 +478,14 @@ class Grammar implements IGrammar
     /**
      * Compile the custom options portion of the query.
      *
-     * @param Builder $query
-     * @param string  $customOption
+     * @param Builder $query The query builder instance
+     * @param string|array|null $customOption The custom options to compile
      *
-     * @return string
+     * @return string The compiled custom options as query parameters
      */
     protected function compileCustomOption(Builder $query, $customOption)
     {
-        if (is_null($customOption)) {
+        if (is_null($customOption) || (is_array($customOption) && empty($customOption))) {
             return '';
         }
 
@@ -497,21 +497,26 @@ class Grammar implements IGrammar
     }
 
     /**
-     * Compile the composite Custom Options key portion of the query.
+     * Compile the composite Custom Options into a query parameter string.
      *
-     * @param Builder $query
-     * @param mixed   $customOption
+     * Converts an associative array of custom options into a 'key=value&key2=value2' format
+     * suitable for URL query parameters.
      *
-     * @return string
+     * @param array $customOption Associative array of custom options
+     *
+     * @return string Compiled custom options string
      */
     public function compileCompositeCustomOption($customOption)
     {
         $customOptions = [];
         foreach ($customOption as $key => $value) {
-            $customOptions[] = $key . '=' . $value;
+            // URL encode both key and value to handle special characters
+            $encodedKey = urlencode($key);
+            $encodedValue = urlencode($value);
+            $customOptions[] = $encodedKey . '=' . $encodedValue;
         }
 
-        return implode(',', $customOptions);
+        return implode('&', $customOptions);
     }    
 
     /**
