@@ -1120,8 +1120,10 @@ class Builder
      *
      * @return boolean
      */
-    public function delete($options = null)
+    public function delete($id, $options = null)
     {
+        $this->whereKey($id);
+        
         $results = $this->processor->processSelect($this, $this->runDelete());
 
         return true;
