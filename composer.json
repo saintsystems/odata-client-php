@@ -23,7 +23,7 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.0",
-        "phpunit/phpunit": "^9.0 || ^10.5",
+        "phpunit/phpunit": "*",
         "phpstan/phpstan": "^2.1"
     },
     "suggest": {
