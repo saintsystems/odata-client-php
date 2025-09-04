@@ -231,6 +231,75 @@ This approach allows you to customize request creation without having to overrid
 
 For a complete working example, see [`examples/custom_headers_example.php`](examples/custom_headers_example.php).
 
+### Lambda Operators (any/all)
+
+The OData Client supports lambda operators `any` and `all` for filtering collections within entities. These operators allow you to filter based on conditions within related navigation properties.
+
+#### Basic Usage
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$client = new ODataClient('https://services.odata.org/V4/TripPinService', null, $httpProvider);
+
+// Find people who have any completed trips
+$peopleWithCompletedTrips = $client->from('People')
+    ->whereAny('Trips', function($query) {
+        $query->where('Status', 'Completed');
+    })
+    ->get();
+// Generates: People?$filter=Trips/any(t: t/Status eq 'Completed')
+
+// Find people where all their trips are high-budget
+$peopleWithAllHighBudgetTrips = $client->from('People')
+    ->whereAll('Trips', function($query) {
+        $query->where('Budget', '>', 1000);
+    })
+    ->get();
+// Generates: People?$filter=Trips/all(t: t/Budget gt 1000)
+```
+
+#### Available Lambda Methods
+
+- `whereAny($navigationProperty, $callback)` - Returns true if any element matches the condition
+- `whereAll($navigationProperty, $callback)` - Returns true if all elements match the condition  
+- `orWhereAny($navigationProperty, $callback)` - OR version of whereAny
+- `orWhereAll($navigationProperty, $callback)` - OR version of whereAll
+
+#### Complex Conditions
+
+```php
+// Multiple conditions within lambda
+$peopleWithQualifiedTrips = $client->from('People')
+    ->whereAny('Trips', function($query) {
+        $query->where('Status', 'Completed')
+              ->where('Budget', '>', 500);
+    })
+    ->get();
+// Generates: People?$filter=Trips/any(t: t/Status eq 'Completed' and t/Budget gt 500)
+
+// Combining with regular conditions
+$activePeopleWithTrips = $client->from('People')
+    ->where('Status', 'Active')
+    ->whereAny('Trips', function($query) {
+        $query->where('Status', 'Pending');
+    })
+    ->get();
+// Generates: People?$filter=Status eq 'Active' and Trips/any(t: t/Status eq 'Pending')
+```
+
+**Key Features:**
+- **Automatic variable generation**: Uses first letter of navigation property (e.g., `Trips` → `t`)
+- **Full operator support**: Supports all comparison operators (eq, ne, gt, ge, lt, le)
+- **Nested conditions**: Handles complex where clauses within lambda expressions
+- **Fluent interface**: Works seamlessly with other query builder methods
+
+For comprehensive examples and advanced usage patterns, see [`examples/lambda_operators.php`](examples/lambda_operators.php).
+
 ## Develop
 
 ### Run Tests

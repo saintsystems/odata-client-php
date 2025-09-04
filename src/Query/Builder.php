@@ -1015,6 +1015,74 @@ class Builder
         return $this->whereNotContains($column, $value, 'or');
     }
 
+    /**
+     * Add a "where any" lambda clause to the query.
+     *
+     * @param  string  $navigationProperty
+     * @param  \Closure  $callback
+     * @param  string  $boolean
+     * @return $this
+     */
+    public function whereAny($navigationProperty, Closure $callback, $boolean = 'and')
+    {
+        $type = 'Any';
+
+        // Create a new query instance for the lambda condition
+        call_user_func($callback, $query = $this->forNestedWhere());
+
+        $this->wheres[] = compact('type', 'navigationProperty', 'query', 'boolean');
+
+        $this->addBinding($query->getBindings(), 'where');
+
+        return $this;
+    }
+
+    /**
+     * Add an "or where any" lambda clause to the query.
+     *
+     * @param  string  $navigationProperty
+     * @param  \Closure  $callback
+     * @return Builder|static
+     */
+    public function orWhereAny($navigationProperty, Closure $callback)
+    {
+        return $this->whereAny($navigationProperty, $callback, 'or');
+    }
+
+    /**
+     * Add a "where all" lambda clause to the query.
+     *
+     * @param  string  $navigationProperty
+     * @param  \Closure  $callback
+     * @param  string  $boolean
+     * @return $this
+     */
+    public function whereAll($navigationProperty, Closure $callback, $boolean = 'and')
+    {
+        $type = 'All';
+
+        // Create a new query instance for the lambda condition
+        call_user_func($callback, $query = $this->forNestedWhere());
+
+        $this->wheres[] = compact('type', 'navigationProperty', 'query', 'boolean');
+
+        $this->addBinding($query->getBindings(), 'where');
+
+        return $this;
+    }
+
+    /**
+     * Add an "or where all" lambda clause to the query.
+     *
+     * @param  string  $navigationProperty
+     * @param  \Closure  $callback
+     * @return Builder|static
+     */
+    public function orWhereAll($navigationProperty, Closure $callback)
+    {
+        return $this->whereAll($navigationProperty, $callback, 'or');
+    }
+
 
 
     /**
