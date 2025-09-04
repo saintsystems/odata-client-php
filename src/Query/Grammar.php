@@ -360,6 +360,88 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Determines if the value is a URL-encoded datetime format
+     *
+     * @param string $value
+     * @return bool
+     */
+    protected function isUrlEncodedDateTime($value)
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        // First try to URL decode the value
+        $decoded = urldecode($value);
+        
+        // Skip if the value wasn't actually URL encoded (decoded is same as original)
+        if ($decoded === $value) {
+            return false;
+        }
+        
+        // Check if the decoded value matches common ISO 8601 datetime patterns
+        $patterns = [
+            // Basic ISO 8601: 2023-12-25T10:30:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
+            // ISO 8601 with milliseconds: 2023-12-25T10:30:00.123
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}$/',
+            // ISO 8601 with timezone: 2023-12-25T10:30:00+05:00 or 2023-12-25T10:30:00-05:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/',
+            // ISO 8601 with milliseconds and timezone: 2023-12-25T10:30:00.123+05:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}[+-]\d{2}:\d{2}$/',
+            // ISO 8601 UTC: 2023-12-25T10:30:00Z
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/',
+            // ISO 8601 UTC with milliseconds: 2023-12-25T10:30:00.123Z
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}Z$/',
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $decoded)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Determines if the value is a datetime string (not URL encoded)
+     *
+     * @param string $value
+     * @return bool
+     */
+    protected function isDateTime($value)
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+        
+        // Check if it matches common ISO 8601 datetime patterns
+        $patterns = [
+            // Basic ISO 8601: 2023-12-25T10:30:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
+            // ISO 8601 with milliseconds: 2023-12-25T10:30:00.123
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}$/',
+            // ISO 8601 with timezone: 2023-12-25T10:30:00+05:00 or 2023-12-25T10:30:00-05:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/',
+            // ISO 8601 with milliseconds and timezone: 2023-12-25T10:30:00.123+05:00
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}[+-]\d{2}:\d{2}$/',
+            // ISO 8601 UTC: 2023-12-25T10:30:00Z
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/',
+            // ISO 8601 UTC with milliseconds: 2023-12-25T10:30:00.123Z
+            '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,6}Z$/',
+        ];
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $value)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
      * Compile the "order by" portions of the query.
      *
      * @param Builder  $query
@@ -581,8 +663,13 @@ class Grammar implements IGrammar
         // stringify all values if it has NOT an odata enum or special syntax primitive data type
         // (ex. Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female' or datetime'1970-01-01T00:00:00')
         if (!preg_match("/^([\w]+\.)+([\w]+)(\'[\w]+\')$/", $value) && !$this->isSpecialPrimitiveDataType($value)) {
-            // Check if the value is a string and NOT a date
-            if (is_string($value) && !\DateTime::createFromFormat('Y-m-d\TH:i:sT', $value)) {
+            // Check if the value is a URL-encoded datetime or a regular datetime
+            if ($this->isUrlEncodedDateTime($value) || $this->isDateTime($value)) {
+                // Don't wrap datetime values in quotes - they should be passed as-is
+                return $value;
+            } 
+            // Check if the value is a string and should be quoted
+            else if (is_string($value)) {
                 $value = "'".$value."'";
             } else if(is_bool($value)){
                 $value = $value ? 'true' : 'false';

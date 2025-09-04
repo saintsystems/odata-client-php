@@ -773,4 +773,69 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWithDateTimeValue()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'ProductSearch';
+
+        $builder->from($entitySet)
+                ->where('UpdatedAt', '>=', '2000-02-05T08:48:36+08:00');
+
+        $expectedUri = 'ProductSearch?$filter=UpdatedAt ge 2000-02-05T08:48:36+08:00';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithUrlEncodedDateTimeValue()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'ProductSearch';
+        
+        // Simulate URL-encoded datetime as user would provide
+        $filterEarliest = urlencode('2000-02-05T08:48:36+08:00');
+        $filterLatest = urlencode('2023-03-05T08:48:36+08:00');
+
+        $builder->from($entitySet)
+                ->where('UpdatedAt', '>=', $filterEarliest)
+                ->where('UpdatedAt', '<=', $filterLatest);
+
+        // Expected: URL-encoded datetime values should NOT be wrapped in quotes
+        $expectedUri = 'ProductSearch?$filter=UpdatedAt ge 2000-02-05T08%3A48%3A36%2B08%3A00 and UpdatedAt le 2023-03-05T08%3A48%3A36%2B08%3A00';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithVariousDateTimeFormats()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Events';
+
+        // Test different datetime formats
+        $cases = [
+            // ISO 8601 basic
+            ['2023-12-25T10:30:00', '2023-12-25T10:30:00'],
+            // ISO 8601 with timezone
+            ['2023-12-25T10:30:00+05:00', '2023-12-25T10:30:00+05:00'],
+            // URL encoded with timezone  
+            [urlencode('2023-12-25T10:30:00+05:00'), '2023-12-25T10%3A30%3A00%2B05%3A00'],
+            // URL encoded UTC
+            [urlencode('2023-12-25T10:30:00Z'), '2023-12-25T10%3A30%3A00Z'],
+        ];
+
+        foreach ($cases as [$input, $expected]) {
+            $builder = $this->getBuilder();
+            $builder->from($entitySet)->where('EventDate', '>=', $input);
+            
+            $expectedUri = "Events?\$filter=EventDate ge $expected";
+            $actualUri = $builder->toRequest();
+            
+            $this->assertEquals($expectedUri, $actualUri, "Failed for input: $input");
+        }
+    }
+
 }
