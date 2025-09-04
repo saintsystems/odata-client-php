@@ -695,4 +695,82 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectedUri, $actualUri);
     }
 
+    public function testEntityWithWhereContains()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Airlines';
+
+        $builder->from($entitySet)
+                ->whereContains('Name', 'Airline');
+
+        $expectedUri = 'Airlines?$filter=contains(Name,\'Airline\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithOrWhereContains()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Airlines';
+
+        $builder->from($entitySet)
+                ->where('AirlineCode', 'AA')
+                ->orWhereContains('Name', 'Airline');
+
+        $expectedUri = 'Airlines?$filter=AirlineCode eq \'AA\' or contains(Name,\'Airline\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereNotContains()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Airlines';
+
+        $builder->from($entitySet)
+                ->whereNotContains('Name', 'Airline');
+
+        $expectedUri = 'Airlines?$filter=indexof(Name,\'Airline\') eq -1';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithOrWhereNotContains()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Airlines';
+
+        $builder->from($entitySet)
+                ->where('AirlineCode', 'AA')
+                ->orWhereNotContains('Name', 'Airline');
+
+        $expectedUri = 'Airlines?$filter=AirlineCode eq \'AA\' or indexof(Name,\'Airline\') eq -1';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithMultipleContains()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Airlines';
+
+        $builder->from($entitySet)
+                ->whereContains('Name', 'Air')
+                ->whereNotContains('Name', 'Airline');
+
+        $expectedUri = 'Airlines?$filter=contains(Name,\'Air\') and indexof(Name,\'Airline\') eq -1';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }
