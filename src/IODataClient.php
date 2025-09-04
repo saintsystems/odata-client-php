@@ -143,4 +143,28 @@ interface IODataClient
      * @return void
      */
     public function setPostProcessor(IProcessor $processor);
+
+    /**
+     * Set custom headers for requests.
+     *
+     * @param array $headers
+     * @return IODataClient
+     */
+    public function setHeaders(array $headers);
+
+    /**
+     * Get custom headers for requests.
+     *
+     * @return array
+     */
+    public function getHeaders();
+
+    /**
+     * Add a custom header to requests.
+     *
+     * @param string $name
+     * @param string $value
+     * @return IODataClient
+     */
+    public function addHeader($name, $value);
 }

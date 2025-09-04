@@ -67,6 +67,13 @@ class ODataClient implements IODataClient
     private $entityKey;
 
     /**
+     * Custom headers for requests
+     *
+     * @var array
+     */
+    private $customHeaders;
+
+    /**
      * Constructs a new ODataClient.
      * @param string                  $baseUrl                The base service URL.
      * @param IAuthenticationProvider $authenticationProvider The IAuthenticationProvider for authenticating request messages.
@@ -80,6 +87,7 @@ class ODataClient implements IODataClient
         $this->setBaseUrl($baseUrl);
         $this->authenticationProvider = $authenticationProvider;
         $this->httpProvider = $httpProvider;
+        $this->customHeaders = [];
 
         // We need to initialize a query grammar and the query post processors
         // which are both very important parts of the OData abstractions
@@ -338,6 +346,11 @@ class ODataClient implements IODataClient
             $request->attachBody($body);
         }
 
+        // Add custom headers if any
+        if (!empty($this->customHeaders)) {
+            $request->addHeaders($this->customHeaders);
+        }
+
         return $request->execute();
     }
 
@@ -435,5 +448,37 @@ class ODataClient implements IODataClient
      */
     public function getEntityKey() {
         return $this->entityKey;
+    }
+
+    /**
+     * Set custom headers for requests.
+     *
+     * @param array $headers
+     * @return IODataClient
+     */
+    public function setHeaders(array $headers) {
+        $this->customHeaders = $headers;
+        return $this;
+    }
+
+    /**
+     * Get custom headers for requests.
+     *
+     * @return array
+     */
+    public function getHeaders() {
+        return $this->customHeaders;
+    }
+
+    /**
+     * Add a custom header to requests.
+     *
+     * @param string $name
+     * @param string $value
+     * @return IODataClient
+     */
+    public function addHeader($name, $value) {
+        $this->customHeaders[$name] = $value;
+        return $this;
     }
 }
