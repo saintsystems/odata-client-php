@@ -595,15 +595,49 @@ class Grammar implements IGrammar
      */
     protected function concatenate($segments)
     {
-        // return implode('', array_filter($segments, function ($value) {
-        //     return (string) $value !== '';
-        // }));
         $uri = '';
+        $queryParams = [];
+        $hasQueryString = false;
+        $hasEntitySet = false;
+        
         foreach ($segments as $segment => $value) {
             if ((string) $value !== '') {
-                $uri.= strpos($uri, '?$') ? '&' . $value : $value;
+                if ($segment === 'entitySet') {
+                    $hasEntitySet = true;
+                    $uri .= $value;
+                } else if ($segment === 'entityKey' || $segment === 'count') {
+                    // These are path segments, not query parameters
+                    $uri .= $value;
+                } else if ($segment === 'queryString') {
+                    // queryString already includes the '?' 
+                    $hasQueryString = true;
+                    // Skip it if empty or just '?'
+                    if ($value !== '?') {
+                        $uri .= $value;
+                    }
+                } else {
+                    // This is a query parameter - collect it
+                    $queryParams[] = $value;
+                }
             }
         }
+        
+        // Add query parameters if any
+        if (!empty($queryParams)) {
+            // Only add '?' if we have an entity set or already have content
+            if ($hasEntitySet || strlen($uri) > 0) {
+                // If we already have a queryString with '?', use '&' to join
+                if ($hasQueryString && strpos($uri, '?') !== false) {
+                    $uri .= '&' . implode('&', $queryParams);
+                } else {
+                    $uri .= '?' . implode('&', $queryParams);
+                }
+            } else {
+                // No entity set, just return the query params without '?'
+                $uri .= implode('&', $queryParams);
+            }
+        }
+        
         return $uri;
     }
 

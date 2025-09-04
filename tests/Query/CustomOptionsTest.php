@@ -197,7 +197,7 @@ class CustomOptionsTest extends TestCase
     public function testAddOptionValidatesEmptyKey()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Custom option key cannot be empty');
+        $this->expectExceptionMessage('Custom option key must be a non-empty string');
         
         $builder = $this->getBuilder();
         $builder->addOption(['' => 'value']);
@@ -258,7 +258,7 @@ class CustomOptionsTest extends TestCase
         
         // Should not throw any exceptions
         $requestUri = $builder->toRequest();
-        $this->assertStringContains('People?', $requestUri);
+        $this->assertStringContainsString('People?', $requestUri);
     }
 
     public function testEmptyCustomOptionDoesNotAffectUrl()
