@@ -8,12 +8,12 @@
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-  <source>
+  <coverage>
     <include>
       <directory suffix=".php">src</directory>
     </include>
     <exclude>
       <directory suffix=".php">src/Model</directory>
     </exclude>
-  </source>
+  </coverage>
 </phpunit>
