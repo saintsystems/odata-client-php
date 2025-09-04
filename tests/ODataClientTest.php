@@ -429,4 +429,10 @@ class ODataClientTest extends TestCase
         $this->assertNotContains('OS', $airlineCodes); // Austrian Airlines (contains both)
         $this->assertNotContains('FM', $airlineCodes); // Shanghai Airline (contains both)
     }
+
+    public function testODataClientPutMethodExists()
+    {
+        $odataClient = $this->createODataClient();
+        $this->assertTrue(method_exists($odataClient, 'put'));
+    }
 }

@@ -113,6 +113,45 @@ interface IODataClient
     public function cursor($requestUri, $bindings = []);
 
     /**
+     * Run a POST request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $postData
+     *
+     * @return IODataRequest
+     */
+    public function post($requestUri, $postData);
+
+    /**
+     * Run a PUT request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function put($requestUri, $body);
+
+    /**
+     * Run a PATCH request against the service.
+     *
+     * @param string $requestUri
+     * @param mixed  $body
+     *
+     * @return IODataRequest
+     */
+    public function patch($requestUri, $body);
+
+    /**
+     * Run a DELETE request against the service.
+     *
+     * @param string $requestUri
+     *
+     * @return IODataRequest
+     */
+    public function delete($requestUri);
+
+    /**
      * Get the query grammar used by the connection.
      *
      * @return IGrammar
@@ -143,4 +182,28 @@ interface IODataClient
      * @return void
      */
     public function setPostProcessor(IProcessor $processor);
+
+    /**
+     * Set custom headers for requests.
+     *
+     * @param array $headers
+     * @return IODataClient
+     */
+    public function setHeaders(array $headers);
+
+    /**
+     * Get custom headers for requests.
+     *
+     * @return array
+     */
+    public function getHeaders();
+
+    /**
+     * Add a custom header to requests.
+     *
+     * @param string $name
+     * @param string $value
+     * @return IODataClient
+     */
+    public function addHeader($name, $value);
 }

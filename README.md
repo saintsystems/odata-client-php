@@ -95,6 +95,47 @@ $example = new UsageExample();
 
 ## Advanced Usage
 
+### Custom Headers
+
+You can add custom headers to your OData requests for authentication, tracking, or other purposes:
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$odataClient = new ODataClient($odataServiceUrl, null, $httpProvider);
+
+// Method 1: Set headers on the client (applies to all requests)
+$odataClient->setHeaders([
+    'Authorization' => 'Bearer your-token-here',
+    'X-Custom-Header' => 'MyCustomValue',
+    'X-Client-Version' => '1.0.0'
+]);
+
+// Method 2: Add a single header to the client
+$odataClient->addHeader('X-Request-ID', uniqid());
+
+// Method 3: Add headers to specific queries using the fluent interface
+$people = $odataClient->from('People')
+    ->withHeader('X-Query-Context', 'get-all-people')
+    ->withHeaders([
+        'X-Debug' => 'true',
+        'X-Performance-Track' => 'enabled'
+    ])
+    ->get();
+
+// Headers set on the client persist across requests
+$person = $odataClient->from('People')->find('russellwhyte');
+
+// Query-specific headers only apply to that request
+$airlines = $odataClient->from('Airlines')
+    ->withHeader('X-Data-Source', 'airlines-api')
+    ->get();
+```
+
 ### Custom Timeout Configuration
 
 If you need to configure custom network timeouts for your OData requests, you can create a subclass of `ODataClient` and override the `createRequest` method:
@@ -127,6 +168,15 @@ $result = $client->from('Products')->get(); // Uses 60-second timeout
 ```
 
 This approach allows you to customize request creation without having to override the entire request flow, following the template method pattern.
+
+**Key Features:**
+- **Optional**: Headers are completely optional - existing code works without changes
+- **Flexible**: Set headers on the client or per-query
+- **Fluent**: Chain header methods with other query methods
+- **Preserved**: Default OData headers are automatically included
+- **Isolated**: Query-specific headers don't affect the client's global headers
+
+For a complete working example, see [`examples/custom_headers_example.php`](examples/custom_headers_example.php).
 
 ## Develop
 
