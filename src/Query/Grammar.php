@@ -49,6 +49,7 @@ class Grammar implements IGrammar
         'expands',
         //'search',
         'orders',
+        'customOption',
         'skip',
         'skiptoken',
         'take',
@@ -391,6 +392,45 @@ class Grammar implements IGrammar
                         : $order['sql'];
         }, $orders);
     }
+
+    /**
+     * Compile the custom options portion of the query.
+     *
+     * @param Builder $query
+     * @param string  $customOption
+     *
+     * @return string
+     */
+    protected function compileCustomOption(Builder $query, $customOption)
+    {
+        if (is_null($customOption)) {
+            return '';
+        }
+
+        if (is_array($customOption)) {
+            $customOption = $this->compileCompositeCustomOption($customOption);
+        }
+
+        return $this->appendQueryParam($customOption);
+    }
+
+    /**
+     * Compile the composite Custom Options key portion of the query.
+     *
+     * @param Builder $query
+     * @param mixed   $customOption
+     *
+     * @return string
+     */
+    public function compileCompositeCustomOption($customOption)
+    {
+        $customOptions = [];
+        foreach ($customOption as $key => $value) {
+            $customOptions[] = $key . '=' . $value;
+        }
+
+        return implode(',', $customOptions);
+    }    
 
     /**
      * Compile the "$top" portions of the query.
