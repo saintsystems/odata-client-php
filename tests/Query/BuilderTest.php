@@ -838,4 +838,170 @@ class BuilderTest extends TestCase
         }
     }
 
+    public function testEntityWithWhereAny()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->whereAny('Orders', function($query) {
+                    $query->where('Status', 'Completed');
+                });
+
+        $expectedUri = 'Customers?$filter=Orders/any(o: o/Status eq \'Completed\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithWhereAll()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->whereAll('Orders', function($query) {
+                    $query->where('Amount', '>', 100);
+                });
+
+        $expectedUri = 'Customers?$filter=Orders/all(o: o/Amount gt 100)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithOrWhereAny()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->where('Status', 'Active')
+                ->orWhereAny('Orders', function($query) {
+                    $query->where('Status', 'Pending');
+                });
+
+        $expectedUri = 'Customers?$filter=Status eq \'Active\' or Orders/any(o: o/Status eq \'Pending\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithOrWhereAll()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->where('Status', 'Active')
+                ->orWhereAll('Orders', function($query) {
+                    $query->where('Amount', '<', 50);
+                });
+
+        $expectedUri = 'Customers?$filter=Status eq \'Active\' or Orders/all(o: o/Amount lt 50)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithComplexLambdaCondition()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->whereAny('Orders', function($query) {
+                    $query->where('Status', 'Completed')
+                          ->where('Amount', '>', 100);
+                });
+
+        $expectedUri = 'Customers?$filter=Orders/any(o: o/Status eq \'Completed\' and o/Amount gt 100)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithMultipleLambdaOperators()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->whereAny('Orders', function($query) {
+                    $query->where('Status', 'Completed');
+                })
+                ->whereAll('Invoices', function($query) {
+                    $query->where('Paid', true);
+                });
+
+        $expectedUri = 'Customers?$filter=Orders/any(o: o/Status eq \'Completed\') and Invoices/all(i: i/Paid eq true)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithLambdaOperatorAndSelect()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->select('Name', 'Email')
+                ->whereAny('Orders', function($query) {
+                    $query->where('Status', 'Pending');
+                });
+
+        $expectedUri = 'Customers?$select=Name,Email&$filter=Orders/any(o: o/Status eq \'Pending\')';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithNestedLambdaCondition()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Customers';
+
+        $builder->from($entitySet)
+                ->whereAny('Orders', function($query) {
+                    $query->where(function($nested) {
+                        $nested->where('Status', 'Completed')
+                               ->orWhere('Status', 'Shipped');
+                    })->where('Amount', '>', 50);
+                });
+
+        $expectedUri = 'Customers?$filter=Orders/any(o: (o/Status eq \'Completed\' or o/Status eq \'Shipped\') and o/Amount gt 50)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
+    public function testEntityWithDifferentNavigationPropertyNames()
+    {
+        $builder = $this->getBuilder();
+
+        $entitySet = 'Products';
+
+        $builder->from($entitySet)
+                ->whereAny('Reviews', function($query) {
+                    $query->where('Rating', '>=', 4);
+                })
+                ->whereAll('Suppliers', function($query) {
+                    $query->where('Verified', true);
+                });
+
+        $expectedUri = 'Products?$filter=Reviews/any(r: r/Rating ge 4) and Suppliers/all(s: s/Verified eq true)';
+        $actualUri = $builder->toRequest();
+
+        $this->assertEquals($expectedUri, $actualUri);
+    }
+
 }

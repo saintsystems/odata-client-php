@@ -797,6 +797,94 @@ class Grammar implements IGrammar
     }
 
     /**
+     * Compile a "where any" lambda clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereAny(Builder $query, $where)
+    {
+        $lambdaVariable = strtolower(substr($where['navigationProperty'], 0, 1));
+        $nestedWhere = $this->compileWheres($where['query']);
+        
+        // Extract the condition part from the nested where clause
+        $condition = $this->extractLambdaCondition($nestedWhere, $lambdaVariable);
+        
+        return $where['navigationProperty'] . '/any(' . $lambdaVariable . ': ' . $condition . ')';
+    }
+
+    /**
+     * Compile a "where all" lambda clause.
+     *
+     * @param  Builder  $query
+     * @param  array  $where
+     * @return string
+     */
+    protected function whereAll(Builder $query, $where)
+    {
+        $lambdaVariable = strtolower(substr($where['navigationProperty'], 0, 1));
+        $nestedWhere = $this->compileWheres($where['query']);
+        
+        // Extract the condition part from the nested where clause
+        $condition = $this->extractLambdaCondition($nestedWhere, $lambdaVariable);
+        
+        return $where['navigationProperty'] . '/all(' . $lambdaVariable . ': ' . $condition . ')';
+    }
+
+    /**
+     * Extract the lambda condition from nested where clause and prefix columns with lambda variable.
+     *
+     * @param  string  $nestedWhere
+     * @param  string  $lambdaVariable
+     * @return string
+     */
+    protected function extractLambdaCondition($nestedWhere, $lambdaVariable)
+    {
+        // Remove the $filter= prefix from nested where clause
+        $offset = (substr($nestedWhere, 0, 1) === '&') ? 9 : 8;
+        $condition = substr($nestedWhere, $offset);
+        
+        // If the condition starts with '(' and ends with ')', it's already properly nested
+        // This happens when multiple where clauses are used in the lambda
+        if (substr($condition, 0, 1) === '(' && substr($condition, -1) === ')') {
+            // Remove outer parentheses temporarily to process inner content
+            $innerCondition = substr($condition, 1, -1);
+            $processedInner = $this->prefixColumnsWithLambdaVariable($innerCondition, $lambdaVariable);
+            return '(' . $processedInner . ')';
+        } else {
+            // Single condition, process normally
+            return $this->prefixColumnsWithLambdaVariable($condition, $lambdaVariable);
+        }
+    }
+
+    /**
+     * Prefix column names with lambda variable.
+     *
+     * @param  string  $condition
+     * @param  string  $lambdaVariable
+     * @return string
+     */
+    protected function prefixColumnsWithLambdaVariable($condition, $lambdaVariable)
+    {
+        // Replace column references with lambda variable prefix
+        // Use a more precise pattern that only matches property names at the start of comparisons
+        return preg_replace_callback('/\b([a-zA-Z_][a-zA-Z0-9_]*)\s+(eq|ne|gt|ge|lt|le)\s+/', function($matches) use ($lambdaVariable) {
+            $property = $matches[1];
+            $operator = $matches[2];
+            
+            // Don't prefix if it's already prefixed, a keyword, or looks like it's already processed
+            if (strpos($property, '/') !== false || 
+                in_array($property, ['and', 'or', 'not', 'eq', 'ne', 'gt', 'ge', 'lt', 'le', 'true', 'false', 'null']) ||
+                strlen($property) < 2) {
+                return $matches[0];
+            }
+            
+            return $lambdaVariable . '/' . $property . ' ' . $operator . ' ';
+        }, $condition);
+    }
+
+    /**
      * Append query param to existing uri
      *
      * @param string $value
