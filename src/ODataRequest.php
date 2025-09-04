@@ -402,7 +402,7 @@ class ODataRequest implements IODataRequest
      */
     protected function flattenDictionary($obj) {
         foreach ($obj as $arrayKey => $arrayValue) {
-            if (method_exists($arrayValue, 'getProperties')) {
+            if ((is_string($arrayValue) || is_object($arrayValue)) && method_exists($arrayValue, 'getProperties')) {
                 $data = $arrayValue->getProperties();
                 $obj[$arrayKey] = $data;
             } else {
