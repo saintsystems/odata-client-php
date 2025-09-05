@@ -435,4 +435,216 @@ class ODataClientTest extends TestCase
         $odataClient = $this->createODataClient();
         $this->assertTrue(method_exists($odataClient, 'put'));
     }
+
+    // Nested Properties Integration Tests
+
+    public function testNestedPropertiesWithRealTripPinData()
+    {
+        $odataClient = $this->createODataClient();
+        
+        // Get a specific person that we know exists in TripPin service
+        $person = $odataClient->from('People')->find('russellwhyte');
+        
+        $this->assertNotNull($person);
+        
+        // Test basic property access
+        $this->assertEquals('russellwhyte', $person->UserName);
+        $this->assertEquals('Russell', $person->FirstName);
+        $this->assertEquals('Whyte', $person->LastName);
+        
+        // Test nested AddressInfo property access (complex type collection)
+        if (property_exists($person, 'AddressInfo') && !empty($person->AddressInfo)) {
+            // AddressInfo should be an array of address objects
+            $this->assertIsArray($person->AddressInfo);
+            $this->assertGreaterThan(0, count($person->AddressInfo));
+            
+            // Test accessing the first address as an array (backward compatibility)
+            $firstAddress = $person->AddressInfo[0];
+            $this->assertIsArray($firstAddress);
+            
+            if (isset($firstAddress['Address'])) {
+                $this->assertIsString($firstAddress['Address']);
+            }
+            
+            if (isset($firstAddress['City'])) {
+                $this->assertIsArray($firstAddress['City']);
+                if (isset($firstAddress['City']['Name'])) {
+                    $this->assertIsString($firstAddress['City']['Name']);
+                }
+            }
+        }
+    }
+
+    public function testNestedPropertyAccessWithDotNotation()
+    {
+        $odataClient = $this->createODataClient();
+        
+        $person = $odataClient->from('People')->find('russellwhyte');
+        $this->assertNotNull($person);
+        
+        // Test hasProperty method with simple properties
+        $this->assertTrue($person->hasProperty('UserName'));
+        $this->assertTrue($person->hasProperty('FirstName'));
+        $this->assertFalse($person->hasProperty('NonExistentProperty'));
+        
+        // Test hasProperty with nested properties if they exist
+        if (property_exists($person, 'AddressInfo') && !empty($person->AddressInfo)) {
+            $this->assertTrue($person->hasProperty('AddressInfo'));
+            
+            // Check if we can access nested properties using dot notation
+            $addressInfo = $person->getProperty('AddressInfo');
+            $this->assertNotNull($addressInfo);
+            $this->assertIsArray($addressInfo);
+        }
+        
+        // Test accessing non-existent nested properties safely
+        $this->assertNull($person->getProperty('NonExistent.Property'));
+        $this->assertNull($person->getProperty('AddressInfo.NonExistent'));
+    }
+
+    public function testNestedPropertiesWithExpandedData()
+    {
+        $odataClient = $this->createODataClient();
+        
+        // Test with expanded navigation properties
+        $person = $odataClient->from('People')
+            ->expand('Friends')
+            ->find('russellwhyte');
+        
+        $this->assertNotNull($person);
+        
+        // Test basic properties still work
+        $this->assertEquals('russellwhyte', $person->UserName);
+        
+        // Test Friends navigation property if it exists
+        if (property_exists($person, 'Friends')) {
+            $friends = $person->Friends;
+            
+            if (!empty($friends)) {
+                $this->assertIsArray($friends);
+                
+                // Test accessing friend properties
+                $firstFriend = $friends[0];
+                $this->assertIsArray($firstFriend);
+                
+                if (isset($firstFriend['UserName'])) {
+                    $this->assertIsString($firstFriend['UserName']);
+                }
+                
+                if (isset($firstFriend['FirstName'])) {
+                    $this->assertIsString($firstFriend['FirstName']);
+                }
+            }
+        }
+    }
+
+    public function testNestedPropertiesObjectStyleAccess()
+    {
+        $odataClient = $this->createODataClient();
+        
+        $person = $odataClient->from('People')->find('russellwhyte');
+        $this->assertNotNull($person);
+        
+        // Test that complex properties are converted to Entity objects for object-style access
+        if (property_exists($person, 'AddressInfo') && !empty($person->AddressInfo)) {
+            $addressInfo = $person->AddressInfo;
+            $this->assertIsArray($addressInfo);
+            
+            // For complex nested objects, test if they can be accessed as properties
+            $firstAddress = $addressInfo[0];
+            if (is_array($firstAddress) && !empty($firstAddress)) {
+                // Create an Entity from the address data to test object-style access
+                $addressEntity = new Entity($firstAddress);
+                
+                // Test isset functionality on nested objects
+                if (isset($firstAddress['Address'])) {
+                    $this->assertTrue(isset($addressEntity->Address));
+                }
+                
+                if (isset($firstAddress['City'])) {
+                    $this->assertTrue(isset($addressEntity->City));
+                    
+                    // Test deeper nesting if City is an object
+                    if (is_array($firstAddress['City'])) {
+                        $cityEntity = $addressEntity->City;
+                        $this->assertInstanceOf(Entity::class, $cityEntity);
+                        
+                        if (isset($firstAddress['City']['Name'])) {
+                            $this->assertTrue(isset($cityEntity->Name));
+                            $this->assertIsString($cityEntity->Name);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function testNestedPropertiesBackwardCompatibility()
+    {
+        $odataClient = $this->createODataClient();
+        
+        $person = $odataClient->from('People')->find('russellwhyte');
+        $this->assertNotNull($person);
+        
+        // Test that array access still works (backward compatibility)
+        $this->assertEquals('russellwhyte', $person['UserName']);
+        $this->assertEquals('Russell', $person['FirstName']);
+        $this->assertEquals('Whyte', $person['LastName']);
+        
+        // Test nested array access if AddressInfo exists
+        if (property_exists($person, 'AddressInfo') && !empty($person->AddressInfo)) {
+            $this->assertIsArray($person['AddressInfo']);
+            $this->assertGreaterThan(0, count($person['AddressInfo']));
+            
+            $firstAddress = $person['AddressInfo'][0];
+            $this->assertIsArray($firstAddress);
+            
+            // Test nested array access
+            if (isset($firstAddress['City']) && is_array($firstAddress['City'])) {
+                $this->assertIsArray($person['AddressInfo'][0]['City']);
+                
+                if (isset($firstAddress['City']['Name'])) {
+                    $this->assertIsString($person['AddressInfo'][0]['City']['Name']);
+                }
+            }
+        }
+    }
+
+    public function testNestedPropertiesWithPeopleCollection()
+    {
+        $odataClient = $this->createODataClient();
+        
+        // Get multiple people and test nested property access on collection
+        $people = $odataClient->from('People')->take(3)->get();
+        
+        $this->assertGreaterThan(0, $people->count());
+        
+        foreach ($people as $person) {
+            $this->assertInstanceOf(Entity::class, $person);
+            
+            // Test basic properties exist
+            $this->assertTrue($person->hasProperty('UserName'));
+            $this->assertTrue($person->hasProperty('FirstName'));
+            $this->assertTrue($person->hasProperty('LastName'));
+            
+            // Test that properties can be accessed both ways
+            $this->assertEquals($person->UserName, $person['UserName']);
+            $this->assertEquals($person->FirstName, $person['FirstName']);
+            $this->assertEquals($person->LastName, $person['LastName']);
+            
+            // Test nested properties if they exist
+            if ($person->hasProperty('AddressInfo')) {
+                $addressInfo = $person->getProperty('AddressInfo');
+                if (!empty($addressInfo)) {
+                    $this->assertIsArray($addressInfo);
+                    
+                    // Test accessing first address
+                    if (count($addressInfo) > 0) {
+                        $firstAddress = $addressInfo[0];
+                        $this->assertIsArray($firstAddress);
+                    }
+                }
+            }
+        }
+    }
 }

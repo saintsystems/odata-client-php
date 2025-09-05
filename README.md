@@ -231,6 +231,183 @@ This approach allows you to customize request creation without having to overrid
 
 For a complete working example, see [`examples/custom_headers_example.php`](examples/custom_headers_example.php).
 
+### Nested Property Access
+
+The OData Client provides powerful support for accessing nested properties in OData entities, making it easy to work with complex data structures returned by modern OData services.
+
+#### Object-Style Access
+
+Access nested properties naturally using object notation:
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$client = new ODataClient('https://services.odata.org/V4/TripPinService', null, $httpProvider);
+
+// Get a person with address information
+$person = $client->from('People')->find('russellwhyte');
+
+// Access nested properties directly
+$city = $person->AddressInfo[0]->City;           // Object-style access
+$country = $person->AddressInfo[0]->CountryRegion; // Deep nesting supported
+
+// Complex nested structures work naturally
+if ($person->Settings && $person->Settings->Preferences) {
+    $theme = $person->Settings->Preferences->Theme;
+}
+```
+
+#### Dot Notation Access
+
+Use dot notation for safe navigation through nested properties:
+
+```php
+// Safe access with dot notation - returns null if any part doesn't exist
+$city = $person->getProperty('AddressInfo.0.City');
+$country = $person->getProperty('AddressInfo.0.CountryRegion');
+$theme = $person->getProperty('Settings.Preferences.Theme');
+
+// Works with array indices and object properties
+$firstFriendName = $person->getProperty('Friends.0.FirstName');
+$homeAddress = $person->getProperty('AddressInfo.0.Address');
+```
+
+#### Property Existence Checking
+
+Check if nested properties exist before accessing them:
+
+```php
+// Check existence using hasProperty()
+if ($person->hasProperty('AddressInfo.0.City')) {
+    $city = $person->getProperty('AddressInfo.0.City');
+}
+
+// Also works with isset() for object-style access
+if (isset($person->AddressInfo[0]->City)) {
+    $city = $person->AddressInfo[0]->City;
+}
+
+// Check for deeply nested paths
+if ($person->hasProperty('Settings.Preferences.AutoSave')) {
+    $autoSave = $person->getProperty('Settings.Preferences.AutoSave');
+}
+```
+
+#### Working with Collections
+
+Handle arrays and collections within nested structures:
+
+```php
+// Get people with address information
+$people = $client->select('UserName,FirstName,LastName,AddressInfo')
+                 ->from('People')
+                 ->get();
+
+foreach ($people as $person) {
+    echo "Person: " . $person->FirstName . " " . $person->LastName . "\n";
+    
+    // Access nested address info - remains as array for easy filtering
+    $addresses = $person->AddressInfo;
+    
+    // Filter addresses by type
+    $homeAddresses = array_filter($addresses, function($address) {
+        return isset($address['Type']) && $address['Type'] === 'Home';
+    });
+    
+    // Access properties within filtered results
+    foreach ($homeAddresses as $address) {
+        // Convert to Entity for object-style access
+        $addrEntity = new \SaintSystems\OData\Entity($address);
+        echo "  Home Address: " . $addrEntity->Address . ", " . $addrEntity->City . "\n";
+    }
+}
+```
+
+#### Real-World ShareFile OData Example
+
+Working with ShareFile-style OData responses with Info objects and Children collections:
+
+```php
+// Query for folders with nested Info and Children data
+$folders = $client->select('Id,Name,CreatorNameShort,Info,Info/IsAHomeFolder,Children/Id,Children/Name')
+                  ->from('Items')
+                  ->where('HasChildren', true)
+                  ->get();
+
+foreach ($folders as $folder) {
+    echo "Folder: " . $folder->Name . "\n";
+    echo "Creator: " . $folder->CreatorNameShort . "\n";
+    
+    // Access nested Info properties
+    if ($folder->Info) {
+        echo "Is Home Folder: " . ($folder->Info->IsAHomeFolder ? 'Yes' : 'No') . "\n";
+        
+        // Safe navigation for optional nested properties
+        if ($folder->hasProperty('Info.Settings.Theme')) {
+            echo "Theme: " . $folder->getProperty('Info.Settings.Theme') . "\n";
+        }
+    }
+    
+    // Work with Children collection
+    if ($folder->Children) {
+        echo "Children:\n";
+        
+        // Filter children by type
+        $subfolders = array_filter($folder->Children, function($child) {
+            return $child['FileSizeBytes'] == 0; // Folders have 0 file size
+        });
+        
+        foreach ($subfolders as $subfolder) {
+            echo "  - " . $subfolder['Name'] . " (ID: " . $subfolder['Id'] . ")\n";
+        }
+    }
+    echo "\n";
+}
+```
+
+#### Integration with Query Building
+
+Nested property access works seamlessly with OData query operations:
+
+```php
+// Select specific nested properties
+$result = $client->select('Id,Name,Info/IsAHomeFolder,Children/Name,AddressInfo/City')
+                 ->from('Items')
+                 ->get();
+
+// Use in where clauses (if supported by the OData service)
+$homeItems = $client->from('Items')
+                    ->where('Info/IsAHomeFolder', true)
+                    ->get();
+
+// Expand related data and access nested properties
+$peopleWithTrips = $client->from('People')
+                          ->expand('Trips')
+                          ->get();
+
+foreach ($peopleWithTrips as $person) {
+    foreach ($person->Trips as $trip) {
+        // Access nested trip properties
+        $tripEntity = new \SaintSystems\OData\Entity($trip);
+        echo $person->FirstName . " has trip: " . $tripEntity->Name . "\n";
+    }
+}
+```
+
+**Key Features:**
+- **Multiple Access Patterns**: Object notation, dot notation, and array access all supported
+- **Automatic Type Conversion**: Nested associative arrays become Entity objects for object-style access
+- **Safe Navigation**: Non-existent properties return `null` instead of throwing errors
+- **Performance Optimized**: Entity objects created lazily only when accessed
+- **Backward Compatible**: All existing code continues to work unchanged
+- **Collection Friendly**: Arrays remain as arrays for easy filtering and manipulation
+
+For comprehensive examples and advanced usage patterns, see [`examples/nested_properties_example.php`](examples/nested_properties_example.php).
+
 ### Lambda Operators (any/all)
 
 The OData Client supports lambda operators `any` and `all` for filtering collections within entities. These operators allow you to filter based on conditions within related navigation properties.

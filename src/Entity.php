@@ -178,6 +178,13 @@ class Entity implements ArrayAccess, Arrayable
     protected static $mutatorCache = [];
 
     /**
+     * Indicates whether property names should be snake cased when using mutators.
+     *
+     * @var bool
+     */
+    protected static $snakeProperties = false;
+
+    /**
      * @var bool
      */
     private $exists;
@@ -563,7 +570,7 @@ class Entity implements ArrayAccess, Arrayable
     public static function cacheMutatedProperties($class)
     {
         static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))->map(function ($match) {
-            return lcfirst(static::$snakePropreties ? Str::snake($match) : $match);
+            return lcfirst(static::$snakeProperties ? Str::snake($match) : $match);
         })->all();
     }
 
@@ -1508,6 +1515,11 @@ class Entity implements ArrayAccess, Arrayable
             $key = $this->primaryKey;
         }
 
+        // Handle nested property access with dot notation (e.g., "Info.IsAHomeFolder")
+        if (strpos($key, '.') !== false) {
+            return $this->getNestedPropertyByPath($key);
+        }
+
         // If the property exists in the properties array or has a "get" mutator we will
         // get the property's value. Otherwise, we will proceed as if the developers
         // are asking for a relationship's value. This covers both types of values.
@@ -1527,6 +1539,28 @@ class Entity implements ArrayAccess, Arrayable
 
         // return $this->getRelationValue($key);
         return null;
+    }
+
+    /**
+     * Get a nested property using dot notation.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    protected function getNestedPropertyByPath($key)
+    {
+        $keys = explode('.', $key);
+        $value = $this->properties;
+
+        foreach ($keys as $segment) {
+            if (is_array($value) && array_key_exists($segment, $value)) {
+                $value = $value[$segment];
+            } else {
+                return null;
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -1563,7 +1597,49 @@ class Entity implements ArrayAccess, Arrayable
             return $this->asDateTime($value);
         }
 
+        // Convert nested arrays to Entity objects for object-style property access
+        if (is_array($value) && $this->isAssociativeArray($value)) {
+            return new static($value);
+        }
+
         return $value;
+    }
+
+    /**
+     * Check if an array is associative (has string keys or is a complex object).
+     *
+     * @param  array  $array
+     * @return bool
+     */
+    protected function isAssociativeArray(array $array)
+    {
+        if (empty($array)) {
+            return false;
+        }
+        
+        // If any key is a string, it's associative
+        foreach (array_keys($array) as $key) {
+            if (is_string($key)) {
+                return true;
+            }
+        }
+        
+        // If all keys are numeric but not sequential (0, 1, 2...), it might be associative
+        $keys = array_keys($array);
+        return $keys !== range(0, count($array) - 1);
+    }
+
+    /**
+     * Check if a property exists on the entity, including nested properties with dot notation.
+     * This provides a more intuitive alternative to PHP's built-in property_exists() 
+     * which doesn't work with dynamic properties.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function hasProperty($key)
+    {
+        return !is_null($this->getProperty($key));
     }
 
     /**
