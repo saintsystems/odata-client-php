@@ -178,6 +178,13 @@ class Entity implements ArrayAccess, Arrayable
     protected static $mutatorCache = [];
 
     /**
+     * Indicates whether property names should be snake cased when using mutators.
+     *
+     * @var bool
+     */
+    protected static $snakeProperties = false;
+
+    /**
      * @var bool
      */
     private $exists;
@@ -563,7 +570,7 @@ class Entity implements ArrayAccess, Arrayable
     public static function cacheMutatedProperties($class)
     {
         static::$mutatorCache[$class] = collect(static::getMutatorMethods($class))->map(function ($match) {
-            return lcfirst(static::$snakePropreties ? Str::snake($match) : $match);
+            return lcfirst(static::$snakeProperties ? Str::snake($match) : $match);
         })->all();
     }
 
@@ -1510,7 +1517,7 @@ class Entity implements ArrayAccess, Arrayable
 
         // Handle nested property access with dot notation (e.g., "Info.IsAHomeFolder")
         if (strpos($key, '.') !== false) {
-            return $this->getNestedProperty($key);
+            return $this->getNestedPropertyByPath($key);
         }
 
         // If the property exists in the properties array or has a "get" mutator we will
@@ -1540,7 +1547,7 @@ class Entity implements ArrayAccess, Arrayable
      * @param  string  $key
      * @return mixed
      */
-    protected function getNestedProperty($key)
+    protected function getNestedPropertyByPath($key)
     {
         $keys = explode('.', $key);
         $value = $this->properties;
