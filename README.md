@@ -300,6 +300,91 @@ $activePeopleWithTrips = $client->from('People')
 
 For comprehensive examples and advanced usage patterns, see [`examples/lambda_operators.php`](examples/lambda_operators.php).
 
+### Batch Operations
+
+The OData Client supports batch operations, which allow you to send multiple HTTP requests in a single batch request. This can significantly improve performance when you need to perform multiple operations.
+
+#### Basic Batch Usage
+
+```php
+<?php
+
+use SaintSystems\OData\ODataClient;
+use SaintSystems\OData\GuzzleHttpProvider;
+
+$httpProvider = new GuzzleHttpProvider();
+$client = new ODataClient('https://services.odata.org/V4/TripPinService', null, $httpProvider);
+
+// Simple batch with multiple GET requests
+$response = $client->batch()
+    ->get('People', 'get-people')
+    ->get('Airlines', 'get-airlines') 
+    ->get('Airports', 'get-airports')
+    ->execute();
+```
+
+#### Changesets for Atomic Operations
+
+Changesets ensure that all operations within the changeset are executed atomically (all succeed or all fail):
+
+```php
+// Batch with changeset for atomic operations
+$response = $client->batch()
+    ->startChangeset()
+        ->post('People', [
+            'FirstName' => 'John',
+            'LastName' => 'Doe',
+            'UserName' => 'johndoe',
+            'Emails' => ['john.doe@example.com']
+        ], 'create-person')
+        ->patch('People(\'russellwhyte\')', [
+            'FirstName' => 'Jane',
+            'LastName' => 'Smith'
+        ], 'update-person')
+    ->endChangeset()
+    ->execute();
+```
+
+#### Mixed Batch Operations
+
+You can combine individual requests and changesets in a single batch:
+
+```php
+$response = $client->batch()
+    // Individual queries (not in changeset)
+    ->get('People?$top=5', 'get-top-people')
+    
+    // Atomic operations in changeset
+    ->startChangeset()
+        ->post('People', $newPersonData, 'create-person')
+        ->delete('People(\'obsolete-id\')', 'delete-person')
+    ->endChangeset()
+    
+    // More individual queries
+    ->get('Airlines?$top=3', 'get-airlines')
+    ->execute();
+```
+
+#### Available Batch Methods
+
+- `get($uri, $id)` - Add a GET request to the batch
+- `post($uri, $data, $id)` - Add a POST request to the batch
+- `put($uri, $data, $id)` - Add a PUT request to the batch
+- `patch($uri, $data, $id)` - Add a PATCH request to the batch
+- `delete($uri, $id)` - Add a DELETE request to the batch
+- `startChangeset()` - Begin a new changeset for atomic operations
+- `endChangeset()` - End the current changeset
+- `execute()` - Execute the batch request
+
+**Key Features:**
+- **Performance**: Reduces network overhead by combining multiple requests
+- **Atomic transactions**: Changesets ensure all-or-nothing execution
+- **Content-ID references**: Use request IDs to reference results between operations
+- **Error handling**: Individual operation errors are reported separately
+- **Fluent interface**: Chain operations for clean, readable code
+
+For comprehensive examples, see [`examples/batch_operations.php`](examples/batch_operations.php).
+
 ## Develop
 
 ### Run Tests

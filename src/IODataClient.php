@@ -219,4 +219,11 @@ interface IODataClient
      * @return IODataClient
      */
     public function addHeader($name, $value);
+
+    /**
+     * Create a batch request builder for executing multiple operations in a single request.
+     *
+     * @return \SaintSystems\OData\BatchRequestBuilder
+     */
+    public function batch();
 }
