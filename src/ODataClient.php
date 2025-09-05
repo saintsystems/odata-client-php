@@ -510,4 +510,14 @@ class ODataClient implements IODataClient
         $this->customHeaders[$name] = $value;
         return $this;
     }
+
+    /**
+     * Create a batch request builder for executing multiple operations in a single request.
+     *
+     * @return BatchRequestBuilder
+     */
+    public function batch()
+    {
+        return new BatchRequestBuilder($this);
+    }
 }
