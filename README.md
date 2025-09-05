@@ -2,8 +2,6 @@
 
 A fluent library for calling OData REST services inspired by and based on the [Laravel Query Builder](https://laravel.com/docs/5.4/queries).
 
-*This library is currently in preview. Please continue to provide [feedback](https://github.com/saintsystems/odata-client-php/issues/new) as we iterate towards a production-supported library.*
-
 [![Build Status](https://github.com/saintsystems/odata-client-php/actions/workflows/ci.yml/badge.svg)](https://github.com/saintsystems/odata-client-php/actions/workflows/ci.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/saintsystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/saintsystems/odata-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/saintsystems/odata-client.svg?style=flat-square)](https://packagist.org/packages/saintsystems/odata-client)
@@ -19,6 +17,8 @@ composer require saintsystems/odata-client
 ### HTTP Provider Configuration
 
 Starting from version 0.10.0, the OData Client requires an HTTP provider to be explicitly set. This allows you to use any HTTP client implementation that suits your needs.
+
+As of version 1.0.0, we will be using [semver](https://semver.org/).
 
 #### Using Guzzle (recommended for most users)
 
@@ -156,7 +156,7 @@ $people = $odataClient->from('People')
     ->get();
 // Results in: /People?timeout=30&format=minimal
 
-// Method 2: Add custom options using array format  
+// Method 2: Add custom options using array format
 $people = $odataClient->from('People')
     ->addOption(['timeout' => '30', 'debug' => 'true'])
     ->get();
@@ -201,12 +201,12 @@ use SaintSystems\OData\GuzzleHttpProvider;
 
 class CustomTimeoutODataClient extends ODataClient {
     private $customTimeout;
-    
+
     public function __construct($baseUrl, $authProvider = null, $httpProvider = null, $timeout = 30) {
         parent::__construct($baseUrl, $authProvider, $httpProvider);
         $this->customTimeout = $timeout;
     }
-    
+
     protected function createRequest($method, $requestUri) {
         $request = parent::createRequest($method, $requestUri);
         $request->setTimeout($this->customTimeout);
@@ -309,15 +309,15 @@ $people = $client->select('UserName,FirstName,LastName,AddressInfo')
 
 foreach ($people as $person) {
     echo "Person: " . $person->FirstName . " " . $person->LastName . "\n";
-    
+
     // Access nested address info - remains as array for easy filtering
     $addresses = $person->AddressInfo;
-    
+
     // Filter addresses by type
     $homeAddresses = array_filter($addresses, function($address) {
         return isset($address['Type']) && $address['Type'] === 'Home';
     });
-    
+
     // Access properties within filtered results
     foreach ($homeAddresses as $address) {
         // Convert to Entity for object-style access
@@ -341,26 +341,26 @@ $folders = $client->select('Id,Name,CreatorNameShort,Info,Info/IsAHomeFolder,Chi
 foreach ($folders as $folder) {
     echo "Folder: " . $folder->Name . "\n";
     echo "Creator: " . $folder->CreatorNameShort . "\n";
-    
+
     // Access nested Info properties
     if ($folder->Info) {
         echo "Is Home Folder: " . ($folder->Info->IsAHomeFolder ? 'Yes' : 'No') . "\n";
-        
+
         // Safe navigation for optional nested properties
         if ($folder->hasProperty('Info.Settings.Theme')) {
             echo "Theme: " . $folder->getProperty('Info.Settings.Theme') . "\n";
         }
     }
-    
+
     // Work with Children collection
     if ($folder->Children) {
         echo "Children:\n";
-        
+
         // Filter children by type
         $subfolders = array_filter($folder->Children, function($child) {
             return $child['FileSizeBytes'] == 0; // Folders have 0 file size
         });
-        
+
         foreach ($subfolders as $subfolder) {
             echo "  - " . $subfolder['Name'] . " (ID: " . $subfolder['Id'] . ")\n";
         }
@@ -443,7 +443,7 @@ $peopleWithAllHighBudgetTrips = $client->from('People')
 #### Available Lambda Methods
 
 - `whereAny($navigationProperty, $callback)` - Returns true if any element matches the condition
-- `whereAll($navigationProperty, $callback)` - Returns true if all elements match the condition  
+- `whereAll($navigationProperty, $callback)` - Returns true if all elements match the condition
 - `orWhereAny($navigationProperty, $callback)` - OR version of whereAny
 - `orWhereAll($navigationProperty, $callback)` - OR version of whereAll
 
@@ -495,7 +495,7 @@ $client = new ODataClient('https://services.odata.org/V4/TripPinService', null, 
 // Simple batch with multiple GET requests
 $response = $client->batch()
     ->get('People', 'get-people')
-    ->get('Airlines', 'get-airlines') 
+    ->get('Airlines', 'get-airlines')
     ->get('Airports', 'get-airports')
     ->execute();
 ```
@@ -530,13 +530,13 @@ You can combine individual requests and changesets in a single batch:
 $response = $client->batch()
     // Individual queries (not in changeset)
     ->get('People?$top=5', 'get-top-people')
-    
+
     // Atomic operations in changeset
     ->startChangeset()
         ->post('People', $newPersonData, 'create-person')
         ->delete('People(\'obsolete-id\')', 'delete-person')
     ->endChangeset()
-    
+
     // More individual queries
     ->get('Airlines?$top=3', 'get-airlines')
     ->execute();
