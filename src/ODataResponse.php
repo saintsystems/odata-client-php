@@ -87,11 +87,11 @@ class ODataResponse implements IODataResponse
      */
     private function decodeBody()
     {
-        $decodedBody = json_decode($this->body, true);
+        $decodedBody = json_decode($this->body, true, 512, JSON_BIGINT_AS_STRING);
         if ($decodedBody === null) {
             $matches = null;
             preg_match('~\{(?:[^{}]|(?R))*\}~', $this->body, $matches);
-            $decodedBody = json_decode($matches[0], true);
+            $decodedBody = json_decode($matches[0], true, 512, JSON_BIGINT_AS_STRING);
             if ($decodedBody === null) {
                 $decodedBody = array();
             }
@@ -153,11 +153,19 @@ class ODataResponse implements IODataResponse
 
         //If more than one object is returned
         if (array_key_exists(Constants::ODATA_VALUE, $result)) {
-            $objArray = array();
-            foreach ($result[Constants::ODATA_VALUE] as $obj) {
-                $objArray[] = new $class($obj);
+            $value = $result[Constants::ODATA_VALUE];
+            
+            // Check if value is an array before iterating
+            if (is_array($value)) {
+                $objArray = array();
+                foreach ($value as $obj) {
+                    $objArray[] = new $class($obj);
+                }
+                return $objArray;
+            } else {
+                // Single value case - wrap in array and create single object
+                return [new $class(['value' => $value])];
             }
-            return $objArray;
         } else {
             return [new $class($result)];
         }
