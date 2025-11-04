@@ -157,14 +157,23 @@ class BatchRequestBuilder
         $boundary = $this->generateBoundary();
         $batchContent = $this->buildBatchContent($boundary);
 
-        // Create a custom request for batch operation with proper content type
-        $request = $this->client->request(
+        // Store original custom headers to restore them after the batch request
+        $originalHeaders = $this->client->getHeaders();
+
+        // Set the correct Content-Type header for batch requests
+        $this->client->addHeader('Content-Type', "multipart/mixed; boundary={$boundary}");
+
+        // Create the batch request
+        $response = $this->client->request(
             HttpMethod::POST,
             '$batch',
             $batchContent
         );
 
-        return $request;
+        // Restore original custom headers for future requests
+        $this->client->setHeaders($originalHeaders);
+
+        return $response;
     }
 
     /**
