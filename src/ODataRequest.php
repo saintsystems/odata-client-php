@@ -247,9 +247,9 @@ class ODataRequest implements IODataRequest
             return [(string) $result->getBody(), null];
         }
 
-        // Wrap response in ODataResponse layer
+        // Wrap response in appropriate ODataResponse layer using factory
         try {
-            $response = new ODataResponse(
+            $response = ODataResponseFactory::create(
                 $this,
                 (string) $result->getBody(),
                 $result->getStatusCode(),
