@@ -90,8 +90,9 @@ class ODataResponse implements IODataResponse
         $decodedBody = json_decode($this->body, true, 512, JSON_BIGINT_AS_STRING);
         if ($decodedBody === null) {
             $matches = null;
-            preg_match('~\{(?:[^{}]|(?R))*\}~', $this->body, $matches);
-            $decodedBody = json_decode($matches[0], true, 512, JSON_BIGINT_AS_STRING);
+            if (preg_match('~\{(?:[^{}]|(?R))*\}~', $this->body, $matches)) {
+                $decodedBody = json_decode($matches[0], true, 512, JSON_BIGINT_AS_STRING);
+            }
             if ($decodedBody === null) {
                 $decodedBody = array();
             }
