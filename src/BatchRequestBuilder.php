@@ -51,11 +51,12 @@ class BatchRequestBuilder
      * 
      * @param string $uri The request URI
      * @param string|null $id Optional request ID for referencing in responses
+     * @param array<string,string> $headers Headers for this subrequest
      * @return $this
      */
-    public function get($uri, $id = null)
+    public function get($uri, $id = null, array $headers = [])
     {
-        $this->addRequest(HttpMethod::GET, $uri, null, $id);
+        $this->addRequest(HttpMethod::GET, $uri, null, $id, $headers);
         return $this;
     }
 
@@ -65,11 +66,12 @@ class BatchRequestBuilder
      * @param string $uri The request URI
      * @param mixed $data The data to post
      * @param string|null $id Optional request ID for referencing in responses
+     * @param array<string,string> $headers Headers for this subrequest
      * @return $this
      */
-    public function post($uri, $data, $id = null)
+    public function post($uri, $data, $id = null, array $headers = [])
     {
-        $this->addRequest(HttpMethod::POST, $uri, $data, $id);
+        $this->addRequest(HttpMethod::POST, $uri, $data, $id, $headers);
         return $this;
     }
 
@@ -79,11 +81,12 @@ class BatchRequestBuilder
      * @param string $uri The request URI
      * @param mixed $data The data to put
      * @param string|null $id Optional request ID for referencing in responses
+     * @param array<string,string> $headers Headers for this subrequest
      * @return $this
      */
-    public function put($uri, $data, $id = null)
+    public function put($uri, $data, $id = null, array $headers = [])
     {
-        $this->addRequest(HttpMethod::PUT, $uri, $data, $id);
+        $this->addRequest(HttpMethod::PUT, $uri, $data, $id, $headers);
         return $this;
     }
 
@@ -93,11 +96,12 @@ class BatchRequestBuilder
      * @param string $uri The request URI
      * @param mixed $data The data to patch
      * @param string|null $id Optional request ID for referencing in responses
+     * @param array<string,string> $headers Headers for this subrequest
      * @return $this
      */
-    public function patch($uri, $data, $id = null)
+    public function patch($uri, $data, $id = null, array $headers = [])
     {
-        $this->addRequest(HttpMethod::PATCH, $uri, $data, $id);
+        $this->addRequest(HttpMethod::PATCH, $uri, $data, $id, $headers);
         return $this;
     }
 
@@ -106,11 +110,12 @@ class BatchRequestBuilder
      * 
      * @param string $uri The request URI
      * @param string|null $id Optional request ID for referencing in responses
+     * @param array<string,string> $headers Headers for this subrequest
      * @return $this
      */
-    public function delete($uri, $id = null)
+    public function delete($uri, $id = null, array $headers = [])
     {
-        $this->addRequest(HttpMethod::DELETE, $uri, null, $id);
+        $this->addRequest(HttpMethod::DELETE, $uri, null, $id, $headers);
         return $this;
     }
 
@@ -145,9 +150,9 @@ class BatchRequestBuilder
     /**
      * Execute the batch request
      * 
-     * @return IODataResponse
+     * @return ODataBatchResponse
      */
-    public function execute()
+    public function execute() : ODataBatchResponse
     {
         // End any open changeset
         if ($this->currentChangeset !== null) {
@@ -163,17 +168,20 @@ class BatchRequestBuilder
         // Set the correct Content-Type header for batch requests
         $this->client->addHeader('Content-Type', "multipart/mixed; boundary={$boundary}");
 
-        // Create the batch request
-        $response = $this->client->request(
-            HttpMethod::POST,
-            '$batch',
-            $batchContent
-        );
+        try {
+            // Dataverse can return a multipart batch response with a 4xx envelope status.
+            // Keep that response so callers can inspect individual operation results.
+            $request = fn () => $this->client->request(HttpMethod::POST, '$batch', $batchContent);
+            $httpProvider = $this->client->getHttpProvider();
+            $response = method_exists($httpProvider, 'executeWithExtraOptions')
+                ? $httpProvider->executeWithExtraOptions(['http_errors' => false], $request)
+                : $request();
+        } finally {
+            // Restore original headers for future requests.
+            $this->client->setHeaders($originalHeaders);
+        }
 
-        // Restore original custom headers for future requests
-        $this->client->setHeaders($originalHeaders);
-
-        return $response;
+        return $response[0];
     }
 
     /**
@@ -183,14 +191,26 @@ class BatchRequestBuilder
      * @param string $uri The request URI
      * @param mixed $data The request data
      * @param string|null $id Optional request ID
+     * @param array<string,string> $headers Headers for this subrequest
      */
-    private function addRequest($method, $uri, $data = null, $id = null)
+    private function addRequest($method, $uri, $data = null, $id = null, array $headers = [])
     {
+        foreach ($headers as $name => $value) {
+            if (!is_string($name) || !preg_match("/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/", $name)) {
+                throw new \InvalidArgumentException('Batch subrequest header names must be valid HTTP tokens.');
+            }
+
+            if (!is_string($value) || strpbrk($value, "\r\n") !== false) {
+                throw new \InvalidArgumentException('Batch subrequest header values must not contain CR or LF characters.');
+            }
+        }
+
         $request = [
             'method' => $method,
             'uri' => $uri,
             'data' => $data,
-            'id' => $id ?: uniqid('request_')
+            'id' => $id ?: uniqid('request_'),
+            'headers' => $headers,
         ];
 
         if ($this->currentChangeset !== null) {
@@ -265,6 +285,9 @@ class BatchRequestBuilder
         $fullUrl = "{$baseUrl}/{$uri}";
 
         $httpRequest = "{$request['method']} {$fullUrl} HTTP/1.1\r\n";
+        foreach ($request['headers'] as $name => $value) {
+            $httpRequest .= "{$name}: {$value}\r\n";
+        }
         
         if ($request['data'] && in_array($request['method'], [HttpMethod::POST, HttpMethod::PUT, HttpMethod::PATCH])) {
             $jsonData = is_string($request['data']) ? $request['data'] : json_encode($request['data']);

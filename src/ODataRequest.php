@@ -197,7 +197,7 @@ class ODataRequest implements IODataRequest
     /**
      * Sets the timeout limit of the HTTP request
      *
-     * @param string $timeout The timeout in ms
+     * @param string $timeout The timeout in seconds
      *
      * @return ODataRequest object
      */
@@ -210,11 +210,14 @@ class ODataRequest implements IODataRequest
     /**
      * Executes the HTTP request
      *
-     * @throws ODataException if response is invalid
-     *
-     * @return array array of objects
-     *         of class $returnType if $returnType !== false
-     *         of class ODataResponse if $returnType === false
+     * @return array|\Psr\Http\Message\ResponseInterface When streaming: returns ResponseInterface directly.
+     *         Otherwise: returns array with [response, nextLink] where response is the parsed entity/entities
+     *         and nextLink is a string URL or null.
+     *         response is
+     *         - of class $returnType if $returnType !== false
+     *         - of class ODataResponse if $returnType === false
+     *         - of class ODataBatchResponse if batch request
+     * @throws ODataException if request or response is invalid
      */
     public function execute()
     {
@@ -228,11 +231,6 @@ class ODataRequest implements IODataRequest
 
         $this->authenticateRequest($request);
 
-        // if (strpos($this->requestUrl, '$skiptoken') !== false) {
-            // echo PHP_EOL;
-            // echo 'Sending request: '. $this->requestUrl;
-            // echo PHP_EOL;
-        // }
         $result = $this->client->getHttpProvider()->send($request);
 
         // Reset
@@ -247,9 +245,9 @@ class ODataRequest implements IODataRequest
             return [(string) $result->getBody(), null];
         }
 
-        // Wrap response in ODataResponse layer
+        // Wrap response in appropriate ODataResponse layer using factory
         try {
-            $response = new ODataResponse(
+            $response = ODataResponseFactory::create(
                 $this,
                 (string) $result->getBody(),
                 $result->getStatusCode(),
@@ -257,6 +255,10 @@ class ODataRequest implements IODataRequest
             );
         } catch (\Exception $e) {
             throw new ODataException(Constants::UNABLE_TO_PARSE_RESPONSE);
+        }
+
+        if ($response instanceof ODataBatchResponse) {
+            return [$response, null];
         }
 
         // If no return type is specified, return ODataResponse

@@ -25,7 +25,7 @@ namespace SaintSystems\OData;
  * @package  SaintSystems.OData
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-class ODataResponse implements IODataResponse
+class ODataResponse implements IODataEntityResponse
 {
     /**
      * The request
@@ -59,7 +59,7 @@ class ODataResponse implements IODataResponse
     /**
      * The status code of the response
      *
-     * @var string
+     * @var int
      */
     private $httpStatusCode;
 
@@ -68,8 +68,8 @@ class ODataResponse implements IODataResponse
      *
      * @param object $request        The request
      * @param string $body           The body of the response
-     * @param string $httpStatusCode The returned status code
-     * @param array  $headers        The returned headers
+     * @param int $httpStatusCode    The returned status code
+     * @param array $headers         The returned headers
      */
     public function __construct($request, $body = null, $httpStatusCode = null, $headers = array())
     {
@@ -122,7 +122,7 @@ class ODataResponse implements IODataResponse
     /**
      * Get the status of the HTTP response
      *
-     * @return string The HTTP status
+     * @return int The HTTP status
      */
     public function getStatus()
     {

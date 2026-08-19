@@ -41,7 +41,7 @@ class GuzzleHttpProvider implements IHttpProvider
 
     /**
      * Gets the timeout limit of the cURL request
-     * @return integer  The timeout in ms
+     * @return integer  The timeout in seconds
      */
     public function getTimeout()
     {
@@ -51,7 +51,7 @@ class GuzzleHttpProvider implements IHttpProvider
     /**
      * Sets the timeout limit of the cURL request
      *
-     * @param integer $timeout The timeout in ms
+     * @param integer $timeout The timeout in seconds
      *
      * @return $this
      */
@@ -74,6 +74,18 @@ class GuzzleHttpProvider implements IHttpProvider
     public function setExtraOptions($options)
     {
         $this->extra_options = $options;
+    }
+
+    public function executeWithExtraOptions(array $options, callable $callback)
+    {
+        $originalOptions = $this->extra_options;
+        $this->extra_options = array_merge($originalOptions, $options);
+
+        try {
+            return $callback();
+        } finally {
+            $this->extra_options = $originalOptions;
+        }
     }
 
     /**
